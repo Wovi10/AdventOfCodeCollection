@@ -19,13 +19,13 @@ public static class Day01
     private static void PartOne()
     {
         var result = GetCalibrationSum();
-        Console.WriteLine($"Answer of this part 1 is: \n{result}");
+        Console.WriteLine($"Answer of part 1 is: \n{result}");
     }
 
     private static void PartTwo()
     {
         var result = GetCalibrationSum(@"\d|one|two|three|four|five|six|seven|eight|nine");
-        Console.WriteLine($"Answer of this part 2 is: \n{result}");
+        Console.WriteLine($"Answer of part 2 is: \n{result}");
     }
 
     private static int GetCalibrationSum(string regexMatch = @"\d")
