@@ -1,115 +1,209 @@
-﻿using System.Text.RegularExpressions;
-
-namespace AdventOfCode2023_1;
+﻿namespace AdventOfCode2023_1;
 
 public static class Day02
 {
-    private static readonly string FilePath = Path.Combine("../../..", "Input/Day02/MockDay02.in");
+    private static readonly string FilePath = Path.Combine("../../..", "Input/Day02/Day02.in");
+    private static readonly string MockFilePath = Path.Combine("../../..", "Input/Day02/MockDay02.in");
     private static readonly string FullPath = Path.Combine(Directory.GetCurrentDirectory(), FilePath);
     private static readonly string InputFile = File.ReadAllText(FullPath);
 
-    private static List<Tuple<string, int>> _inputConfig = new()
+    public static readonly Dictionary<char, int> InputConfig = new()
     {
-        new Tuple<string, int>("red", 12),
-        new Tuple<string, int>("green", 13),
-        new Tuple<string, int>("blue", 14)
+        {'r', 12},{'g', 13}, {'b', 14}
     };
 
     public static void Run()
     {
         Console.WriteLine("Starting day 2 challenge: Cube Conundrum");
         PartOne();
-        // PartTwo();
+        PartTwo();
         Console.WriteLine();
     }
 
     private static void PartOne()
     {
-        var result = GetListPossibleGames();
-    }
-
-    private static List<int> GetListPossibleGames()
-    {
-        var trying = InputFile.Split("\n")
-            .Select(inputLine => new {gameIndex = int.Parse(inputLine[5].ToString()), games = inputLine[8..]})
-            .Select(inputLine => new {inputLine.gameIndex, games = inputLine.games.Split(";")})
-            .Select(game => new {game.gameIndex, sets = game.games.Select(set => set.Split(","))})
-            .Select(set => new
-            {
-                set.gameIndex,
-                colours = set.sets.Select(colour =>
-                {
-                    var colourName = colour[2..].ToString();
-                    var numberOfColour = int.Parse(colour[0].ToString());
-                    return new Game(new List<Set>
-                    {
-                    new Set(new List<Grab>
-                    {
-                    new Grab(colourName, numberOfColour)
-                })
-            });
-                })
-            })
-            .ToList();
-        
-        // var listOfValidGames = trying.Select()
-
-        return new List<int>();
-        // return InputFile.Split("\n")
-        //     .Select(inputLine => new {inputLine, gameIndex = (int)inputLine[5], grabs = inputLine[8..]})
-        //     .Select(set => new {set, lastNumber = Regex.Match(t.inputLine, regex, RegexOptions.RightToLeft)})
-        //     .Select(t => ParseMatch(t.t.firstNumber.Value) * 10 + ParseMatch(t.lastNumber.Value))
-        //     .ToList();
+        var result = GetListPossibleGames().Sum();
+        Console.WriteLine($"Answer of part 1 is: \n{result}");
     }
 
     private static void PartTwo()
     {
-        throw new NotImplementedException();
+        var result = GetListPartTwoGames().Sum();
+        Console.WriteLine($"Answer of part 2 is: \n{result}");
+    }
+
+    private static List<int> GetListPartTwoGames()
+    {
+        var games = InputFile.Split("\n")
+            .Select(inputLine => new Game2(inputLine))
+            .ToList();
+
+        return games.Select(game => game.Power).ToList();
+    }
+
+    private static List<int> GetListPossibleGames()
+    {
+        var games = InputFile.Split("\n")
+            .Select(inputLine => new Game(inputLine))
+            .ToList();
+
+        var validGames = games.Where(game => game.IsValid).ToList();
+
+        return validGames.Select(game => game.GameIndex).ToList();
     }
 }
-
+# region
 internal class Game
 {
-    internal List<Set> Sets { get; set; }
+    private List<Set> Sets { get; set; }
+    public int GameIndex { get; set; }
+    private Dictionary<char, int> Colours { get; set; }
+    public bool IsValid { get; set; }
 
-    public Game(List<Set> sets)
+    public Game(string gameLine)
     {
-        Sets = sets;
+        var gameLineParts = gameLine.Split(":");
+        GameIndex = GetIndex(gameLineParts[0]);
+        Sets = gameLineParts[1].Split(";").Select(set => new Set(set)).ToList();
+        Colours = DecideColours(Sets);
+        IsValid = IsValidGame();
+    }
+
+    private bool IsValidGame()
+    {
+        foreach (var (key, value) in Colours)
+        {
+            if (Day02.InputConfig.ContainsKey(key) && Day02.InputConfig[key] < value)
+                return false;
+        }
+
+        return true;
+    }
+
+    private static int GetIndex(string gameIndexPart)
+    {
+        var outputString = gameIndexPart.Split(" ").Last();
+        return int.Parse(outputString);
+    }
+
+    private Dictionary<char,int> DecideColours(List<Set> sets)
+    {
+        Colours = new Dictionary<char, int>();
+        foreach (var set in sets)
+        {
+            foreach (var (key, value) in set.Colours)
+            {
+                if (!Colours.ContainsKey(key))
+                    Colours.Add(key, value);
+                else if (Colours[key] < value)
+                    Colours[key] = value;
+            }
+        }
+
+        return Colours;
     }
 }
 
 internal class Set
 {
-    public List<Grab> Grabs { get; set; }
+    public Dictionary<char, int> Colours { get; private set; }
 
-    public Set(List<Grab> grabs)
+    public Set(string colours)
     {
-        Grabs = grabs;
+        Colours = DecideColours(colours);
     }
-}
 
-internal class Grab
-{
-    public static List<int> Colours = new()
+    private Dictionary<char, int> DecideColours(string colours)
     {
-        0,0,0
-    };
+        Colours = new Dictionary<char, int>();
 
-    public Grab(string colour, int number)
-    {
-        switch (colour)
+        var allColours = colours.Split(",");
+
+        foreach (var colourCombo in allColours)
         {
-            case "red":
-                Colours[0] += number;
-                return;
-            case "blue":
-                Colours[1] += number;
-                return;
-            case "green":
-                Colours[2] += number;
-                return;
-            default:
-                return;
+            var colour = colourCombo.Trim().Split(" ");
+            var key = colour[1][0];
+            var amount = int.Parse(colour[0]);
+
+            Colours.TryAdd(key, amount);
         }
+        return Colours;
     }
 }
+# endregion
+
+# region
+internal class Game2
+{
+    private List<Set2> Sets { get; set; }
+    public int GameIndex { get; set; }
+    private Dictionary<char, int> Colours { get; set; }
+    public int Power { get; set; }
+
+    public Game2(string gameLine)
+    {
+        var gameLineParts = gameLine.Split(":");
+        GameIndex = GetIndex(gameLineParts[0]);
+        Sets = gameLineParts[1].Split(";").Select(set => new Set2(set)).ToList();
+        Colours = DecideColours(Sets);
+        Power = CalculatePower();
+    }
+
+    private int CalculatePower()
+    {
+        var values = Colours.Select(colour => colour.Value);
+        var aggregate = values.Aggregate((value1, value2) => value1 * value2);
+        return aggregate;
+    }
+
+    private static int GetIndex(string gameIndexPart)
+    {
+        var outputString = gameIndexPart.Split(" ").Last();
+        return int.Parse(outputString);
+    }
+
+    private Dictionary<char,int> DecideColours(List<Set2> sets)
+    {
+        Colours = new Dictionary<char, int>();
+        foreach (var set in sets)
+        {
+            foreach (var (key, value) in set.Colours)
+            {
+                if (!Colours.ContainsKey(key))
+                    Colours.Add(key, value);
+                else if (Colours[key] < value)
+                    Colours[key] = value;
+            }
+        }
+
+        return Colours;
+    }
+}
+
+internal class Set2
+{
+    public Dictionary<char, int> Colours { get; private set; }
+
+    public Set2(string colours)
+    {
+        Colours = DecideColours(colours);
+    }
+
+    private Dictionary<char, int> DecideColours(string colours)
+    {
+        Colours = new Dictionary<char, int>();
+
+        var allColours = colours.Split(",");
+
+        foreach (var colourCombo in allColours)
+        {
+            var colour = colourCombo.Trim().Split(" ");
+            var key = colour[1][0];
+            var amount = int.Parse(colour[0]);
+
+            Colours.TryAdd(key, amount);
+        }
+        return Colours;
+    }
+}
+# endregion
