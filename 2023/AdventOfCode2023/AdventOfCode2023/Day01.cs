@@ -4,10 +4,8 @@ namespace AdventOfCode2023_1;
 
 public static class Day01
 {
-    // private static string sCurrentDirectory = Directory.GetCurrentDirectory();  
-    private static readonly string FilePath = Path.Combine("../../..", "Input/Day01.in");
-    private static readonly string FullPath = Path.Combine(Directory.GetCurrentDirectory(), FilePath);  
-    // private static string sFilePath = Path.GetFullPath(sFile);
+    private static readonly string FilePath = Path.Combine("../../..", "Input/Day01/Day01.in");
+    private static readonly string FullPath = Path.Combine(Directory.GetCurrentDirectory(), FilePath);
     private static readonly string InputFile = File.ReadAllText(FullPath);
 
     public static void Run()
@@ -38,10 +36,6 @@ public static class Day01
 
     private static List<int> GetCalibrationList(string regex = @"\d")
     {
-        var tempLine = InputFile.Split("\n");
-        var tempFirst = tempLine.Select(inputLine => new {inputLine, firstNumber = Regex.Match(inputLine, regex)}).First().firstNumber;
-        var tempLast = tempLine.Select(inputLine => new {inputLine, lastNumber = Regex.Match(inputLine, regex, RegexOptions.RightToLeft)}).First().lastNumber;
-        var tempOutput = ParseMatch(tempFirst.Value) * 10 + ParseMatch(tempLast.Value);
         return InputFile.Split("\n")
             .Select(inputLine => new {inputLine, firstNumber = Regex.Match(inputLine, regex)})
             .Select(t => new {t, lastNumber = Regex.Match(t.inputLine, regex, RegexOptions.RightToLeft)})

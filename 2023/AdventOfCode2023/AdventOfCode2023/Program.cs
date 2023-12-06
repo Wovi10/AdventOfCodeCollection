@@ -2,4 +2,5 @@
 
 using AdventOfCode2023_1;
 
-Day01.Run();
+// Day01.Run();
+Day02.Run();
