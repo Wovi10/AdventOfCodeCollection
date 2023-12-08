@@ -10,13 +10,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="7cda96a4-74c4-4a1f-9cd5-b1023f290e22" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/AdventOfCode2023/Day02.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/AdventOfCode2023/Input/Day02/Day02.in" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/AdventOfCode2023/Input/Day02/MockDay02.in" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/AdventOfCode2023/Day03.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/AdventOfCode2023/Input/Day03/Day03.in" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/AdventOfCode2023/Input/Day03/MockDay03.in" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.AdventOfCode2023/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.AdventOfCode2023/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AdventOfCode2023/Day01.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AdventOfCode2023/Day01.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AdventOfCode2023/Input/Day01.in" beforeDir="false" afterPath="$PROJECT_DIR$/AdventOfCode2023/Input/Day01/Day01.in" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AdventOfCode2023/Input/MockDay01.in" beforeDir="false" afterPath="$PROJECT_DIR$/AdventOfCode2023/Input/Day01/MockDay01.in" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AdventOfCode2023/AdventOfCode2023.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/AdventOfCode2023/AdventOfCode2023.csproj" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/AdventOfCode2023/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AdventOfCode2023/Program.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -29,6 +27,12 @@
   </component>
   <component name="HighlightingSettingsPerFile">
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/20885d5d627d4da82a4a22d7c55abb3d50afdd1ab121738514d59792dc9993/Select.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/387238ef9c8f8c6b1dccf4dcba4eed0e459454919b2e4b9cad11a5071789df/Dictionary.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/767db1e17d404f86c3c73c54c6b20b5ff9ec43b79ef47681ae34b40a6852cf9/Where.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/9a6b1457cbcf17db31a383ba49ef9bcc786cf3ef77146d997eee499b27a46d/Object.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/ab3652e3e0c1780ce9b7fbb6938dbec71c093d375262e61691b468390c520/KeyValuePair.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/aef21ab35a6576cdcb99a56e6a8c84076d069f09ad1be52cfedaf49ee667855/Int32.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/d5a9d2179b0fd7c3bf9d8cad2b1b85cfd8f51ff3375b4d3fd677eee914cb50/Iterator.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AdventOfCode2023/Day01.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AdventOfCode2023/Program.cs" root0="FORCE_HIGHLIGHTING" />
   </component>
@@ -42,26 +46,27 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;2023__01__Trebuchet&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "full.screen.before.presentation.mode": "false",
+    "git-widget-placeholder": "2023__Day03__GearRatios",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "vue.rearranger.settings.migration": "true"
   },
-  &quot;keyToStringList&quot;: {
-    &quot;rider.external.source.directories&quot;: [
-      &quot;C:\\Users\\wout\\AppData\\Roaming\\JetBrains\\Rider2023.2\\resharper-host\\DecompilerCache&quot;,
-      &quot;C:\\Users\\wout\\AppData\\Roaming\\JetBrains\\Rider2023.2\\resharper-host\\SourcesCache&quot;,
-      &quot;C:\\Users\\wout\\AppData\\Local\\Symbols\\src&quot;
+  "keyToStringList": {
+    "rider.external.source.directories": [
+      "C:\\Users\\woutv\\AppData\\Roaming\\JetBrains\\Rider2023.2\\resharper-host\\DecompilerCache",
+      "C:\\Users\\woutv\\AppData\\Roaming\\JetBrains\\Rider2023.2\\resharper-host\\SourcesCache",
+      "C:\\Users\\woutv\\AppData\\Local\\Symbols\\src"
     ]
   }
-}</component>
+}]]></component>
   <component name="RunManager" selected=".NET Project.AdventOfCode2023">
     <configuration name="AdventOfCode2023" type="DotNetProject" factoryName=".NET Project">
       <option name="EXE_PATH" value="" />
@@ -129,6 +134,7 @@
       <workItem from="1701771781918" duration="7500000" />
       <workItem from="1701874916493" duration="3270000" />
       <workItem from="1701878248045" duration="2778000" />
+      <workItem from="1702043531103" duration="4136000" />
     </task>
     <servers />
   </component>
@@ -142,30 +148,17 @@
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" type="DotNet Breakpoints">
-          <url>file://$PROJECT_DIR$/AdventOfCode2023/Day02.cs</url>
-          <line>56</line>
-          <properties documentPath="D:\GitHub\AdventOfCodeCollection\2023\AdventOfCode2023\AdventOfCode2023\Day02.cs" initialLine="36" containingFunctionPresentation="Method 'GetListPossibleGames'">
+          <url>file://$PROJECT_DIR$/AdventOfCode2023/Day03.cs</url>
+          <line>39</line>
+          <properties documentPath="D:\Github\AdventOfCodeCollection\2023\AdventOfCode2023\AdventOfCode2023\Day03.cs" initialLine="37" containingFunctionPresentation="Method 'GetPartNumbers'">
             <startOffsets>
-              <option value="1904" />
+              <option value="1179" />
             </startOffsets>
             <endOffsets>
-              <option value="1927" />
+              <option value="1202" />
             </endOffsets>
           </properties>
-          <option name="timeStamp" value="4" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="DotNet Breakpoints">
-          <url>file://$PROJECT_DIR$/AdventOfCode2023/Day02.cs</url>
-          <line>99</line>
-          <properties documentPath="D:\GitHub\AdventOfCodeCollection\2023\AdventOfCode2023\AdventOfCode2023\Day02.cs" initialLine="91" containingFunctionPresentation="Constructor 'Grab'">
-            <startOffsets>
-              <option value="2836" />
-            </startOffsets>
-            <endOffsets>
-              <option value="2851" />
-            </endOffsets>
-          </properties>
-          <option name="timeStamp" value="5" />
+          <option name="timeStamp" value="6" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
