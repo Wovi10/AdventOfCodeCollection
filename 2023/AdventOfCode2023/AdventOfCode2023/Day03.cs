@@ -6,7 +6,8 @@ public static class Day03
     private static readonly string MockFilePath = Path.Combine("../../..", "Input/Day03/MockDay03.in");
     private static readonly string FullPath = Path.Combine(Directory.GetCurrentDirectory(), FilePath);
     private static readonly string InputFile = File.ReadAllText(FullPath);
-
+    private static readonly List<string> Input = GetInput();
+    
     public static void Run()
     {
         Console.WriteLine("Starting day 3 challenge: Gear Ratios");
@@ -28,7 +29,6 @@ public static class Day03
     }
 
     # region Part 1
-
     private static int GetSumPartNumbers()
     {
         return GetPartNumbers().Sum();
@@ -36,16 +36,9 @@ public static class Day03
 
     private static List<int> GetPartNumbers()
     {
-        var input = GetInput();
-        Console.WriteLine("Deciding symbol indices");
-        var symbolIndices = DecideSymbolIndices(input);
-        Console.WriteLine("Found symbol indices");
-        Console.WriteLine("Deciding Numbers");
-        var engineNumbers = DecideNumbers(input);
-        Console.WriteLine("Found Numbers");
-        Console.WriteLine("Deciding Part Numbers");
+        var symbolIndices = DecideSymbolIndices();
+        var engineNumbers = DecideNumbers();
         var partNumbers = DecidePartNumbers(symbolIndices, engineNumbers);
-        Console.WriteLine("Found Part Numbers");
         return partNumbers.Select(pn => pn.Number).ToList();
     }
 
@@ -80,12 +73,12 @@ public static class Day03
         return partNumbers;
     }
 
-    private static List<EngineNumber> DecideNumbers(List<string> input)
+    private static List<EngineNumber> DecideNumbers()
     {
         var output = new List<EngineNumber>();
-        for (var i = 0; i < input.Count; i++)
+        for (var i = 0; i < Input.Count; i++)
         {
-            var line = input[i].Trim();
+            var line = Input[i].Trim();
             for (var j = 0; j < line.Length; j++)
             {
                 var symbol = line[j];
@@ -111,12 +104,12 @@ public static class Day03
         return output;
     }
 
-    private static List<EngineSymbol> DecideSymbolIndices(List<string> input)
+    private static List<EngineSymbol> DecideSymbolIndices()
     {
         var symbolIndices = new List<EngineSymbol>();
-        for (var i = 0; i < input.Count; i++)
+        for (var i = 0; i < Input.Count; i++)
         {
-            var line = input[i].Trim();
+            var line = Input[i].Trim();
             for (var j = 0; j < line.Length; j++)
             {
                 var symbol = line[j];
@@ -136,7 +129,6 @@ public static class Day03
     {
         return InputFile.Split("\n").ToList();
     }
-
     # endregion
     
     # region Part 2
@@ -147,16 +139,9 @@ public static class Day03
 
     private static List<int> GetGearRatios()
     {
-        var input = GetInput();
-        Console.WriteLine("Deciding symbol indices");
-        var symbolIndices = DecideSymbolIndices(input);
-        Console.WriteLine("Found symbol indices");
-        Console.WriteLine("Deciding Numbers");
-        var engineNumbers = DecideNumbers(input);
-        Console.WriteLine("Found Numbers");
-        Console.WriteLine("Deciding Gears");
+        var symbolIndices = DecideSymbolIndices();
+        var engineNumbers = DecideNumbers();
         var gears = DecideGears(symbolIndices, engineNumbers);
-        Console.WriteLine("Found Gears");
 
         return gears.Select(engineSymbol => engineSymbol.GearRatio).ToList();
     }
@@ -166,7 +151,8 @@ public static class Day03
         var gears = new List<EngineSymbol>();
         foreach (var engineSymbol in engineSymbols)
         {
-            if (engineSymbol.Symbol != "*")
+            const string gearSymbol = "*";
+            if (engineSymbol.Symbol != gearSymbol)
                 continue;
 
             var previousLineNumbers = engineNumbers.Where(engineNumber => engineNumber.RowIndex == engineSymbol.RowIndex - 1).ToList();
@@ -216,8 +202,8 @@ public static class Day03
 
 internal class EngineNumber(int rowIndex, int columnIndex, int numberLength, int number)
 {
-    public int RowIndex { get; set; } = rowIndex;
-    public int ColumnIndex { get; set; } = columnIndex;
+    public int RowIndex { get; } = rowIndex;
+    public int ColumnIndex { get; } = columnIndex;
     public int NumberLength { get; set; } = numberLength;
     public int Number { get; set; } = number;
     public bool IsPartNumber { get; set; }
@@ -225,9 +211,9 @@ internal class EngineNumber(int rowIndex, int columnIndex, int numberLength, int
 
 internal class EngineSymbol(int rowIndex, int columnIndex, char symbol)
 {
-    public int RowIndex { get; set; } = rowIndex;
-    public int ColumnIndex { get; set; } = columnIndex;
-    public string Symbol { get; set; } = symbol.ToString();
+    public int RowIndex { get; } = rowIndex;
+    public int ColumnIndex { get; } = columnIndex;
+    public string Symbol { get; } = symbol.ToString();
     public bool IsGear { get; set; }
     public List<EngineNumber>? AdjacentPartNumbers { get; set; }
     public int GearRatio { get; set; }
