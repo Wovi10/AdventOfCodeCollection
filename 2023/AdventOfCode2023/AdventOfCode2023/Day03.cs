@@ -4,14 +4,14 @@ public static class Day03
 {
     private static readonly string FilePath = Path.Combine("../../..", "Input/Day03/Day03.in");
     private static readonly string MockFilePath = Path.Combine("../../..", "Input/Day03/MockDay03.in");
-    private static readonly string FullPath = Path.Combine(Directory.GetCurrentDirectory(), MockFilePath);
+    private static readonly string FullPath = Path.Combine(Directory.GetCurrentDirectory(), FilePath);
     private static readonly string InputFile = File.ReadAllText(FullPath);
 
     public static void Run()
     {
-        Console.WriteLine("Starting day 2 challenge: Cube Conundrum");
+        Console.WriteLine("Starting day 3 challenge: Gear Ratios");
         PartOne();
-        // PartTwo();
+        PartTwo();
         Console.WriteLine();
     }
 
@@ -23,10 +23,12 @@ public static class Day03
 
     private static void PartTwo()
     {
-        throw new NotImplementedException();
+        var result = GetSumGearRatios();
+        Console.WriteLine($"Answer of part 2 is: \n{result}");
     }
-    
-    # region
+
+    # region Part 1
+
     private static int GetSumPartNumbers()
     {
         return GetPartNumbers().Sum();
@@ -35,9 +37,47 @@ public static class Day03
     private static List<int> GetPartNumbers()
     {
         var input = GetInput();
+        Console.WriteLine("Deciding symbol indices");
         var symbolIndices = DecideSymbolIndices(input);
+        Console.WriteLine("Found symbol indices");
+        Console.WriteLine("Deciding Numbers");
         var engineNumbers = DecideNumbers(input);
-        return new List<int>();
+        Console.WriteLine("Found Numbers");
+        Console.WriteLine("Deciding Part Numbers");
+        var partNumbers = DecidePartNumbers(symbolIndices, engineNumbers);
+        Console.WriteLine("Found Part Numbers");
+        return partNumbers.Select(pn => pn.Number).ToList();
+    }
+
+    private static List<EngineNumber> DecidePartNumbers(List<EngineSymbol> symbolIndices,
+        List<EngineNumber> engineNumbers)
+    {
+        var partNumbers = new List<EngineNumber>();
+        foreach (var engineNumber in engineNumbers)
+        {
+            var previousLineSymbols = symbolIndices.Where(es => es.RowIndex == engineNumber.RowIndex - 1).ToList();
+            var ownLineSymbols = symbolIndices.Where(es => es.RowIndex == engineNumber.RowIndex).ToList();
+            var nextLineSymbols = symbolIndices.Where(es => es.RowIndex == engineNumber.RowIndex + 1).ToList();
+
+            var counter = -1;
+            do
+            {
+                engineNumber.IsPartNumber =
+                    previousLineSymbols.Any(es => es.ColumnIndex == engineNumber.ColumnIndex + counter) ||
+                    ownLineSymbols.Any(es => es.ColumnIndex == engineNumber.ColumnIndex + counter) ||
+                    nextLineSymbols.Any(es => es.ColumnIndex == engineNumber.ColumnIndex + counter);
+
+                if (engineNumber.IsPartNumber)
+                {
+                    partNumbers.Add(engineNumber);
+                    break;
+                }
+
+                counter++;
+            } while (counter <= engineNumber.NumberLength);
+        }
+
+        return partNumbers;
     }
 
     private static List<EngineNumber> DecideNumbers(List<string> input)
@@ -45,38 +85,47 @@ public static class Day03
         var output = new List<EngineNumber>();
         for (var i = 0; i < input.Count; i++)
         {
-            var s = input[i];
-            for (var j = 0; j < s.Length; j++)
+            var line = input[i].Trim();
+            for (var j = 0; j < line.Length; j++)
             {
-                if (!int.TryParse(s[j].ToString(), out _)) continue;
-                var engineNumber = new EngineNumber(i, j, 1);
+                var symbol = line[j];
+                if (!int.TryParse(symbol.ToString(), out var number)) continue;
+                var engineNumber = new EngineNumber(i, j, 1, number);
 
-                if (j+1 != s.Length && int.TryParse(s[j+1].ToString(), out _))
+                var nextSymbol = line[j + 1];
+
+                while (j + 1 < line.Length && int.TryParse(nextSymbol.ToString(), out var nextNumber))
                 {
                     engineNumber.NumberLength += 1;
+                    engineNumber.Number = Convert.ToInt32(engineNumber.Number + "" + nextNumber);
                     j++;
+                    if (j + 1 >= line.Length) continue;
+                    nextSymbol = line[j + 1];
                 }
 
                 output.Add(engineNumber);
             }
         }
-        
+
 
         return output;
     }
 
-    private static List<Tuple<int, int>> DecideSymbolIndices(List<string> input)
+    private static List<EngineSymbol> DecideSymbolIndices(List<string> input)
     {
-        var symbolIndices = new List<Tuple<int, int>>();
+        var symbolIndices = new List<EngineSymbol>();
         for (var i = 0; i < input.Count; i++)
         {
-            var s = input[i];
-            for (var j = 0; j < s.Length; j++)
+            var line = input[i].Trim();
+            for (var j = 0; j < line.Length; j++)
             {
-                if (!int.TryParse(s[j].ToString(), out _) || s[j] != '.')
-                {
-                    symbolIndices.Add(new Tuple<int, int>(i, j));
-                }
+                var symbol = line[j];
+
+                if (int.TryParse(line[j].ToString(), out _) || line[j] == '.') continue;
+
+                var engineSymbol = new EngineSymbol(i, j, symbol);
+                engineSymbol.IsGear = engineSymbol.Symbol == "*";
+                symbolIndices.Add(engineSymbol);
             }
         }
 
@@ -89,18 +138,102 @@ public static class Day03
     }
 
     # endregion
+    
+    # region Part 2
+    private static int GetSumGearRatios()
+    {
+        return GetGearRatios().Sum();
+    }
+
+    private static List<int> GetGearRatios()
+    {
+        var input = GetInput();
+        Console.WriteLine("Deciding symbol indices");
+        var symbolIndices = DecideSymbolIndices(input);
+        Console.WriteLine("Found symbol indices");
+        Console.WriteLine("Deciding Numbers");
+        var engineNumbers = DecideNumbers(input);
+        Console.WriteLine("Found Numbers");
+        Console.WriteLine("Deciding Gears");
+        var gears = DecideGears(symbolIndices, engineNumbers);
+        Console.WriteLine("Found Gears");
+
+        return gears.Select(engineSymbol => engineSymbol.GearRatio).ToList();
+    }
+
+    private static List<EngineSymbol> DecideGears(List<EngineSymbol> engineSymbols, List<EngineNumber> engineNumbers)
+    {
+        var gears = new List<EngineSymbol>();
+        foreach (var engineSymbol in engineSymbols)
+        {
+            if (engineSymbol.Symbol != "*")
+                continue;
+
+            var previousLineNumbers = engineNumbers.Where(engineNumber => engineNumber.RowIndex == engineSymbol.RowIndex - 1).ToList();
+            CheckLine(previousLineNumbers, engineSymbol);
+            var ownLineNumbers = engineNumbers.Where(engineNumber => engineNumber.RowIndex == engineSymbol.RowIndex).ToList();
+            CheckLine(ownLineNumbers, engineSymbol);
+            var nextLineNumbers = engineNumbers.Where(engineNumber => engineNumber.RowIndex == engineSymbol.RowIndex + 1).ToList();
+            CheckLine(nextLineNumbers, engineSymbol);
+
+            engineSymbol.IsGear = engineSymbol.AdjacentPartNumbers is {Count: >= 2};
+
+            if (!engineSymbol.IsGear) continue;
+            engineSymbol.GearRatio = engineSymbol.GetGearRatio();
+            gears.Add(engineSymbol);
+        }
+
+        return gears.Where(gear => gear.IsGear).ToList();
+    }
+
+    private static void CheckLine(List<EngineNumber> line, EngineSymbol engineSymbol)
+    {
+        foreach (var ownLineNumbers in line)
+        {
+            if (engineSymbol.ColumnIndex > ownLineNumbers.ColumnIndex + ownLineNumbers.NumberLength)
+                continue;
+
+            if (engineSymbol.ColumnIndex < ownLineNumbers.ColumnIndex - 1)
+                break;
+
+            var counter = -1;
+            do
+            {
+                if (engineSymbol.ColumnIndex == ownLineNumbers.ColumnIndex + counter)
+                {
+                    if (engineSymbol.AdjacentPartNumbers != null)
+                        engineSymbol.AdjacentPartNumbers.Add(ownLineNumbers);
+                    else
+                        engineSymbol.AdjacentPartNumbers = new List<EngineNumber> {ownLineNumbers};
+                    break;
+                }
+                counter++;
+            } while (counter <= ownLineNumbers.NumberLength);
+        }
+    }
+    # endregion
 }
 
-internal class EngineNumber
+internal class EngineNumber(int rowIndex, int columnIndex, int numberLength, int number)
 {
-    public int RowNumber { get; set; }
-    public int StartIndex { get; set; }
-    public int NumberLength { get; set; }
+    public int RowIndex { get; set; } = rowIndex;
+    public int ColumnIndex { get; set; } = columnIndex;
+    public int NumberLength { get; set; } = numberLength;
+    public int Number { get; set; } = number;
+    public bool IsPartNumber { get; set; }
+}
 
-    public EngineNumber(int rowNumber, int startIndex, int numberLength)
+internal class EngineSymbol(int rowIndex, int columnIndex, char symbol)
+{
+    public int RowIndex { get; set; } = rowIndex;
+    public int ColumnIndex { get; set; } = columnIndex;
+    public string Symbol { get; set; } = symbol.ToString();
+    public bool IsGear { get; set; }
+    public List<EngineNumber>? AdjacentPartNumbers { get; set; }
+    public int GearRatio { get; set; }
+
+    internal int GetGearRatio()
     {
-        RowNumber = rowNumber;
-        StartIndex = startIndex;
-        NumberLength = numberLength;
+        return AdjacentPartNumbers?.Aggregate(1, (current, partNumber) => current * partNumber.Number) ?? 0;
     }
 }
