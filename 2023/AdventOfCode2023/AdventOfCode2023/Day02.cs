@@ -1,9 +1,11 @@
-﻿namespace AdventOfCode2023_1;
+﻿using AdventOfCode2023_1.Shared;
+
+namespace AdventOfCode2023_1;
 
 public static class Day02
 {
-    private static readonly string FilePath = Path.Combine("../../..", "Input/Day02/Day02.in");
-    private static readonly string MockFilePath = Path.Combine("../../..", "Input/Day02/MockDay02.in");
+    private static readonly string FilePath = Path.Combine(Constants.RootInputPath, "/Day02/Day02.in");
+    private static readonly string MockFilePath = Path.Combine(Constants.RootInputPath, "/Day02/MockDay02.in");
     private static readonly string FullPath = Path.Combine(Directory.GetCurrentDirectory(), FilePath);
     private static readonly string InputFile = File.ReadAllText(FullPath);
 
@@ -14,7 +16,7 @@ public static class Day02
 
     public static void Run()
     {
-        Console.WriteLine("Starting day 2 challenge: Cube Conundrum");
+        SharedClasses.WriteBeginText(2, "Cube Conundrum");
         PartOne();
         PartTwo();
         Console.WriteLine();
@@ -23,18 +25,18 @@ public static class Day02
     private static void PartOne()
     {
         var result = GetListPossibleGames().Sum();
-        Console.WriteLine($"Answer of part 1 is: \n{result}");
+        SharedClasses.AnswerPart(1, result);
     }
 
     private static void PartTwo()
     {
         var result = GetListPartTwoGames().Sum();
-        Console.WriteLine($"Answer of part 2 is: \n{result}");
+        SharedClasses.AnswerPart(2, result);
     }
 
     private static List<int> GetListPartTwoGames()
     {
-        var games = InputFile.Split("\n")
+        var games = InputFile.Split(Constants.LineSeparator)
             .Select(inputLine => new Game2(inputLine))
             .ToList();
 
@@ -43,7 +45,7 @@ public static class Day02
 
     private static List<int> GetListPossibleGames()
     {
-        var games = InputFile.Split("\n")
+        var games = InputFile.Split(Constants.LineSeparator)
             .Select(inputLine => new Game(inputLine))
             .ToList();
 
@@ -55,16 +57,16 @@ public static class Day02
 # region
 internal class Game
 {
-    private List<Set> Sets { get; set; }
-    public int GameIndex { get; set; }
+    private List<Set> Sets { get; }
+    public int GameIndex { get; }
     private Dictionary<char, int> Colours { get; set; }
-    public bool IsValid { get; set; }
+    public bool IsValid { get; }
 
     public Game(string gameLine)
     {
-        var gameLineParts = gameLine.Split(":");
+        var gameLineParts = gameLine.Split(Constants.Colon);
         GameIndex = GetIndex(gameLineParts[0]);
-        Sets = gameLineParts[1].Split(";").Select(set => new Set(set)).ToList();
+        Sets = gameLineParts[1].Split(Constants.SemiColon).Select(set => new Set(set)).ToList();
         Colours = DecideColours(Sets);
         IsValid = IsValidGame();
     }
@@ -82,7 +84,7 @@ internal class Game
 
     private static int GetIndex(string gameIndexPart)
     {
-        var outputString = gameIndexPart.Split(" ").Last();
+        var outputString = gameIndexPart.Split(Constants.Space).Last();
         return int.Parse(outputString);
     }
 
@@ -117,11 +119,11 @@ internal class Set
     {
         Colours = new Dictionary<char, int>();
 
-        var allColours = colours.Split(",");
+        var allColours = colours.Split(Constants.Comma);
 
         foreach (var colourCombo in allColours)
         {
-            var colour = colourCombo.Trim().Split(" ");
+            var colour = colourCombo.Trim().Split(Constants.Space);
             var key = colour[1][0];
             var amount = int.Parse(colour[0]);
 
@@ -135,16 +137,14 @@ internal class Set
 # region
 internal class Game2
 {
-    private List<Set2> Sets { get; set; }
-    public int GameIndex { get; set; }
+    private List<Set2> Sets { get; }
     private Dictionary<char, int> Colours { get; set; }
-    public int Power { get; set; }
+    public int Power { get; }
 
     public Game2(string gameLine)
     {
-        var gameLineParts = gameLine.Split(":");
-        GameIndex = GetIndex(gameLineParts[0]);
-        Sets = gameLineParts[1].Split(";").Select(set => new Set2(set)).ToList();
+        var gameLineParts = gameLine.Split(Constants.Colon);
+        Sets = gameLineParts[1].Split(Constants.SemiColon).Select(set => new Set2(set)).ToList();
         Colours = DecideColours(Sets);
         Power = CalculatePower();
     }
@@ -156,12 +156,6 @@ internal class Game2
         return aggregate;
     }
 
-    private static int GetIndex(string gameIndexPart)
-    {
-        var outputString = gameIndexPart.Split(" ").Last();
-        return int.Parse(outputString);
-    }
-
     private Dictionary<char,int> DecideColours(List<Set2> sets)
     {
         Colours = new Dictionary<char, int>();
@@ -169,9 +163,9 @@ internal class Game2
         {
             foreach (var (key, value) in set.Colours)
             {
-                if (!Colours.ContainsKey(key))
+                if (!Colours.TryGetValue(key, out var currentValue))
                     Colours.Add(key, value);
-                else if (Colours[key] < value)
+                else if (currentValue < value)
                     Colours[key] = value;
             }
         }
@@ -193,11 +187,11 @@ internal class Set2
     {
         Colours = new Dictionary<char, int>();
 
-        var allColours = colours.Split(",");
+        var allColours = colours.Split(Constants.Comma);
 
         foreach (var colourCombo in allColours)
         {
-            var colour = colourCombo.Trim().Split(" ");
+            var colour = colourCombo.Trim().Split(Constants.Space);
             var key = colour[1][0];
             var amount = int.Parse(colour[0]);
 

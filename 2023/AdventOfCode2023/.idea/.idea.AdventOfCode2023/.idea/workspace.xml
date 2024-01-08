@@ -10,7 +10,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="7cda96a4-74c4-4a1f-9cd5-b1023f290e22" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/AdventOfCode2023/Shared/Constants.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/AdventOfCode2023/Shared/SharedClasses.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.AdventOfCode2023/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.AdventOfCode2023/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AdventOfCode2023/Day01.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AdventOfCode2023/Day01.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AdventOfCode2023/Day02.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AdventOfCode2023/Day02.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/AdventOfCode2023/Day03.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AdventOfCode2023/Day03.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -132,7 +136,7 @@
       <workItem from="1701874916493" duration="3270000" />
       <workItem from="1701878248045" duration="2778000" />
       <workItem from="1702043531103" duration="4136000" />
-      <workItem from="1704713203317" duration="9862000" />
+      <workItem from="1704713203317" duration="10855000" />
     </task>
     <servers />
   </component>

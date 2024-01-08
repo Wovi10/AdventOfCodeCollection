@@ -1,16 +1,18 @@
-﻿namespace AdventOfCode2023_1;
+﻿using AdventOfCode2023_1.Shared;
+
+namespace AdventOfCode2023_1;
 
 public static class Day03
 {
-    private static readonly string FilePath = Path.Combine("../../..", "Input/Day03/Day03.in");
-    private static readonly string MockFilePath = Path.Combine("../../..", "Input/Day03/MockDay03.in");
+    private static readonly string FilePath = Path.Combine(Constants.RootInputPath, "/Day03/Day03.in");
+    private static readonly string MockFilePath = Path.Combine(Constants.RootInputPath, "/Day03/MockDay03.in");
     private static readonly string FullPath = Path.Combine(Directory.GetCurrentDirectory(), FilePath);
     private static readonly string InputFile = File.ReadAllText(FullPath);
     private static readonly List<string> Input = GetInput();
     
     public static void Run()
     {
-        Console.WriteLine("Starting day 3 challenge: Gear Ratios");
+        SharedClasses.WriteBeginText(3, "Gear Ratios");
         PartOne();
         PartTwo();
         Console.WriteLine();
@@ -19,13 +21,13 @@ public static class Day03
     private static void PartOne()
     {
         var result = GetSumPartNumbers();
-        Console.WriteLine($"Answer of part 1 is: \n{result}");
+        SharedClasses.AnswerPart(1, result);
     }
 
     private static void PartTwo()
     {
         var result = GetSumGearRatios();
-        Console.WriteLine($"Answer of part 2 is: \n{result}");
+        SharedClasses.AnswerPart(2, result);
     }
 
     # region Part 1
@@ -127,7 +129,7 @@ public static class Day03
 
     private static List<string> GetInput()
     {
-        return InputFile.Split("\n").ToList();
+        return InputFile.Split(Constants.LineSeparator).ToList();
     }
     # endregion
     
