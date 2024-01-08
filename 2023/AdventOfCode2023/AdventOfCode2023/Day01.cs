@@ -1,16 +1,18 @@
 ﻿using System.Text.RegularExpressions;
+using AdventOfCode2023_1.Shared;
 
 namespace AdventOfCode2023_1;
 
 public static class Day01
 {
-    private static readonly string FilePath = Path.Combine("../../..", "Input/Day01/Day01.in");
+    private static readonly string FilePath = Path.Combine(Constants.RootInputPath, "/Day01/Day01.in");
+    private static readonly string MockFilePath = Path.Combine(Constants.RootInputPath, "/Day01/MockDay01.in");
     private static readonly string FullPath = Path.Combine(Directory.GetCurrentDirectory(), FilePath);
     private static readonly string InputFile = File.ReadAllText(FullPath);
 
     public static void Run()
     {
-        Console.WriteLine("Starting day 1 challenge: Trebuchet?!");
+        SharedClasses.WriteBeginText(1, "Trebuchet?!");
         PartOne();
         PartTwo();
         Console.WriteLine();
@@ -19,13 +21,13 @@ public static class Day01
     private static void PartOne()
     {
         var result = GetCalibrationSum();
-        Console.WriteLine($"Answer of part 1 is: \n{result}");
+        SharedClasses.AnswerPart(1, result);
     }
 
     private static void PartTwo()
     {
         var result = GetCalibrationSum(@"\d|one|two|three|four|five|six|seven|eight|nine");
-        Console.WriteLine($"Answer of part 2 is: \n{result}");
+        SharedClasses.AnswerPart(2, result);
     }
 
     private static int GetCalibrationSum(string regexMatch = @"\d")
@@ -36,7 +38,7 @@ public static class Day01
 
     private static List<int> GetCalibrationList(string regex = @"\d")
     {
-        return InputFile.Split("\n")
+        return InputFile.Split(Constants.LineSeparator)
             .Select(inputLine => new {inputLine, firstNumber = Regex.Match(inputLine, regex)})
             .Select(t => new {t, lastNumber = Regex.Match(t.inputLine, regex, RegexOptions.RightToLeft)})
             .Select(t => ParseMatch(t.t.firstNumber.Value) * 10 + ParseMatch(t.lastNumber.Value))
