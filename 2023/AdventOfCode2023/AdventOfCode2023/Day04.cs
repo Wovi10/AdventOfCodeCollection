@@ -4,11 +4,7 @@ namespace AdventOfCode2023_1;
 
 public static class Day04
 {
-    private static readonly string FilePath = Constants.RootInputPath + "/Day04/Day04.in";
-    private static readonly string MockFilePath = Constants.RootInputPath + "/Day04/MockDay04.in";
-    private static readonly string FullPath = Directory.GetCurrentDirectory() + FilePath;
-    private static readonly string InputFile = File.ReadAllText(FullPath);
-    private static readonly List<string> Input = SharedMethods.GetInput(InputFile);
+    private static readonly List<string> Input = SharedMethods.GetInput("04", true);
 
     public static void Run()
     {
