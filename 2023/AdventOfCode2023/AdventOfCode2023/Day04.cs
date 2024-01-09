@@ -10,7 +10,7 @@ public static class Day04
     {
         SharedMethods.WriteBeginText(4, "Scratchcards");
         PartOne();
-        // PartTwo();
+        PartTwo();
         Console.WriteLine();
     }
 
@@ -18,6 +18,12 @@ public static class Day04
     {
         var result = GetSumScratchCardPoints();
         SharedMethods.AnswerPart(1, result);
+    }
+
+    private static void PartTwo()
+    {
+        var result = GetTotalNumberCards();
+        SharedMethods.AnswerPart(2, result);
     }
 
     #region Part 1
@@ -29,6 +35,10 @@ public static class Day04
     private static List<int> GetScratchCardPoints()
     {
         var scratchCards = GetScratchCards();
+        foreach (var scratchCard in scratchCards)
+        {
+            scratchCard.CalculatePoints();
+        }
     
         return scratchCards.Select(card => card.Points).ToList();
     }
@@ -38,10 +48,12 @@ public static class Day04
         var scratchCards = new List<ScratchCard>();
         foreach (var line in Input)
         {
-            var gameNumbers = line.Split(Constants.Colon).ToList().Last();
+            var gameLine = line.Split(Constants.Colon).ToList();
+            var gameId = gameLine.First().Split(Constants.Space).Last();
+            var gameNumbers = gameLine.Last();
             var winningNumbers = gameNumbers.Split(Constants.Pipe).ToList().First().Trim();
             var cardNumbers = gameNumbers.Split(Constants.Pipe).ToList().Last().Trim();
-            var scratchCard = new ScratchCard(winningNumbers, cardNumbers);
+            var scratchCard = new ScratchCard(gameId, winningNumbers, cardNumbers);
             scratchCards.Add(scratchCard);
         }
 
@@ -49,18 +61,20 @@ public static class Day04
     }
     #endregion
 
-    private class ScratchCard
+    #region Part 2
+    private static int GetTotalNumberCards()
     {
-        public ScratchCard(string winningNumbers, string cardNumbers)
-        {
-            WinningNumbers = ConvertToList(winningNumbers);
-            CardNumbers = ConvertToList(cardNumbers);
-            Points = CalculatePoints();
-        }
-
-        private List<int> WinningNumbers { get; set; }
-        private List<int> CardNumbers { get; set; }
-        public int Points { get; set; }
+        var scratchCards = GetScratchCards();
+        return scratchCards.Count;
+    }
+    #endregion
+    
+    private class ScratchCard(string cardId, string winningNumbers, string cardNumbers)
+    {
+        private int CardId { get; set; } = int.Parse(cardId);
+        private List<int> WinningNumbers { get; set; } = ConvertToList(winningNumbers);
+        private List<int> CardNumbers { get; set; } = ConvertToList(cardNumbers);
+        public int Points { get; set; } = 0;
 
         private static List<int> ConvertToList(string inputString)
         {
@@ -68,19 +82,15 @@ public static class Day04
             return separatedString.Where(number => int.TryParse(number, out _)).Select(int.Parse).ToList();
         }
 
-        private int CalculatePoints()
+        public void CalculatePoints()
         {
-            // You get 1 point if 1 number from Cardnumbers is in WinningNumbers. For each additional number your points get doubled.
-            var points = 0;
             foreach (var _ in CardNumbers.Where(cardNumber => WinningNumbers.Contains(cardNumber)))
             {
-                if (points > 0)
-                    points *= 2;
+                if (Points > 0)
+                    Points *= 2;
                 else
-                    points++;
+                    Points++;
             }
-
-            return points;
         }
     }
 }
