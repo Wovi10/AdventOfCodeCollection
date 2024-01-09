@@ -10,13 +10,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="7cda96a4-74c4-4a1f-9cd5-b1023f290e22" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/AdventOfCode2023/Day04.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/AdventOfCode2023/Input/Day04/MockDay04.in" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.AdventOfCode2023/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.AdventOfCode2023/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AdventOfCode2023/Day01.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AdventOfCode2023/Day01.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AdventOfCode2023/Day02.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AdventOfCode2023/Day02.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AdventOfCode2023/Day03.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AdventOfCode2023/Day03.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AdventOfCode2023/Shared/SharedClasses.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AdventOfCode2023/Shared/SharedMethods.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AdventOfCode2023/Day04.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AdventOfCode2023/Day04.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AdventOfCode2023/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AdventOfCode2023/Program.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AdventOfCode2023/Shared/Constants.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AdventOfCode2023/Shared/Constants.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -138,7 +135,7 @@
       <workItem from="1701878248045" duration="2778000" />
       <workItem from="1702043531103" duration="4136000" />
       <workItem from="1704713203317" duration="10855000" />
-      <workItem from="1704811719984" duration="377000" />
+      <workItem from="1704811719984" duration="2053000" />
     </task>
     <servers />
   </component>
@@ -147,5 +144,37 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="DotNet Breakpoints">
+          <url>file://$PROJECT_DIR$/AdventOfCode2023/Day04.cs</url>
+          <line>51</line>
+          <properties documentPath="D:\GitHub\AdventOfCodeCollection\2023\AdventOfCode2023\AdventOfCode2023\Day04.cs" initialLine="49" containingFunctionPresentation="Method 'GetScratchCards'">
+            <startOffsets>
+              <option value="1715" />
+            </startOffsets>
+            <endOffsets>
+              <option value="1735" />
+            </endOffsets>
+          </properties>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DotNet Breakpoints">
+          <url>file://$PROJECT_DIR$/AdventOfCode2023/Day04.cs</url>
+          <line>47</line>
+          <properties documentPath="D:\GitHub\AdventOfCodeCollection\2023\AdventOfCode2023\AdventOfCode2023\Day04.cs" initialLine="47" containingFunctionPresentation="Method 'GetScratchCards'">
+            <startOffsets>
+              <option value="1589" />
+            </startOffsets>
+            <endOffsets>
+              <option value="1652" />
+            </endOffsets>
+          </properties>
+          <option name="timeStamp" value="3" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>
