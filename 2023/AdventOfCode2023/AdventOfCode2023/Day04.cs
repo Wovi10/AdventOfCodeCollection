@@ -4,9 +4,9 @@ namespace AdventOfCode2023_1;
 
 public static class Day04
 {
-    private static readonly string FilePath = Path.Combine(Constants.RootInputPath, "/Day04/Day04.in");
+    private static readonly string FilePath = Constants.RootInputPath + "/Day04/Day04.in";
     private static readonly string MockFilePath = Constants.RootInputPath + "/Day04/MockDay04.in";
-    private static readonly string FullPath = Directory.GetCurrentDirectory() + MockFilePath;
+    private static readonly string FullPath = Directory.GetCurrentDirectory() + FilePath;
     private static readonly string InputFile = File.ReadAllText(FullPath);
     private static readonly List<string> Input = SharedMethods.GetInput(InputFile);
 
@@ -33,7 +33,7 @@ public static class Day04
     private static List<int> GetScratchCardPoints()
     {
         var scratchCards = GetScratchCards();
-
+    
         return scratchCards.Select(card => card.Points).ToList();
     }
 
@@ -52,17 +52,39 @@ public static class Day04
         return scratchCards;
     }
     #endregion
-    
-    private class ScratchCard(string winningNumbers, string cardNumbers)
+
+    private class ScratchCard
     {
-        public List<int> WinningNumbers { get; set; } = ConvertToList(winningNumbers);
-        public List<int> CardNumbers { get; set; } = ConvertToList(cardNumbers);
+        public ScratchCard(string winningNumbers, string cardNumbers)
+        {
+            WinningNumbers = ConvertToList(winningNumbers);
+            CardNumbers = ConvertToList(cardNumbers);
+            Points = CalculatePoints();
+        }
+
+        private List<int> WinningNumbers { get; set; }
+        private List<int> CardNumbers { get; set; }
         public int Points { get; set; }
 
         private static List<int> ConvertToList(string inputString)
         {
             var separatedString = inputString.Split(Constants.Space).ToList();
             return separatedString.Where(number => int.TryParse(number, out _)).Select(int.Parse).ToList();
+        }
+
+        private int CalculatePoints()
+        {
+            // You get 1 point if 1 number from Cardnumbers is in WinningNumbers. For each additional number your points get doubled.
+            var points = 0;
+            foreach (var _ in CardNumbers.Where(cardNumber => WinningNumbers.Contains(cardNumber)))
+            {
+                if (points > 0)
+                    points *= 2;
+                else
+                    points++;
+            }
+
+            return points;
         }
     }
 }
