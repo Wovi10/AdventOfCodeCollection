@@ -10,12 +10,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="7cda96a4-74c4-4a1f-9cd5-b1023f290e22" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/AdventOfCode2023/Shared/Constants.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/AdventOfCode2023/Shared/SharedClasses.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/AdventOfCode2023/Day04.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/AdventOfCode2023/Input/Day04/MockDay04.in" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.AdventOfCode2023/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.AdventOfCode2023/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/AdventOfCode2023/Day01.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AdventOfCode2023/Day01.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/AdventOfCode2023/Day02.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AdventOfCode2023/Day02.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/AdventOfCode2023/Day03.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AdventOfCode2023/Day03.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AdventOfCode2023/Shared/SharedClasses.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AdventOfCode2023/Shared/SharedMethods.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -52,7 +53,7 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "WebServerToolWindowFactoryState": "false",
     "full.screen.before.presentation.mode": "false",
-    "git-widget-placeholder": "2023__Day03__GearRatios",
+    "git-widget-placeholder": "04__scratchcards",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -137,6 +138,7 @@
       <workItem from="1701878248045" duration="2778000" />
       <workItem from="1702043531103" duration="4136000" />
       <workItem from="1704713203317" duration="10855000" />
+      <workItem from="1704811719984" duration="377000" />
     </task>
     <servers />
   </component>

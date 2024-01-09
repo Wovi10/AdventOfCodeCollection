@@ -8,11 +8,11 @@ public static class Day03
     private static readonly string MockFilePath = Path.Combine(Constants.RootInputPath, "/Day03/MockDay03.in");
     private static readonly string FullPath = Path.Combine(Directory.GetCurrentDirectory(), FilePath);
     private static readonly string InputFile = File.ReadAllText(FullPath);
-    private static readonly List<string> Input = GetInput();
+    private static readonly List<string> Input = SharedMethods.GetInput(InputFile);
     
     public static void Run()
     {
-        SharedClasses.WriteBeginText(3, "Gear Ratios");
+        SharedMethods.WriteBeginText(3, "Gear Ratios");
         PartOne();
         PartTwo();
         Console.WriteLine();
@@ -21,13 +21,13 @@ public static class Day03
     private static void PartOne()
     {
         var result = GetSumPartNumbers();
-        SharedClasses.AnswerPart(1, result);
+        SharedMethods.AnswerPart(1, result);
     }
 
     private static void PartTwo()
     {
         var result = GetSumGearRatios();
-        SharedClasses.AnswerPart(2, result);
+        SharedMethods.AnswerPart(2, result);
     }
 
     # region Part 1
@@ -125,11 +125,6 @@ public static class Day03
         }
 
         return symbolIndices;
-    }
-
-    private static List<string> GetInput()
-    {
-        return InputFile.Split(Constants.LineSeparator).ToList();
     }
     # endregion
     
