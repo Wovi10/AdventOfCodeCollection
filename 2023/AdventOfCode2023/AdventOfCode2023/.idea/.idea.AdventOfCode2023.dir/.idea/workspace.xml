@@ -76,7 +76,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1704895416417</updated>
-      <workItem from="1704895417535" duration="5052000" />
+      <workItem from="1704895417535" duration="9412000" />
     </task>
     <servers />
   </component>
@@ -85,5 +85,24 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="DotNet Breakpoints">
+          <url>file://$PROJECT_DIR$/Day05.cs</url>
+          <line>96</line>
+          <properties documentPath="D:\GitHub\AdventOfCodeCollection\2023\AdventOfCode2023\AdventOfCode2023\Day05.cs" initialLine="95" containingFunctionPresentation="Method 'ConvertToSoilOptions'">
+            <startOffsets>
+              <option value="2677" />
+            </startOffsets>
+            <endOffsets>
+              <option value="2690" />
+            </endOffsets>
+          </properties>
+          <option name="timeStamp" value="8" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>
