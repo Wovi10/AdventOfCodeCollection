@@ -1,4 +1,5 @@
-﻿using AdventOfCode2023_1.Shared;
+﻿using System.Diagnostics;
+using AdventOfCode2023_1.Shared;
 
 namespace AdventOfCode2023_1;
 
@@ -34,11 +35,11 @@ public static class Day04
 
     private static List<int> GetScratchCardPoints()
     {
-        var scratchCards = GetScratchCards();
+        var scratchCards = GetScratchCards(true);
         return scratchCards.Select(card => card.Points).ToList();
     }
 
-    private static List<ScratchCard> GetScratchCards()
+    private static List<ScratchCard> GetScratchCards(bool needPoints = false)
     {
         var scratchCards = new List<ScratchCard>();
         foreach (var line in Input)
@@ -51,6 +52,11 @@ public static class Day04
             var scratchCard = new ScratchCard(gameId, winningNumbers, cardNumbers);
             scratchCards.Add(scratchCard);
         }
+
+        if (!needPoints) return scratchCards;
+        
+        foreach (var scratchCard in scratchCards) 
+            scratchCard.CalculatePoints();
 
         return scratchCards;
     }
@@ -66,26 +72,24 @@ public static class Day04
 
     private static int CountDuplicateScratchCards(List<ScratchCard> scratchCards)
     {
-        var duplicateScratchCards = new List<ScratchCard>();
+        var initialCount = scratchCards.Count;
         var countDuplicateScratchCards = 0;
         foreach (var scratchCard in scratchCards)
         {
+            countDuplicateScratchCards += scratchCard.NumTimesToRun;
             for (var i = 0; i < scratchCard.NumTimesToRun; i++)
             {
-                countDuplicateScratchCards++;
                 if (scratchCard.MatchingNumbers.Count == 0)
                     continue;
 
                 var counter = scratchCard.CardId + 1;
-                foreach (var _ in scratchCard.MatchingNumbers)
+                if (counter > initialCount)
+                    continue;
+                foreach (var scratchCardToAdjust in scratchCard.MatchingNumbers.Select(_ => scratchCards.FirstOrDefault(card => card.CardId == counter)))
                 {
-                    var scratchCardToAdjust = scratchCards.FirstOrDefault(card => card.CardId == counter);
-                    if (scratchCardToAdjust != null)
-                    {
-                        scratchCardToAdjust.NumTimesToRun++;
-                    }
-
                     counter++;
+                    if (scratchCardToAdjust != null) 
+                        scratchCardToAdjust.NumTimesToRun++;
                 }
             }
         }
@@ -103,15 +107,13 @@ public static class Day04
             WinningNumbers = ConvertToList(winningNumbers);
             CardNumbers = ConvertToList(cardNumbers);
             MatchingNumbers = CalculateMatchingNumbers();
-            Points = CalculatePoints();
         }
 
-        public int CardId { get; set; }
-        public List<int> WinningNumbers { get; set; }
-        public List<int> CardNumbers { get; set; }
-        public List<int> MatchingNumbers { get; set; }
-        public int Points { get; set; }
-        public bool IsCopy { get; set; } = false;
+        public int CardId { get; }
+        private List<int> WinningNumbers { get; }
+        private List<int> CardNumbers { get; }
+        public List<int> MatchingNumbers { get; }
+        public int Points { get; private set; }
         public int NumTimesToRun { get; set; } = 1;
 
         private static List<int> ConvertToList(string inputString)
@@ -124,13 +126,12 @@ public static class Day04
         {
             return CardNumbers.Where(number => WinningNumbers.Contains(number)).ToList();
         }
-        
-        private int CalculatePoints()
+
+        public void CalculatePoints()
         {
             if (MatchingNumbers.Count == 0)
-                return 0;
-            var points = (int)Math.Pow(2, MatchingNumbers.Count - 1);
-            return points;
+                Points = 0;
+            Points = (int)Math.Pow(2, MatchingNumbers.Count - 1);
         }
     }
 }
