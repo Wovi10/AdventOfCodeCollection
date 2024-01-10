@@ -4,10 +4,7 @@ namespace AdventOfCode2023_1;
 
 public static class Day02
 {
-    private static readonly string FilePath = Path.Combine(Constants.RootInputPath, "/Day02/Day02.in");
-    private static readonly string MockFilePath = Path.Combine(Constants.RootInputPath, "/Day02/MockDay02.in");
-    private static readonly string FullPath = Path.Combine(Directory.GetCurrentDirectory(), FilePath);
-    private static readonly string InputFile = File.ReadAllText(FullPath);
+    private static readonly List<string> Input = SharedMethods.GetInput("02", true);
 
     public static readonly Dictionary<char, int> InputConfig = new()
     {
@@ -16,7 +13,7 @@ public static class Day02
 
     public static void Run()
     {
-        SharedClasses.WriteBeginText(2, "Cube Conundrum");
+        SharedMethods.WriteBeginText(2, "Cube Conundrum");
         PartOne();
         PartTwo();
         Console.WriteLine();
@@ -25,18 +22,18 @@ public static class Day02
     private static void PartOne()
     {
         var result = GetListPossibleGames().Sum();
-        SharedClasses.AnswerPart(1, result);
+        SharedMethods.AnswerPart(1, result);
     }
 
     private static void PartTwo()
     {
         var result = GetListPartTwoGames().Sum();
-        SharedClasses.AnswerPart(2, result);
+        SharedMethods.AnswerPart(2, result);
     }
 
     private static List<int> GetListPartTwoGames()
     {
-        var games = InputFile.Split(Constants.LineSeparator)
+        var games = Input
             .Select(inputLine => new Game2(inputLine))
             .ToList();
 
@@ -45,7 +42,7 @@ public static class Day02
 
     private static List<int> GetListPossibleGames()
     {
-        var games = InputFile.Split(Constants.LineSeparator)
+        var games = Input
             .Select(inputLine => new Game(inputLine))
             .ToList();
 
