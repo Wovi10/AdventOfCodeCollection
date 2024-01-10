@@ -5,35 +5,18 @@ namespace AdventOfCode2023_1;
 
 public class Day01:DayBase
 {
-<<<<<<< Updated upstream
-    private static readonly string FilePath = Path.Combine(Constants.RootInputPath, "/Day01/Day01.in");
-    private static readonly string MockFilePath = Path.Combine(Constants.RootInputPath, "/Day01/MockDay01.in");
-    private static readonly string FullPath = Path.Combine(Directory.GetCurrentDirectory(), FilePath);
-    private static readonly string InputFile = File.ReadAllText(FullPath);
-
-    public static void Run()
-    {
-        SharedClasses.WriteBeginText(1, "Trebuchet?!");
-        PartOne();
-        PartTwo();
-        Console.WriteLine();
-    }
-
-    private static void PartOne()
-=======
     private static readonly List<string> Input = SharedMethods.GetInput("01");
 
     public override void PartOne()
->>>>>>> Stashed changes
     {
         var result = GetCalibrationSum();
-        SharedClasses.AnswerPart(1, result);
+        SharedMethods.AnswerPart(1, result);
     }
 
     public override void PartTwo()
     {
         var result = GetCalibrationSum(@"\d|one|two|three|four|five|six|seven|eight|nine");
-        SharedClasses.AnswerPart(2, result);
+        SharedMethods.AnswerPart(2, result);
     }
 
     private static int GetCalibrationSum(string regexMatch = @"\d")
@@ -44,7 +27,7 @@ public class Day01:DayBase
 
     private static List<int> GetCalibrationList(string regex = @"\d")
     {
-        return InputFile.Split(Constants.LineSeparator)
+        return Input
             .Select(inputLine => new {inputLine, firstNumber = Regex.Match(inputLine, regex)})
             .Select(t => new {t, lastNumber = Regex.Match(t.inputLine, regex, RegexOptions.RightToLeft)})
             .Select(t => ParseMatch(t.t.firstNumber.Value) * 10 + ParseMatch(t.lastNumber.Value))

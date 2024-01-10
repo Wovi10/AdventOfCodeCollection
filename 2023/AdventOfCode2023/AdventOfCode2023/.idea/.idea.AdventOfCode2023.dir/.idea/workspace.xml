@@ -7,15 +7,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="1eb7a15f-81d2-45e5-9810-8bdd95773f76" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/Day05.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/IDay.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Day01.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Day01.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Day02.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Day02.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Day03.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Day03.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Day04.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Day04.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Program.cs" afterDir="false" />
-    </list>
+    <list default="true" id="1eb7a15f-81d2-45e5-9810-8bdd95773f76" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -84,7 +76,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1704895416417</updated>
-      <workItem from="1704895417535" duration="2037000" />
+      <workItem from="1704895417535" duration="2558000" />
     </task>
     <servers />
   </component>
