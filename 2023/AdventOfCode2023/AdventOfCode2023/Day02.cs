@@ -2,18 +2,23 @@
 
 namespace AdventOfCode2023_1;
 
-public static class Day02
+public class Day02:DayBase
 {
+<<<<<<< Updated upstream
     private static readonly string FilePath = Path.Combine(Constants.RootInputPath, "/Day02/Day02.in");
     private static readonly string MockFilePath = Path.Combine(Constants.RootInputPath, "/Day02/MockDay02.in");
     private static readonly string FullPath = Path.Combine(Directory.GetCurrentDirectory(), FilePath);
     private static readonly string InputFile = File.ReadAllText(FullPath);
+=======
+    private static readonly List<string> Input = SharedMethods.GetInput("02");
+>>>>>>> Stashed changes
 
     public static readonly Dictionary<char, int> InputConfig = new()
     {
         {'r', 12},{'g', 13}, {'b', 14}
     };
 
+<<<<<<< Updated upstream
     public static void Run()
     {
         SharedClasses.WriteBeginText(2, "Cube Conundrum");
@@ -23,12 +28,15 @@ public static class Day02
     }
 
     private static void PartOne()
+=======
+    public override void PartOne()
+>>>>>>> Stashed changes
     {
         var result = GetListPossibleGames().Sum();
         SharedClasses.AnswerPart(1, result);
     }
 
-    private static void PartTwo()
+    public override void PartTwo()
     {
         var result = GetListPartTwoGames().Sum();
         SharedClasses.AnswerPart(2, result);

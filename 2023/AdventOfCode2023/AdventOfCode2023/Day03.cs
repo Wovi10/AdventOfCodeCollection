@@ -2,8 +2,9 @@
 
 namespace AdventOfCode2023_1;
 
-public static class Day03
+public class Day03: DayBase
 {
+<<<<<<< Updated upstream
     private static readonly string FilePath = Path.Combine(Constants.RootInputPath, "/Day03/Day03.in");
     private static readonly string MockFilePath = Path.Combine(Constants.RootInputPath, "/Day03/MockDay03.in");
     private static readonly string FullPath = Path.Combine(Directory.GetCurrentDirectory(), FilePath);
@@ -17,14 +18,17 @@ public static class Day03
         PartTwo();
         Console.WriteLine();
     }
+=======
+    private static readonly List<string> Input = SharedMethods.GetInput("03");
+>>>>>>> Stashed changes
 
-    private static void PartOne()
+    public override void PartOne()
     {
         var result = GetSumPartNumbers();
         SharedClasses.AnswerPart(1, result);
     }
 
-    private static void PartTwo()
+    public override void PartTwo()
     {
         var result = GetSumGearRatios();
         SharedClasses.AnswerPart(2, result);

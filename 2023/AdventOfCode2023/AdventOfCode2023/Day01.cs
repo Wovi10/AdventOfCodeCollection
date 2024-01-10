@@ -3,8 +3,9 @@ using AdventOfCode2023_1.Shared;
 
 namespace AdventOfCode2023_1;
 
-public static class Day01
+public class Day01:DayBase
 {
+<<<<<<< Updated upstream
     private static readonly string FilePath = Path.Combine(Constants.RootInputPath, "/Day01/Day01.in");
     private static readonly string MockFilePath = Path.Combine(Constants.RootInputPath, "/Day01/MockDay01.in");
     private static readonly string FullPath = Path.Combine(Directory.GetCurrentDirectory(), FilePath);
@@ -19,12 +20,17 @@ public static class Day01
     }
 
     private static void PartOne()
+=======
+    private static readonly List<string> Input = SharedMethods.GetInput("01");
+
+    public override void PartOne()
+>>>>>>> Stashed changes
     {
         var result = GetCalibrationSum();
         SharedClasses.AnswerPart(1, result);
     }
 
-    private static void PartTwo()
+    public override void PartTwo()
     {
         var result = GetCalibrationSum(@"\d|one|two|three|four|five|six|seven|eight|nine");
         SharedClasses.AnswerPart(2, result);
