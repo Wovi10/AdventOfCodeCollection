@@ -4,11 +4,23 @@ namespace AdventOfCode2023_1;
 
 public abstract class DayBase
 {
-    public void Run(int day, string title)
+    public void Run(int day, string title, PartsToRun partsToRun = PartsToRun.Both)
     {
         SharedMethods.WriteBeginText(day, title);
-        PartOne();
-        PartTwo();
+        switch (partsToRun)
+        {
+            case PartsToRun.Part1:
+                PartOne();
+                break;
+            case PartsToRun.Part2:
+                PartTwo();
+                break;
+            case PartsToRun.Both:
+            default:
+                PartOne();
+                PartTwo();
+                break;
+        }
         Console.WriteLine();
     }
 

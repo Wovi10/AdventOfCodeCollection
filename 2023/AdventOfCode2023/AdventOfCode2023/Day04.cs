@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using AdventOfCode2023_1.Shared;
+﻿using AdventOfCode2023_1.Shared;
 
 namespace AdventOfCode2023_1;
 
