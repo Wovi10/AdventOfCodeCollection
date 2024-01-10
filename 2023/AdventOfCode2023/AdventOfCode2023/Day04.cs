@@ -4,7 +4,7 @@ namespace AdventOfCode2023_1;
 
 public static class Day04
 {
-    private static readonly List<string> Input = SharedMethods.GetInput("04", true);
+    private static readonly List<string> Input = SharedMethods.GetInput("04");
 
     public static void Run()
     {
@@ -35,11 +35,6 @@ public static class Day04
     private static List<int> GetScratchCardPoints()
     {
         var scratchCards = GetScratchCards();
-        foreach (var scratchCard in scratchCards)
-        {
-            scratchCard.CalculatePoints();
-        }
-    
         return scratchCards.Select(card => card.Points).ToList();
     }
 
@@ -65,16 +60,59 @@ public static class Day04
     private static int GetTotalNumberCards()
     {
         var scratchCards = GetScratchCards();
-        return scratchCards.Count;
+        var numScratchCards = CountDuplicateScratchCards(scratchCards);
+        return numScratchCards;
     }
+
+    private static int CountDuplicateScratchCards(List<ScratchCard> scratchCards)
+    {
+        var duplicateScratchCards = new List<ScratchCard>();
+        var countDuplicateScratchCards = 0;
+        foreach (var scratchCard in scratchCards)
+        {
+            for (var i = 0; i < scratchCard.NumTimesToRun; i++)
+            {
+                countDuplicateScratchCards++;
+                if (scratchCard.MatchingNumbers.Count == 0)
+                    continue;
+
+                var counter = scratchCard.CardId + 1;
+                foreach (var _ in scratchCard.MatchingNumbers)
+                {
+                    var scratchCardToAdjust = scratchCards.FirstOrDefault(card => card.CardId == counter);
+                    if (scratchCardToAdjust != null)
+                    {
+                        scratchCardToAdjust.NumTimesToRun++;
+                    }
+
+                    counter++;
+                }
+            }
+        }
+
+        return countDuplicateScratchCards;
+    }
+
     #endregion
     
-    private class ScratchCard(string cardId, string winningNumbers, string cardNumbers)
+    private class ScratchCard
     {
-        private int CardId { get; set; } = int.Parse(cardId);
-        private List<int> WinningNumbers { get; set; } = ConvertToList(winningNumbers);
-        private List<int> CardNumbers { get; set; } = ConvertToList(cardNumbers);
-        public int Points { get; set; } = 0;
+        public ScratchCard(string cardId, string winningNumbers, string cardNumbers)
+        {
+            CardId = int.Parse(cardId);
+            WinningNumbers = ConvertToList(winningNumbers);
+            CardNumbers = ConvertToList(cardNumbers);
+            MatchingNumbers = CalculateMatchingNumbers();
+            Points = CalculatePoints();
+        }
+
+        public int CardId { get; set; }
+        public List<int> WinningNumbers { get; set; }
+        public List<int> CardNumbers { get; set; }
+        public List<int> MatchingNumbers { get; set; }
+        public int Points { get; set; }
+        public bool IsCopy { get; set; } = false;
+        public int NumTimesToRun { get; set; } = 1;
 
         private static List<int> ConvertToList(string inputString)
         {
@@ -82,15 +120,17 @@ public static class Day04
             return separatedString.Where(number => int.TryParse(number, out _)).Select(int.Parse).ToList();
         }
 
-        public void CalculatePoints()
+        private List<int> CalculateMatchingNumbers()
         {
-            foreach (var _ in CardNumbers.Where(cardNumber => WinningNumbers.Contains(cardNumber)))
-            {
-                if (Points > 0)
-                    Points *= 2;
-                else
-                    Points++;
-            }
+            return CardNumbers.Where(number => WinningNumbers.Contains(number)).ToList();
+        }
+        
+        private int CalculatePoints()
+        {
+            if (MatchingNumbers.Count == 0)
+                return 0;
+            var points = (int)Math.Pow(2, MatchingNumbers.Count - 1);
+            return points;
         }
     }
 }
