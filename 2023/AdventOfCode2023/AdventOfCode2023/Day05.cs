@@ -4,11 +4,11 @@ namespace AdventOfCode2023_1;
 
 public class Day05 : DayBase
 {
-    private static readonly List<string> Input = SharedMethods.GetInput("05", true);
+    private static readonly List<string> Input = SharedMethods.GetInput("05");
 
-    private static List<List<List<int>>> InputParts = GenerateInputParts();
+    private static readonly List<List<List<long>>> InputParts = GenerateInputParts();
 
-    private static List<List<List<int>>> GenerateInputParts()
+    private static List<List<List<long>>> GenerateInputParts()
     {
         var inputParts = new List<List<string>>();
         var inputPart = new List<string>();
@@ -19,9 +19,10 @@ public class Day05 : DayBase
             else
             {
                 inputParts.Add(inputPart);
-                inputPart = [];
+                inputPart = new List<string>();
             }
         }
+        inputParts.Add(inputPart);
 
         for (var i = 1; i < inputParts.Count; i++)
         {
@@ -32,9 +33,9 @@ public class Day05 : DayBase
         return result;
     }
 
-    private static List<List<List<int>>> GenerateMappings(List<List<string>> inputPartsAsStrings)
+    private static List<List<List<long>>> GenerateMappings(List<List<string>> inputPartsAsStrings)
     {
-        var result = new List<List<List<int>>>();
+        var result = new List<List<List<long>>>();
         for (var i = 1; i < inputPartsAsStrings.Count; i++)
         {
             var inputPart = inputPartsAsStrings[i];
@@ -43,8 +44,8 @@ public class Day05 : DayBase
                     {
                         return line
                             .Split(Constants.Space)
-                            .Where(location => int.TryParse(location, out _))
-                            .Select(int.Parse)
+                            .Where(location => long.TryParse(location, out _))
+                            .Select(long.Parse)
                             .ToList();
                     })
                     .ToList();
@@ -60,11 +61,17 @@ public class Day05 : DayBase
         SharedMethods.AnswerPart(1, result);
     }
 
-    private static int GetLowestLocationNumber()
+    private static long GetLowestLocationNumber()
     {
         var seeds = GetSeeds();
-        var soilsOptions = ConvertToSoilOptions(seeds);
-        return seeds.Min();
+        var soilsOptions = ConvertSourceToDestination(seeds, 0);
+        var fertilizerOptions = ConvertSourceToDestination(soilsOptions, 1);
+        var waterOptions = ConvertSourceToDestination(fertilizerOptions, 2);
+        var lightOptions = ConvertSourceToDestination(waterOptions, 3);
+        var temperatureOptions = ConvertSourceToDestination(lightOptions, 4);
+        var humidityOptions = ConvertSourceToDestination(temperatureOptions, 5);
+        var locationOptions = ConvertSourceToDestination(humidityOptions, 6);
+        return locationOptions.Min();
     }
 
     public override void PartTwo()
@@ -73,7 +80,7 @@ public class Day05 : DayBase
     }
 
     #region Part1
-    private static List<int> GetSeeds()
+    private static List<long> GetSeeds()
     {
         var seeds = Input
             .First() // First line
@@ -83,53 +90,61 @@ public class Day05 : DayBase
             .Split(Constants.Space)
             .ToList();
 
-        return seeds.Where(seed => int.TryParse(seed, out _)).Select(int.Parse).ToList();
+        return seeds.Where(seed => long.TryParse(seed, out _)).Select(long.Parse).ToList();
     }
 
-    private static List<int> ConvertToSoilOptions(List<int> seeds)
+    private static List<long> ConvertSourceToDestination(List<long> sourceList, int inputPartsIndex)
     {
-        var soils = new List<int>();
-        foreach (var seed in seeds)
+        var destinationList = new List<long>();
+        foreach (var source in sourceList)
         {
-            soils.AddRange(GetSoils(seed));
+            destinationList.AddRange(GetConvertedValue(source, inputPartsIndex));
         }
 
-        return soils;
+        return destinationList;
     }
 
-    private static List<int> GetSoils(int initialSeed)
+    private static IEnumerable<long> GetConvertedValue(long initialLocation, int inputPartsIndex)
     {
-        var soils = new List<int>();
-        for (var i = 0; i < InputParts[0].Count; i++)
+        var destinationList = new List<long>();
+        var inputPart = InputParts[inputPartsIndex];
+        foreach (var inputPartLine in inputPart)
         {
-            var seed = initialSeed;
-            var source = GetSource(InputParts[0][i]);
-            var destination = GetDestination(InputParts[0][i]);
-            var range = GetRange(InputParts[0][i]);
-            if (seed >= int.Min(int.Min(source, source + range), int.Min(destination, destination + range)) 
-                && 
-                seed <= int.Max(int.Max(source, source + range), int.Max(destination, destination + range)))
+            var newLocation = initialLocation;
+
+            var source = GetSource(inputPartLine);
+            var destination = GetDestination(inputPartLine);
+            var range = GetRange(inputPartLine);
+
+            var biggest = long.Max(source, destination);
+            var smallest = long.Min(source, destination);
+
+            if (newLocation >= smallest && newLocation <= biggest + range)
             {
-                seed += range;
+                if (biggest == source)
+                    newLocation += range;
+                else
+                    newLocation -= range;
             }
 
-            soils.Add(seed);
+            if (newLocation > 0) 
+                destinationList.Add(newLocation);
         }
 
-        return soils;
+        return destinationList;
     }
 
-    private static int GetDestination(List<int> inputPart)
+    private static long GetDestination(List<long> inputPart)
     {
         return inputPart[0];
     }
 
-    private static int GetRange(List<int> inputPart)
+    private static long GetRange(List<long> inputPart)
     {
         return inputPart[2];
     }
 
-    private static int GetSource(List<int> inputPart)
+    private static long GetSource(List<long> inputPart)
     {
         return inputPart[1];
     }
