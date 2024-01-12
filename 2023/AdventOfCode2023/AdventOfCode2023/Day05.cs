@@ -63,15 +63,54 @@ public class Day05 : DayBase
 
     private static long GetLowestLocationNumber()
     {
+        long? possibility = null;
         var seeds = GetSeeds();
-        var soilsOptions = ConvertSourceToDestination(seeds, 0);
-        var fertilizerOptions = ConvertSourceToDestination(soilsOptions, 1);
-        var waterOptions = ConvertSourceToDestination(fertilizerOptions, 2);
-        var lightOptions = ConvertSourceToDestination(waterOptions, 3);
-        var temperatureOptions = ConvertSourceToDestination(lightOptions, 4);
-        var humidityOptions = ConvertSourceToDestination(temperatureOptions, 5);
-        var locationOptions = ConvertSourceToDestination(humidityOptions, 6);
-        return locationOptions.Min();
+        var counter = 0;
+        foreach (var seed in seeds.Distinct())
+        {
+            counter++;
+            var soils = GetConvertedValue(seed, 0);
+            foreach (var soil in soils)
+            {
+                var fertilizers = GetConvertedValue(soil, 1);
+                foreach (var fertilizer in fertilizers)
+                {
+                    var waters = GetConvertedValue(fertilizer, 2);
+                    foreach (var water in waters)
+                    {
+                        var lights = GetConvertedValue(water, 3);
+                        foreach (var light in lights)
+                        {
+                            var temperatures = GetConvertedValue(light, 4);
+                            foreach (var temperature in temperatures)
+                            {
+                                var humidities = GetConvertedValue(temperature, 5);
+                                foreach (var humidity in humidities)
+                                {
+                                    var locations = GetConvertedValue(humidity, 6);
+                                    var newPossibility = locations.Min();
+                                    possibility = possibility == null 
+                                        ? newPossibility 
+                                        : Math.Min(possibility.Value, newPossibility);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            Console.WriteLine($"Seed {counter} of {seeds.Count} done");
+        }
+
+        return possibility ?? 0;
+        // var soilsOptions = ConvertSourceToDestination(seeds, 0);
+        // var fertilizerOptions = ConvertSourceToDestination(soilsOptions, 1);
+        // var waterOptions = ConvertSourceToDestination(fertilizerOptions, 2);
+        // var lightOptions = ConvertSourceToDestination(waterOptions, 3);
+        // var temperatureOptions = ConvertSourceToDestination(lightOptions, 4);
+        // var humidityOptions = ConvertSourceToDestination(temperatureOptions, 5);
+        // var locationOptions = ConvertSourceToDestination(humidityOptions, 6);
+        // return locationOptions.Min();
     }
 
     public override void PartTwo()
