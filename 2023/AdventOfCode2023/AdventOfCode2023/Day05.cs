@@ -24,10 +24,8 @@ public class Day05 : DayBase
         }
         inputParts.Add(inputPart);
 
-        for (var i = 1; i < inputParts.Count; i++)
-        {
+        for (var i = 1; i < inputParts.Count; i++) 
             inputParts[i].RemoveAt(0);
-        }
 
         var result = GenerateMappings(inputParts); 
         return result;
