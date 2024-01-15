@@ -1,4 +1,4 @@
-﻿namespace AdventOfCode2023_1.Models;
+﻿namespace AdventOfCode2023_1.Models.Day05;
 
 public class SeedMapping(long sourceStart, long destinationStart, long range)
 {

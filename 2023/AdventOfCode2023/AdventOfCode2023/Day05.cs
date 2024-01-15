@@ -1,4 +1,4 @@
-﻿using AdventOfCode2023_1.Models;
+﻿using AdventOfCode2023_1.Models.Day05;
 using AdventOfCode2023_1.Shared;
 
 namespace AdventOfCode2023_1;
@@ -45,7 +45,7 @@ public class Day05 : DayBase
         {
             currentList = GetMappingList(line) ?? currentList;
 
-            if (currentList != null) 
+            if (currentList != null)
                 AddSeedMapping(currentList, line);
         }
     }
@@ -76,8 +76,9 @@ public class Day05 : DayBase
 
     private static void AddSeedMapping(List<SeedMapping> currentList, string line)
     {
-        var parts = line.Split(Constants.Space).Select(long.Parse).ToArray();
-        currentList.Add(new SeedMapping(parts[1], parts[0], parts[2]));
+        var parts = line.Split(Constants.Space).Where(x => long.TryParse(x, out _)).Select(long.Parse).ToArray();
+        if (parts.Length == 3) 
+            currentList.Add(new SeedMapping(parts[1], parts[0], parts[2]));
     }
 
     private long? SearchLowestLocation()
