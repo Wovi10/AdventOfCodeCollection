@@ -3,17 +3,25 @@ using AdventOfCode2023_1.Shared;
 
 namespace AdventOfCode2023_1;
 
-public class Day01:DayBase
+public static class Day01
 {
-    private static readonly List<string> Input = SharedMethods.GetInput("01");
+    private static readonly List<string> Input = SharedMethods.GetInput("01", true);
 
-    public override void PartOne()
+    public static void Run()
+    {
+        SharedMethods.WriteBeginText(1, "Trebuchet?!");
+        PartOne();
+        PartTwo();
+        Console.WriteLine();
+    }
+
+    private static void PartOne()
     {
         var result = GetCalibrationSum();
         SharedMethods.AnswerPart(1, result);
     }
 
-    public override void PartTwo()
+    private static void PartTwo()
     {
         var result = GetCalibrationSum(@"\d|one|two|three|four|five|six|seven|eight|nine");
         SharedMethods.AnswerPart(2, result);

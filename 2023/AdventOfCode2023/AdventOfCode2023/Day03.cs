@@ -1,19 +1,26 @@
-﻿using AdventOfCode2023_1.Models.Day03;
-using AdventOfCode2023_1.Shared;
+﻿using AdventOfCode2023_1.Shared;
 
 namespace AdventOfCode2023_1;
 
-public class Day03: DayBase
+public static class Day03
 {
-    private static readonly List<string> Input = SharedMethods.GetInput("03");
+    private static readonly List<string> Input = SharedMethods.GetInput("03", true);
+    
+    public static void Run()
+    {
+        SharedMethods.WriteBeginText(3, "Gear Ratios");
+        PartOne();
+        PartTwo();
+        Console.WriteLine();
+    }
 
-    public override void PartOne()
+    private static void PartOne()
     {
         var result = GetSumPartNumbers();
         SharedMethods.AnswerPart(1, result);
     }
 
-    public override void PartTwo()
+    private static void PartTwo()
     {
         var result = GetSumGearRatios();
         SharedMethods.AnswerPart(2, result);
@@ -184,4 +191,28 @@ public class Day03: DayBase
         }
     }
     # endregion
+}
+
+internal class EngineNumber(int rowIndex, int columnIndex, int numberLength, int number)
+{
+    public int RowIndex { get; } = rowIndex;
+    public int ColumnIndex { get; } = columnIndex;
+    public int NumberLength { get; set; } = numberLength;
+    public int Number { get; set; } = number;
+    public bool IsPartNumber { get; set; }
+}
+
+internal class EngineSymbol(int rowIndex, int columnIndex, char symbol)
+{
+    public int RowIndex { get; } = rowIndex;
+    public int ColumnIndex { get; } = columnIndex;
+    public string Symbol { get; } = symbol.ToString();
+    public bool IsGear { get; set; }
+    public List<EngineNumber>? AdjacentPartNumbers { get; set; }
+    public int GearRatio { get; set; }
+
+    internal int GetGearRatio()
+    {
+        return AdjacentPartNumbers?.Aggregate(1, (current, partNumber) => current * partNumber.Number) ?? 0;
+    }
 }
