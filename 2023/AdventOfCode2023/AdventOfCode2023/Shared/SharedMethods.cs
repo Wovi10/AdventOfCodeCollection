@@ -14,21 +14,15 @@ public static class SharedMethods
 
     public static List<string> GetInput(string day, bool isMock = false)
     {
-        var inputFile = GetRawInput(day, isMock);
-        return SplitInputFile(inputFile);
-    }
-
-    public static string GetRawInput(string day, bool isMock = false)
-    {
         var filePath = isMock ? GetMockFilePath(day) : GetFilePath(day);
         var fullPath = Directory.GetCurrentDirectory() + filePath;
         var inputFile = File.ReadAllText(fullPath);
-        return inputFile;
+        return SplitInputFile(inputFile);
     }
 
     private static List<string> SplitInputFile(string inputFile)
     {
-        return inputFile.Split(Constants.LineSeparator, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).ToList();
+        return inputFile.Split(Constants.LineSeparator).ToList();
     }
 
     private static string GetFilePath(string day)
