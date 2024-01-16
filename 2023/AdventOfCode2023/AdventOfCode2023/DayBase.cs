@@ -4,8 +4,10 @@ namespace AdventOfCode2023_1;
 
 public abstract class DayBase
 {
-    public void Run(int day, string title, PartsToRun partsToRun = PartsToRun.Both)
+    protected static bool IsMock = false;
+    public void Run(int day, string title, PartsToRun partsToRun = PartsToRun.Both, bool isMock = false)
     {
+        IsMock = isMock;
         SharedMethods.WriteBeginText(day, title);
         switch (partsToRun)
         {
@@ -24,7 +26,7 @@ public abstract class DayBase
         Console.WriteLine();
     }
 
-    public abstract void PartOne();
+    protected abstract void PartOne();
 
-    public abstract void PartTwo();
+    protected abstract void PartTwo();
 }

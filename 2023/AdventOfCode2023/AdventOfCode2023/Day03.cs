@@ -7,13 +7,13 @@ public class Day03: DayBase
 {
     private static readonly List<string> Input = SharedMethods.GetInput("03");
 
-    public override void PartOne()
+    protected override void PartOne()
     {
         var result = GetSumPartNumbers();
         SharedMethods.AnswerPart(1, result);
     }
 
-    public override void PartTwo()
+    protected override void PartTwo()
     {
         var result = GetSumGearRatios();
         SharedMethods.AnswerPart(2, result);

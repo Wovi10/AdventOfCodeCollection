@@ -7,13 +7,13 @@ public class Day04: DayBase
 {
     private static readonly List<string> Input = SharedMethods.GetInput("04");
 
-    public override void PartOne()
+    protected override void PartOne()
     {
         var result = GetSumScratchCardPoints();
         SharedMethods.AnswerPart(1, result);
     }
 
-    public override void PartTwo()
+    protected override void PartTwo()
     {
         var result = GetTotalNumberCards();
         SharedMethods.AnswerPart(2, result);

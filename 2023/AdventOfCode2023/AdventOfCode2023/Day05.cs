@@ -5,8 +5,8 @@ namespace AdventOfCode2023_1;
 
 public class Day05 : DayBase
 {
-    private static readonly List<string> Input = SharedMethods.GetInput("05");
-    
+    private static readonly List<string> Input = SharedMethods.GetInput("05", IsMock);
+
     private readonly List<long> _seedsToTest = new();
 
     private readonly List<SeedMapping> _seedToSoil = new();
@@ -17,31 +17,32 @@ public class Day05 : DayBase
     private readonly List<SeedMapping> _tempToHumid = new();
     private readonly List<SeedMapping> _humidToLoc = new();
 
-    public override void PartOne()
+    protected override void PartOne()
     {
         
         var result = GetLowestLocationNumber();
         SharedMethods.AnswerPart(1, result);
     }
 
-    public override void PartTwo()
+    protected override void PartTwo()
     {
-        throw new NotImplementedException();
+        var result = GetLowestLocationNumber(true);
+        SharedMethods.AnswerPart(2, result);
     }
 
     #region Part1
 
-    private long GetLowestLocationNumber()
+    private long GetLowestLocationNumber(bool part2 = false)
     {
-        ProcessFile();
+        ProcessFile(part2);
         return SearchLowestLocation() ?? 0;
     }
 
-    private void ProcessFile()
+    private void ProcessFile(bool part2)
     {
         List<SeedMapping>? currentList = null;
 
-        foreach (var line in Input.Where(line => !TryAddSeed(line)))
+        foreach (var line in Input.Where(line => !TryAddSeed(line, part2)))
         {
             currentList = GetMappingList(line) ?? currentList;
 
@@ -50,11 +51,21 @@ public class Day05 : DayBase
         }
     }
 
-    private bool TryAddSeed(string line)
+    private bool TryAddSeed(string line, bool part2)
     {
         if (!line.StartsWith("seeds:")) return false;
+        
+        var seedsLineAsLong = line[7..].Split(Constants.Space).Select(long.Parse).ToList();
+        List<long> seedsToTest;
+        if (part2)
+        {
+            seedsToTest = new List<long>();
+            var startEndPairs = StartEndPair.GetPairs(seedsLineAsLong);
+        }
+        else
+            seedsToTest = seedsLineAsLong;
 
-        _seedsToTest.AddRange(line[7..].Split(Constants.Space).Select(long.Parse));
+        _seedsToTest.AddRange(seedsToTest);
         return true;
 
     }

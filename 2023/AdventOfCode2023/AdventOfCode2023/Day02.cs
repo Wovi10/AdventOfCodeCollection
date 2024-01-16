@@ -12,13 +12,13 @@ public class Day02:DayBase
         {'r', 12},{'g', 13}, {'b', 14}
     };
 
-    public override void PartOne()
+    protected override void PartOne()
     {
         var result = GetListPossibleGames().Sum();
         SharedMethods.AnswerPart(1, result);
     }
 
-    public override void PartTwo()
+    protected override void PartTwo()
     {
         var result = GetListPartTwoGames().Sum();
         SharedMethods.AnswerPart(2, result);
