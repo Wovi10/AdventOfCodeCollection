@@ -9,7 +9,7 @@ public static class SharedMethods
 
     public static void AnswerPart(int part, object result)
     {
-        Console.WriteLine($"Answer of part {part} is: \n{result}");
+        Console.WriteLine($"{Constants.LineReturn}Answer of part {part} is: \n{result}");
     }
 
     public static List<string> GetInput(string day, bool isMock = false)
@@ -26,6 +26,21 @@ public static class SharedMethods
         return inputFile;
     }
 
+    private static long? _previousPercentage;
+    public static void WritePercentage(long percentage)
+    {
+        if (_previousPercentage != null && _previousPercentage == percentage) 
+            return;
+        _previousPercentage = percentage;
+
+        var percentageDec = (int)percentage / 10;
+
+        var spaces = new string(Convert.ToChar(Constants.Space), 10 - percentageDec);
+        var percentageString = new string(Convert.ToChar(Constants.HashTag), percentageDec);
+        
+        Console.Write($"{Constants.LineReturn}[{percentageString}{spaces}] {percentage:D2}%");
+    }
+    
     private static List<string> SplitInputFile(string inputFile)
     {
         return inputFile.Split(Constants.LineSeparator, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).ToList();

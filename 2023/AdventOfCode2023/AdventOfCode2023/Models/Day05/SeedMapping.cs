@@ -8,7 +8,7 @@ public class SeedMapping(long sourceStart, long destinationStart, long range)
     private long SourceEnd { get; } = sourceStart + range - 1;
 
     public bool IsInRange(long sourceValue) => sourceValue >= SourceStart && sourceValue <= SourceEnd;
-        
+
     public long? MapValue(long sourceValue)
     {
         if (sourceValue < SourceStart || sourceValue > SourceEnd)

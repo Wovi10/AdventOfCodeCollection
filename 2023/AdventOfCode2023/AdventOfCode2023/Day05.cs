@@ -8,6 +8,7 @@ public class Day05 : DayBase
     private static readonly List<string> Input = SharedMethods.GetInput("05", IsMock);
 
     private readonly List<long> _seedsToTest = new();
+    private static List<StartEndPair> _seedsToTestPart2 = new();
 
     private readonly List<SeedMapping> _seedToSoil = new();
     private readonly List<SeedMapping> _soilToFert = new();
@@ -26,23 +27,23 @@ public class Day05 : DayBase
 
     protected override void PartTwo()
     {
-        var result = GetLowestLocationNumber(true);
+        var result = GetLowestLocationNumberPart2();
         SharedMethods.AnswerPart(2, result);
     }
 
     #region Part1
 
-    private long GetLowestLocationNumber(bool part2 = false)
+    private long GetLowestLocationNumber()
     {
-        ProcessFile(part2);
+        ProcessFile();
         return SearchLowestLocation() ?? 0;
     }
 
-    private void ProcessFile(bool part2)
+    private void ProcessFile()
     {
         List<SeedMapping>? currentList = null;
 
-        foreach (var line in Input.Where(line => !TryAddSeed(line, part2)))
+        foreach (var line in Input.Where(line => !TryAddSeed(line)))
         {
             currentList = GetMappingList(line) ?? currentList;
 
@@ -51,25 +52,97 @@ public class Day05 : DayBase
         }
     }
 
-    private bool TryAddSeed(string line, bool part2)
+    private bool TryAddSeed(string line)
     {
         if (!line.StartsWith("seeds:")) return false;
         
         var seedsLineAsLong = line[7..].Split(Constants.Space).Select(long.Parse).ToList();
-        List<long> seedsToTest;
-        if (part2)
-        {
-            seedsToTest = new List<long>();
-            var startEndPairs = StartEndPair.GetPairs(seedsLineAsLong);
-        }
-        else
-            seedsToTest = seedsLineAsLong;
+        var seedsToTest = seedsLineAsLong;
 
         _seedsToTest.AddRange(seedsToTest);
         return true;
-
     }
 
+    private long? SearchLowestLocation()
+    {
+        long? lowest = null;
+
+        foreach (var seed in _seedsToTest)
+        {
+            lowest = GetLowest(seed, lowest);
+        }
+
+        return lowest;
+    }
+
+    #endregion
+
+    #region Part2
+
+    private long GetLowestLocationNumberPart2()
+    {
+        List<SeedMapping>? currentList = null;
+
+        foreach (var line in Input.Where(line => !TryAddSeedPart2(line)))
+        {
+            currentList = GetMappingList(line) ?? currentList;
+            
+            if (currentList != null)
+                AddSeedMapping(currentList, line);
+        }
+
+        long? lowest = null;
+        var pairCounter = 0;
+        foreach (var startEndPair in _seedsToTestPart2)
+        {
+            Console.WriteLine($"{Constants.LineReturn}Starting {++pairCounter} of {_seedsToTestPart2.Count}");
+            var seedCounter = 0L;
+            for (var seed = startEndPair.Start; seed < startEndPair.End; seed++)
+            {
+                lowest = GetLowest(seed, lowest);
+
+                if (Constants.IsDebug)
+                {
+                    var percentage = seedCounter / startEndPair.Range * 100;
+                    SharedMethods.WritePercentage(percentage);
+                }
+
+                seedCounter++;
+            }
+
+            Console.WriteLine($"{Constants.LineReturn}Lowest for pair {pairCounter} is {lowest}");
+        }
+
+        return lowest!.Value;
+    }
+
+    private static bool TryAddSeedPart2(string line)
+    {
+        if (!line.StartsWith("seeds:")) return false;
+        
+        var seedsLineAsLong = line[7..].Split(Constants.Space).Select(long.Parse).ToList();
+        var seedsToTestPart2 = StartEndPair.GetPairs(seedsLineAsLong);
+
+        _seedsToTestPart2.AddRange(seedsToTestPart2);
+        return true;
+    }
+
+    #endregion
+
+    private long? GetLowest(long seed, long? lowest)
+    {
+        var result = TestLocation(seed, _seedToSoil);
+        result = TestLocation(result, _soilToFert);
+        result = TestLocation(result, _fertToWater);
+        result = TestLocation(result, _waterToLight);
+        result = TestLocation(result, _lightToTemp);
+        result = TestLocation(result, _tempToHumid);
+        result = TestLocation(result, _humidToLoc);
+        if (lowest == null || result < lowest)
+            lowest = result;
+        return lowest;
+    }
+    
     private List<SeedMapping>? GetMappingList(string line)
     {
         return line switch
@@ -92,32 +165,9 @@ public class Day05 : DayBase
             currentList.Add(new SeedMapping(parts[1], parts[0], parts[2]));
     }
 
-    private long? SearchLowestLocation()
-    {
-        long? lowest = null;
-
-        foreach (var seed in _seedsToTest)
-        {
-            //AnsiConsole.WriteLine("Testing seed " + seed + " for lowest location");
-            var result = TestLocation(seed, _seedToSoil);
-            result = TestLocation(result, _soilToFert);
-            result = TestLocation(result, _fertToWater);
-            result = TestLocation(result, _waterToLight);
-            result = TestLocation(result, _lightToTemp);
-            result = TestLocation(result, _tempToHumid);
-            result = TestLocation(result, _humidToLoc);
-            if (lowest == null || result < lowest)
-                lowest = result;
-        }
-
-        return lowest;
-    }
-
     private static long TestLocation(long seed, List<SeedMapping> mappings)
     {
-        var mapping = mappings.FirstOrDefault(x => x.IsInRange(seed));
+        var mapping = mappings.FirstOrDefault(map => map.IsInRange(seed));
         return mapping?.MapValue(seed) ?? seed;
     }
-
-    #endregion
 }

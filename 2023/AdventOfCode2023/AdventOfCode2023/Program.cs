@@ -6,4 +6,4 @@ using AdventOfCode2023_1;
 // new Day02().Run(2,"Cube Conundrum");
 // new Day03().Run(3, "Gear Ratios");
 // new Day04().Run(4, "Scratchcards");
-new Day05().Run(5, "If You Give A Seed A Fertilizer", PartsToRun.Part2, false);
+new Day05().Run(5, "If You Give A Seed A Fertilizer", PartsToRun.Part2);
