@@ -1,18 +1,25 @@
 ﻿namespace AdventOfCode2023_1.Models.Day05;
 
-public class SeedMapping(long sourceStart, long destinationStart, long range)
+public class SeedMapping
 {
-    private long SourceStart { get; } = sourceStart;
-    private long DestinationStart { get; } = destinationStart;
+    public SeedMapping(long sourceStart, long destinationStart, long range)
+    {
+        _sourceStart = sourceStart;
+        _destinationStart = destinationStart;
+        _sourceEnd = sourceStart + range - 1;
+    }
 
-    private long SourceEnd { get; } = sourceStart + range - 1;
+    private readonly long _sourceStart;
+    private readonly long _destinationStart;
 
-    public bool IsInRange(long sourceValue) => sourceValue >= SourceStart && sourceValue <= SourceEnd;
+    private readonly long _sourceEnd;
+
+    public bool IsInRange(long sourceValue) => sourceValue >= _sourceStart && sourceValue <= _sourceEnd;
 
     public long? MapValue(long sourceValue)
     {
-        if (sourceValue < SourceStart || sourceValue > SourceEnd)
+        if (sourceValue < _sourceStart || sourceValue > _sourceEnd)
             return null;
-        return sourceValue - SourceStart + DestinationStart;
+        return sourceValue - _sourceStart + _destinationStart;
     }
 }
