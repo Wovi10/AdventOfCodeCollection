@@ -70,7 +70,7 @@ public class Day05 : DayBase
     private bool TryAddSeed(string line)
     {
         if (!line.StartsWith("seeds:")) return false;
-        
+
         var seedsLineAsLong = line[7..].Split(Constants.Space).Select(long.Parse).ToList();
         var seedsToTest = seedsLineAsLong;
 
@@ -110,19 +110,23 @@ public class Day05 : DayBase
         var pairCounter = 0;
         foreach (var startEndPair in _seedsToTestPart2)
         {
-            Console.WriteLine($"{Constants.LineReturn}Starting {++pairCounter} of {_seedsToTestPart2.Count}");
+            Console.WriteLine($"{Constants.LineReturn}Starting pair {++pairCounter} of {_seedsToTestPart2.Count}");
             for (var seed = startEndPair.Start; seed < startEndPair.End; seed++)
             {
-                SeedToSoil(seed);
+                var location = SeedToLocation(seed);
+                _lowestLocation = GetLowest(location, _lowestLocation);
 
                 if (Constants.IsDebug)
                 {
                     var trying = seed - startEndPair.Start;
                     var progress = (double)trying / startEndPair.Range;
-                    var percentage = (long) (progress * 100);
+                    var percentage = (long)(progress * 100);
                     SharedMethods.WritePercentage(percentage);
                 }
             }
+
+            if (Constants.IsDebug)
+                Console.WriteLine($"Lowest after pair {pairCounter} is {_lowestLocation}");
         }
 
         return _lowestLocation;
@@ -154,7 +158,8 @@ public class Day05 : DayBase
         result = TestLocation(result, _waterToLight);
         result = TestLocation(result, _lightToTemp);
         result = TestLocation(result, _tempToHumid);
-        // SeedToSoil(seed);
+        result = TestLocation(result, _humidToLoc);
+
         return result;
     }
 
@@ -162,11 +167,9 @@ public class Day05 : DayBase
     {
         foreach (var seedMapping in _seedToSoil)
         {
-            long soil;
+            var soil = seed;
             if (seedMapping.IsInRange(seed))
                 soil = seedMapping.MapValue(seed) ?? seed;
-            else
-                soil = seed;
 
             SoilToFert(soil);
         }

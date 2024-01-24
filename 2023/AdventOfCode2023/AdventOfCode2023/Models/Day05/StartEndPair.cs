@@ -1,10 +1,17 @@
 ﻿namespace AdventOfCode2023_1.Models.Day05;
 
-public class StartEndPair(long start, long range)
+public class StartEndPair
 {
-    public long Start { get; } = start;
-    public long Range { get; } = range;
-    public long End => Start + Range;
+    private StartEndPair(long start, long range)
+    {
+        Start = start;
+        Range = range;
+        End = start + range;
+    }
+
+    public readonly long Start;
+    public readonly long Range;
+    public readonly long End;
 
     public static List<StartEndPair> GetPairs(List<long> seedsToTest)
     {
