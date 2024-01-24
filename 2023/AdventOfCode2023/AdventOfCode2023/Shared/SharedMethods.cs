@@ -26,8 +26,16 @@ public static class SharedMethods
         return inputFile;
     }
 
+    public static void WritePercentage(long current, long max)
+    {
+        var progress = (double)current / max;
+        var percentage = (int)(progress * 100);
+        WritePercentage(percentage);
+    }
+    
     private static long? _previousPercentage;
-    public static void WritePercentage(long percentage)
+
+    private static void WritePercentage(int percentage)
     {
         if (_previousPercentage != null && _previousPercentage == percentage) 
             return;

@@ -118,24 +118,23 @@ public class Day05 : DayBase
 
                 if (Constants.IsDebug)
                 {
-                    var trying = seed - startEndPair.Start;
-                    var progress = (double)trying / startEndPair.Range;
-                    var percentage = (long)(progress * 100);
-                    SharedMethods.WritePercentage(percentage);
+                    var currentIndex = seed - startEndPair.Start;
+                    SharedMethods.WritePercentage(currentIndex, startEndPair.Range);
                 }
             }
-
-            if (Constants.IsDebug)
-                Console.WriteLine($"Lowest after pair {pairCounter} is {_lowestLocation}");
         }
 
         return _lowestLocation;
     }
 
+    private static bool _isFirstLine = true;
     private static bool TryAddSeedPart2(string line)
     {
-        if (!line.StartsWith("seeds:")) return false;
-        
+        if (!_isFirstLine)
+            return false;
+
+        _isFirstLine = false;
+
         var seedsLineAsLong = line[7..].Split(Constants.Space).Select(long.Parse).ToList();
         var seedsToTestPart2 = StartEndPair.GetPairs(seedsLineAsLong);
 

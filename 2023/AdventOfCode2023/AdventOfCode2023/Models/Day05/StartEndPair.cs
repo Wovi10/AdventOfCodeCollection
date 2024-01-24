@@ -42,6 +42,7 @@ public class StartEndPair
             if (!(currentPair.End > nextPair.Start))
             {
                 result.Add(currentPair);
+                currentPair = nextPair;
                 if (i == sortedStartEndPairs.Count - 1)
                     result.Add(nextPair);
                 continue;
@@ -53,6 +54,7 @@ public class StartEndPair
                 currentPair = newPair;
             }
             result.Add(currentPair);
+            currentPair = nextPair;
         }
 
         return result;
