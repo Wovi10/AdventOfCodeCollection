@@ -4,22 +4,20 @@ public class SeedMapping
 {
     public SeedMapping(long sourceStart, long destinationStart, long range)
     {
-        _sourceStart = sourceStart;
+        SourceStart = sourceStart;
         _destinationStart = destinationStart;
-        _sourceEnd = sourceStart + range - 1;
+        SourceEnd = sourceStart + range - 1;
     }
 
-    private readonly long _sourceStart;
+    public readonly long SourceStart;
     private readonly long _destinationStart;
 
-    private readonly long _sourceEnd;
-
-    public bool IsInRange(long sourceValue) => sourceValue >= _sourceStart && sourceValue <= _sourceEnd;
+    public readonly long SourceEnd;
 
     public long? MapValue(long sourceValue)
     {
-        if (sourceValue < _sourceStart || sourceValue > _sourceEnd)
+        if (sourceValue < SourceStart || sourceValue > SourceEnd)
             return null;
-        return sourceValue - _sourceStart + _destinationStart;
+        return sourceValue - SourceStart + _destinationStart;
     }
 }

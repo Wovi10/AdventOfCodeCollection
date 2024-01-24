@@ -17,12 +17,11 @@ public class Day05 : DayBase
     private readonly List<SeedMapping> _lightToTemp = new();
     private readonly List<SeedMapping> _tempToHumid = new();
     private readonly List<SeedMapping> _humidToLoc = new();
-    
+
     private long _lowestLocation = long.MaxValue;
 
     protected override void PartOne()
     {
-        
         var result = GetLowestLocationNumber();
         SharedMethods.AnswerPart(1, result);
         EmptyLists();
@@ -58,24 +57,21 @@ public class Day05 : DayBase
     {
         List<SeedMapping>? currentList = null;
 
-        foreach (var line in Input.Where(line => !TryAddSeed(line)))
+        var isFirstLine = true;
+        foreach (var line in Input)
         {
+            if (isFirstLine)
+            {
+                var seedsLineAsLong = line[7..].Split(Constants.Space).Select(long.Parse).ToList();
+                _seedsToTest.AddRange(seedsLineAsLong);
+                isFirstLine = false;
+            }
+
             currentList = GetMappingList(line) ?? currentList;
 
             if (currentList != null)
                 AddSeedMapping(currentList, line);
         }
-    }
-
-    private bool TryAddSeed(string line)
-    {
-        if (!line.StartsWith("seeds:")) return false;
-
-        var seedsLineAsLong = line[7..].Split(Constants.Space).Select(long.Parse).ToList();
-        var seedsToTest = seedsLineAsLong;
-
-        _seedsToTest.AddRange(seedsToTest);
-        return true;
     }
 
     private long? SearchLowestLocation()
@@ -97,15 +93,7 @@ public class Day05 : DayBase
 
     private long GetLowestLocationNumberPart2()
     {
-        List<SeedMapping>? currentList = null;
-
-        foreach (var line in Input.Where(line => !TryAddSeedPart2(line)))
-        {
-            currentList = GetMappingList(line) ?? currentList;
-            
-            if (currentList != null)
-                AddSeedMapping(currentList, line);
-        }
+        ProcessFilesPart2();
 
         var pairCounter = 0;
         foreach (var startEndPair in _seedsToTestPart2)
@@ -127,19 +115,28 @@ public class Day05 : DayBase
         return _lowestLocation;
     }
 
-    private static bool _isFirstLine = true;
-    private static bool TryAddSeedPart2(string line)
+    private void ProcessFilesPart2()
     {
-        if (!_isFirstLine)
-            return false;
+        List<SeedMapping>? currentList = null;
 
-        _isFirstLine = false;
+        var isFirstLine = true;
+        foreach (var line in Input)
+        {
+            if (!isFirstLine)
+            {
+                currentList = GetMappingList(line) ?? currentList;
 
-        var seedsLineAsLong = line[7..].Split(Constants.Space).Select(long.Parse).ToList();
-        var seedsToTestPart2 = StartEndPair.GetPairs(seedsLineAsLong);
+                if (currentList != null)
+                    AddSeedMapping(currentList, line);
+                continue;
+            }
 
-        _seedsToTestPart2.AddRange(seedsToTestPart2);
-        return true;
+            var seedsLineAsLong = line[7..].Split(Constants.Space).Select(long.Parse).ToList();
+            var seedsToTestPart2 = StartEndPair.GetPairs(seedsLineAsLong);
+
+            _seedsToTestPart2.AddRange(seedsToTestPart2);
+            isFirstLine = false;
+        }
     }
 
     #endregion
@@ -162,102 +159,6 @@ public class Day05 : DayBase
         return result;
     }
 
-    private void SeedToSoil(long seed)
-    {
-        foreach (var seedMapping in _seedToSoil)
-        {
-            var soil = seed;
-            if (seedMapping.IsInRange(seed))
-                soil = seedMapping.MapValue(seed) ?? seed;
-
-            SoilToFert(soil);
-        }
-    }
-
-    private void SoilToFert(long soil)
-    {
-        foreach (var seedMapping in _soilToFert)
-        {
-            long fertilizer;
-            if (seedMapping.IsInRange(soil))
-                fertilizer = seedMapping.MapValue(soil) ?? soil;
-            else
-                fertilizer = soil;
-
-            FertToWater(fertilizer);
-        }
-    }
-
-    private void FertToWater(long fertilizer)
-    {
-        foreach (var seedMapping in _fertToWater)
-        {
-            long water;
-            if (seedMapping.IsInRange(fertilizer))
-                water = seedMapping.MapValue(fertilizer) ?? fertilizer;
-            else
-                water = fertilizer;
-
-            WaterToLight(water);
-        }
-    }
-
-    private void WaterToLight(long water)
-    {
-        foreach (var seedMapping in _waterToLight)
-        {
-            long light;
-            if (seedMapping.IsInRange(water))
-                light = seedMapping.MapValue(water) ?? water;
-            else
-                light = water;
-
-            LightToTemp(light);
-        }
-    }
-
-    private void LightToTemp(long light)
-    {
-        foreach (var seedMapping in _lightToTemp)
-        {
-            long temperature;
-            if (seedMapping.IsInRange(light))
-                temperature = seedMapping.MapValue(light) ?? light;
-            else
-                temperature = light;
-
-            TempToHumid(temperature);
-        }
-    }
-
-    private void TempToHumid(long temperature)
-    {
-        foreach (var seedMapping in _tempToHumid)
-        {
-            long humidity;
-            if (seedMapping.IsInRange(temperature))
-                humidity = seedMapping.MapValue(temperature) ?? temperature;
-            else
-                humidity = temperature;
-
-            HumidToLoc(humidity);
-        }
-    }
-
-    private void HumidToLoc(long humidity)
-    {
-        foreach (var seedMapping in _humidToLoc)
-        {
-            long location;
-            if (seedMapping.IsInRange(humidity))
-                location = seedMapping.MapValue(humidity) ?? humidity;
-            else
-                location = humidity;
-
-            _lowestLocation = GetLowest(location, _lowestLocation);
-        }
-    }
-
     private List<SeedMapping>? GetMappingList(string line)
     {
         return line switch
@@ -276,19 +177,17 @@ public class Day05 : DayBase
     private static void AddSeedMapping(List<SeedMapping> currentList, string line)
     {
         var parts = line.Split(Constants.Space).Where(x => long.TryParse(x, out _)).Select(long.Parse).ToArray();
-        if (parts.Length == 3) 
+        if (parts.Length == 3)
             currentList.Add(new SeedMapping(parts[1], parts[0], parts[2]));
     }
 
     private static long TestLocation(long seed, List<SeedMapping> mappings)
     {
-        SeedMapping mapping = null;
-        foreach (var seedMapping in mappings)
+        foreach (var seedMapping in mappings.Where(seedMapping => seedMapping.SourceStart <= seed).Where(seedMapping => seedMapping.SourceEnd >= seed))
         {
-            if (!seedMapping.IsInRange(seed))
-                continue;
             return seedMapping.MapValue(seed) ?? seed;
         }
+
         return seed;
     }
 }
