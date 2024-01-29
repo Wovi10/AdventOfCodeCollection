@@ -1,33 +1,22 @@
-﻿using AdventOfCode2023_1.Shared;
+﻿using AdventOfCode2023_1.Models.Day03;
+using AdventOfCode2023_1.Shared;
 
 namespace AdventOfCode2023_1;
 
-public static class Day03
+public class Day03: DayBase
 {
-    private static readonly string FilePath = Path.Combine(Constants.RootInputPath, "/Day03/Day03.in");
-    private static readonly string MockFilePath = Path.Combine(Constants.RootInputPath, "/Day03/MockDay03.in");
-    private static readonly string FullPath = Path.Combine(Directory.GetCurrentDirectory(), FilePath);
-    private static readonly string InputFile = File.ReadAllText(FullPath);
-    private static readonly List<string> Input = GetInput();
-    
-    public static void Run()
-    {
-        SharedClasses.WriteBeginText(3, "Gear Ratios");
-        PartOne();
-        PartTwo();
-        Console.WriteLine();
-    }
+    private static readonly List<string> Input = SharedMethods.GetInput("03");
 
-    private static void PartOne()
+    protected override void PartOne()
     {
         var result = GetSumPartNumbers();
-        SharedClasses.AnswerPart(1, result);
+        SharedMethods.AnswerPart(1, result);
     }
 
-    private static void PartTwo()
+    protected override void PartTwo()
     {
         var result = GetSumGearRatios();
-        SharedClasses.AnswerPart(2, result);
+        SharedMethods.AnswerPart(2, result);
     }
 
     # region Part 1
@@ -126,11 +115,6 @@ public static class Day03
 
         return symbolIndices;
     }
-
-    private static List<string> GetInput()
-    {
-        return InputFile.Split(Constants.LineSeparator).ToList();
-    }
     # endregion
     
     # region Part 2
@@ -200,28 +184,4 @@ public static class Day03
         }
     }
     # endregion
-}
-
-internal class EngineNumber(int rowIndex, int columnIndex, int numberLength, int number)
-{
-    public int RowIndex { get; } = rowIndex;
-    public int ColumnIndex { get; } = columnIndex;
-    public int NumberLength { get; set; } = numberLength;
-    public int Number { get; set; } = number;
-    public bool IsPartNumber { get; set; }
-}
-
-internal class EngineSymbol(int rowIndex, int columnIndex, char symbol)
-{
-    public int RowIndex { get; } = rowIndex;
-    public int ColumnIndex { get; } = columnIndex;
-    public string Symbol { get; } = symbol.ToString();
-    public bool IsGear { get; set; }
-    public List<EngineNumber>? AdjacentPartNumbers { get; set; }
-    public int GearRatio { get; set; }
-
-    internal int GetGearRatio()
-    {
-        return AdjacentPartNumbers?.Aggregate(1, (current, partNumber) => current * partNumber.Number) ?? 0;
-    }
 }
