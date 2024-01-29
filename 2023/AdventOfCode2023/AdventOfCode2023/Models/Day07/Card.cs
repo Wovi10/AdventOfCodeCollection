@@ -39,40 +39,4 @@ public static class CardExtensions
             _ => throw new Exception()
         };
     }
-
-    public static char Print(this Card card)
-    {
-        return card switch
-        {
-            Card.Two => '2',
-            Card.Three => '3',
-            Card.Four => '4',
-            Card.Five => '5',
-            Card.Six => '6',
-            Card.Seven => '7',
-            Card.Eight => '8',
-            Card.Nine => '9',
-            Card.T => 'T',
-            Card.J => 'J',
-            Card.Q => 'Q',
-            Card.K => 'K',
-            Card.A => 'A',
-            _ => throw new Exception()
-        };
-    }
-
-    public static bool? IsHigherThan(this Card card1, Card card2)
-    {
-        if ((int) card1 > (int) card2)
-        {
-            return true;
-        }
-
-        if ((int) card1 < (int) card2)
-        {
-            return false;
-        }
-
-        return null;
-    }
 }

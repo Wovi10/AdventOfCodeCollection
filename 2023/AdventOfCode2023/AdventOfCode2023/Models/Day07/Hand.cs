@@ -1,58 +1,53 @@
 ﻿namespace AdventOfCode2023_1.Models.Day07;
 
-public class Hand : IComparable<Hand>
+public class Hand(int bid) : IComparable<Hand>
 {
-    public readonly List<Card> Cards = new();
-    public int Bid;
-    public HandType Type;
-
-    public Hand(int bid)
-    {
-        Bid = bid;
-    }
+    private readonly List<Card> _cards = new();
+    public int Bid = bid;
+    private HandType _type;
 
     public int Winnings { get; set; }
 
     public void AddCard(Card card)
     {
-        if (Cards.Count > 5)
+        if (_cards.Count > 5)
         {
             throw new Exception();
         }
-        Cards.Add(card);
+        _cards.Add(card);
     }
-    
+
     public void SetType()
     {
-        if (Cards.Count != 5)
+        if (_cards.Count != 5)
         {
             throw new Exception();
         }
         
-        var distinctCards = Cards.Distinct().Count();
+        var distinctCards = _cards.Distinct().Count();
 
         switch (distinctCards)
         {
             case 1:
-                Type = HandType.FiveOfAKind;
+                _type = HandType.FiveOfAKind;
                 return;
-            case 2 when Cards.GroupBy(x => x).Any(g => g.Count() == 4):
-                Type = HandType.FourOfAKind;
+            case 2 when _cards.GroupBy(x => x).Any(g => g.Count() == 4):
+                _type = HandType.FourOfAKind;
                 return;
             case 2:
-                Type = HandType.FullHouse;
+                _type = HandType.FullHouse;
                 return;
-            case 3 when Cards.GroupBy(x => x).Any(g => g.Count() == 3):
-                Type = HandType.ThreeOfAKind;
+            case 3 when _cards.GroupBy(x => x).Any(g => g.Count() == 3):
+                _type = HandType.ThreeOfAKind;
                 return;
             case 3:
-                Type = HandType.TwoPairs;
+                _type = HandType.TwoPairs;
                 return;
             case 4:
-                Type = HandType.OnePair;
+                _type = HandType.OnePair;
                 return;
             default:
-                Type = HandType.HighCard;
+                _type = HandType.HighCard;
                 break;
         }
     }
@@ -63,24 +58,24 @@ public class Hand : IComparable<Hand>
         {
             return 1;
         }
-        if (Type.IsHigherThan(hand2.Type) == true)
+        if (_type.IsHigherThan(hand2._type) == true)
         {
             return 1;
         }
-        if (Type.IsHigherThan(hand2.Type) == false)
+        if (_type.IsHigherThan(hand2._type) == false)
         {
             return -1;
         }
 
-        var cards2 = hand2.Cards;
+        var cards2 = hand2._cards;
 
-        for (var i = 0; i < Cards.Count; i++)
+        for (var i = 0; i < _cards.Count; i++)
         {
-            if (Cards[i] > cards2[i])
+            if (_cards[i] > cards2[i])
             {
                 return 1;
             }
-            if (Cards[i] < cards2[i])
+            if (_cards[i] < cards2[i])
             {
                 return -1;
             }

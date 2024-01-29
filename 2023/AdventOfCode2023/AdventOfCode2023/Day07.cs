@@ -21,7 +21,7 @@ public class Day07 : DayBase
     private int GetTotalWinnings()
     {
         ProcessInput();
-        GetWinnings();
+        CalculateWinnings();
         return _hands.Sum(x => x.Winnings);
     }
 
@@ -43,18 +43,15 @@ public class Day07 : DayBase
         }
     }
 
-    private void GetWinnings()
+    private void CalculateWinnings()
     {
-        _hands = OrderHands();
-        for (var i = 0; i < _hands.Count; i++)
-        {
+        OrderHands();
+        for (var i = 0; i < _hands.Count; i++) 
             _hands[i].Winnings = _hands[i].Bid * (i + 1);
-        }
-        
     }
 
-    private List<Hand> OrderHands()
+    private void OrderHands()
     {
-        return _hands.Order().ToList();
+        _hands = _hands.Order().ToList();
     }
 }
