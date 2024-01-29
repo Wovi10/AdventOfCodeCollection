@@ -4,7 +4,7 @@ namespace AdventOfCode2023_1;
 
 public abstract class DayBase
 {
-    protected static bool IsMock = false;
+    protected static bool IsMock = true;
     public void Run(int day, string title, PartsToRun partsToRun = PartsToRun.Both, bool isMock = false)
     {
         IsMock = isMock;
