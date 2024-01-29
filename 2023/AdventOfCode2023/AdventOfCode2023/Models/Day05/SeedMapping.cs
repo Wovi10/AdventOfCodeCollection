@@ -14,10 +14,10 @@ public class SeedMapping
 
     public readonly long SourceEnd;
 
-    public long? MapValue(long sourceValue)
+    public long MapValue(long sourceValue)
     {
         if (sourceValue < SourceStart || sourceValue > SourceEnd)
-            return null;
+            return sourceValue;
         return sourceValue - SourceStart + _destinationStart;
     }
 }

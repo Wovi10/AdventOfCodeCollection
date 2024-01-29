@@ -185,7 +185,7 @@ public class Day05 : DayBase
     {
         foreach (var seedMapping in mappings.Where(seedMapping => seedMapping.SourceStart <= seed).Where(seedMapping => seedMapping.SourceEnd >= seed))
         {
-            return seedMapping.MapValue(seed) ?? seed;
+            return seedMapping.MapValue(seed);
         }
 
         return seed;
