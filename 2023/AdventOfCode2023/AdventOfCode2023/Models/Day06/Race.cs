@@ -2,16 +2,24 @@
 
 public class Race
 {
-    public readonly int Duration;
-    public readonly int Record;
-    public int WaysToWin { get; set; }
-    public int TimeHeld { get; set; }
-    public int DistanceTravelled { get; set; }
-    public int DistancePerMs { get; set; }
+    public readonly int DurationInt;
+    public readonly int RecordInt;
+    public int DistanceTravelledInt { get; set; }
 
-    public Race(int duration, int record)
+    public readonly long DurationLong;
+    public readonly long RecordLong;
+    
+    public long DistanceTravelledLong { get; set; }
+    
+    public Race(int durationInt, int recordInt)
     {
-        Duration = duration;
-        Record = record;
+        DurationInt = durationInt;
+        RecordInt = recordInt;
+    }
+
+    public Race(long durationLong, long recordLong)
+    {
+        DurationLong = durationLong;
+        RecordLong = recordLong;
     }
 }

@@ -2,7 +2,7 @@
 
 public static class Constants
 {
-    public static readonly string RootInputPath = "../../../../Input";
+    public const string RootInputPath = "../../../../Input";
     public const string LineSeparator = "\n";
     public const string Space = " ";
     public const string Comma = ",";
@@ -12,4 +12,5 @@ public static class Constants
     public const string LineReturn = "\r";
     public const string HashTag = "#";
     public const bool IsDebug = true;
+    public const string EmptyString = "";
 }
