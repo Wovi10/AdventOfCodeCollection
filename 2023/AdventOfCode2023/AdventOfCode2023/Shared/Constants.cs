@@ -9,4 +9,7 @@ public static class Constants
     public const string Colon = ":";
     public const string SemiColon = ";";
     public const string Pipe = "|";
+    public const string LineReturn = "\r";
+    public const string HashTag = "#";
+    public const bool IsDebug = true;
 }
