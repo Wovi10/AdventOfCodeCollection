@@ -4,13 +4,10 @@ public class Race
 {
     public readonly int DurationInt;
     public readonly int RecordInt;
-    public int DistanceTravelledInt { get; set; }
 
     public readonly long DurationLong;
     public readonly long RecordLong;
-    
-    public long DistanceTravelledLong { get; set; }
-    
+
     public Race(int durationInt, int recordInt)
     {
         DurationInt = durationInt;
