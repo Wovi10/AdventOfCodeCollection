@@ -5,17 +5,22 @@ namespace AdventOfCode2023_1;
 
 public class Day07 : DayBase
 {
-    private static readonly List<string> Input = SharedMethods.GetInput("07");
+    private static readonly List<string> Input = SharedMethods.GetInput("07", true);
     private List<Hand> _hands = new();
+    private static bool _runningPartOne = true;
+
     protected override void PartOne()
     {
+        _runningPartOne = true;
         var result = GetTotalWinnings();
         SharedMethods.AnswerPart(1, result);
     }
 
     protected override void PartTwo()
     {
-        throw new NotImplementedException();
+        _runningPartOne = false;
+        var result = GetTotalWinnings();
+        SharedMethods.AnswerPart(2, result);
     }
 
     private int GetTotalWinnings()
@@ -29,15 +34,14 @@ public class Day07 : DayBase
     {
         foreach (var line in Input)
         {
-            var hand = new Hand(0);
+            var hand = new Hand(0, _runningPartOne);
             var lineParts = line.Split(Constants.Space).ToList();
             var cards = lineParts.First();
             hand.Bid = int.Parse(lineParts.Last());
 
-            foreach (var card in cards)
-            {
-                hand.AddCard(CardExtensions.Parse(card));
-            }
+            foreach (var card in cards) 
+                hand.AddCard(card);
+
             hand.SetType();
             _hands.Add(hand);
         }
