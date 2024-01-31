@@ -4,7 +4,8 @@ namespace AdventOfCode2023_1;
 
 public class Day08 : DayBase
 {
-    public List<bool> Instructions = new();
+    private const char Left = 'L';
+    private readonly List<bool> _instructions = new();
     protected override void PartOne()
     {
         var result = CalculateSteps();
@@ -25,11 +26,16 @@ public class Day08 : DayBase
 
     private void ProcessInput()
     {
+        _instructions.Clear();
         GetInstructions();
     }
 
     private void GetInstructions()
     {
-        throw new NotImplementedException();
+        var instructionsString = Input.First();
+        foreach (var instruction in instructionsString)
+        {
+            _instructions.Add(instruction == Left);
+        }
     }
 }
