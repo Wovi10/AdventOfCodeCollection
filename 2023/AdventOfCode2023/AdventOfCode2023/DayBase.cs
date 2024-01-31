@@ -4,10 +4,13 @@ namespace AdventOfCode2023_1;
 
 public abstract class DayBase
 {
-    protected static bool IsMock = true;
-    public void Run(int day, string title, PartsToRun partsToRun = PartsToRun.Both, bool isMock = false)
+    private static string _day = "";
+    private static bool _isMock = true;
+    protected static readonly List<string> Input = SharedMethods.GetInput(_day, _isMock);
+    public void Run(string day, string title, PartsToRun partsToRun = PartsToRun.Both, bool isMock = false)
     {
-        IsMock = isMock;
+        _day = day;
+        _isMock = isMock;
         SharedMethods.WriteBeginText(day, title);
         switch (partsToRun)
         {

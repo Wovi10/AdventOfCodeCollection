@@ -5,8 +5,6 @@ namespace AdventOfCode2023_1;
 
 public class Day05 : DayBase
 {
-    private static readonly List<string> Input = SharedMethods.GetInput("05", IsMock);
-
     private readonly List<long> _seedsToTest = new();
     private static List<StartEndPair> _seedsToTestPart2 = new();
 
