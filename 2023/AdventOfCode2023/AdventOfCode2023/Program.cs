@@ -9,4 +9,4 @@ using AdventOfCode2023_1;
 // new Day05().Run("05", "If You Give A Seed A Fertilizer");
 // new Day06().Run("06", "Wait For It");
 // new Day07().Run("07", "Camel Cards");
-new Day08().Run("08", "Haunted Wasteland", PartsToRun.Part1, true);
+new Day08().Run("08", "Haunted Wasteland", PartsToRun.Part1, false);

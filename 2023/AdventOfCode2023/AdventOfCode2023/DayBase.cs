@@ -6,11 +6,12 @@ public abstract class DayBase
 {
     private static string _day = "";
     private static bool _isMock = true;
-    protected static readonly List<string> Input = SharedMethods.GetInput(_day, _isMock);
+    protected static List<string> Input = new();
     public void Run(string day, string title, PartsToRun partsToRun = PartsToRun.Both, bool isMock = false)
     {
         _day = day;
         _isMock = isMock;
+        Input = SharedMethods.GetInput(day, isMock);
         SharedMethods.WriteBeginText(day, title);
         switch (partsToRun)
         {
