@@ -6,54 +6,55 @@ public class Hand(int bid, bool runningPartOne = true) : IComparable<Hand>
     private readonly List<Card2> _cards2 = new();
     public int Bid = bid;
     private HandType _type;
+    private bool _containsJoker;
 
     public int Winnings { get; set; }
 
     public void SetType()
     {
-        if ((runningPartOne && _cards.Count != 5) || _cards2.Count != 5)
-        {
-            throw new Exception();
-        }
-        
-        var distinctCards = _cards.Distinct().ToList();
-        var distinctCards2 = _cards2.Distinct().ToList();
-        var distinctCardsCount = distinctCards.Count;
-        var containsJoker = distinctCards.Contains(Card.J);
+        if (runningPartOne)
+            _containsJoker = false;
 
-        if (!runningPartOne)
-        {
-            distinctCardsCount = distinctCards2.Count;
-            containsJoker = distinctCards2.Contains(Card2.J);
-        }
-        
-        if (runningPartOne && containsJoker) 
-            distinctCardsCount -= 1;
+        var distinctCards = _cards.Distinct().ToList();
+        var distinctCardGroups = _cards.GroupBy(c => c).ToList();
+
+        var distinctCards2 = _cards2.Distinct().ToList();
+        var distinctCardGroups2 = _cards2.GroupBy(c => c).ToList();
+        var distinctCardsCount = runningPartOne
+                                    ? distinctCards.Count
+                                    : distinctCards2.Count;
+        var numJokers = _containsJoker ? _cards2.Count(c => c == Card2.J) : 0;
 
         switch (distinctCardsCount)
         {
-            case 0:
-            case 1:
+            case 1: // Five of the same
+            case 2 when _containsJoker: // Two types of cards of which one is a Joker
                 _type = HandType.FiveOfAKind;
                 return;
-            case 2 when _cards.GroupBy(x => x).Any(g => g.Count() == 4):
-            case 2 when !runningPartOne && _cards2.GroupBy(x => x).Any(g => g.Count() == 3) && containsJoker:
+            case 2 when runningPartOne && distinctCardGroups.Any(g => g.Count() == 4): // Four the same and a different one
+            case 2 when !runningPartOne && distinctCardGroups2.Any(g => g.Count() == 4): // Four the same and a different one
+            case 3 when _containsJoker && distinctCardGroups2.Any(g => g.Count() == 3): // Three the same, Joker as fourth and a different one
+            case 3 when _containsJoker && distinctCardGroups2.Any(g => g.Count() == 2) && numJokers == 2: // Three the same, Joker as fourth and a different one
                 _type = HandType.FourOfAKind;
                 return;
-            case 2:
+            case 2 when runningPartOne && distinctCardGroups.Any(g => g.Count() == 3): // Three the same and two the same
+            case 2 when !runningPartOne && distinctCardGroups2.Any(g => g.Count() == 3): // Three the same and two the same
+            case 3 when _containsJoker: // Two the same, Joker as third and two different ones
                 _type = HandType.FullHouse;
                 return;
-            case 3 when _cards.GroupBy(x => x).Any(g => g.Count() == 3):
-            case 3 when !runningPartOne && _cards2.GroupBy(x => x).Any(g => g.Count() == 2) && containsJoker:
+            case 3 when runningPartOne && distinctCardGroups.Any(g => g.Count() == 3): // Three the same and two different ones
+            case 3 when !runningPartOne && distinctCardGroups2.Any(g => g.Count() == 3): // Three the same and two different ones
+            case 4 when _containsJoker: // Two the same, Joker as third and two different ones
                 _type = HandType.ThreeOfAKind;
                 return;
-            case 3:
+            case 3: // Three different cards, no Joker
                 _type = HandType.TwoPairs;
                 return;
-            case 4:
+            case 4: // Four different cards, no Joker
+            case 5 when _containsJoker: // Five different cards, of which one is a Joker
                 _type = HandType.OnePair;
                 return;
-            default:
+            case 5: // Five different cards, no Joker
                 _type = HandType.HighCard;
                 break;
         }
@@ -76,30 +77,31 @@ public class Hand(int bid, bool runningPartOne = true) : IComparable<Hand>
 
         if (runningPartOne)
         {
+            var cardsCount = _cards.Count;
             var hand2Cards = hand2._cards;
-
-            for (var i = 0; i < _cards.Count; i++)
+            for (var i = 0; i < cardsCount; i++)
             {
-                if (_cards[i] > hand2Cards[i])
+                if (_cards[i].IsHigherThan(hand2Cards[i]) == true)
                 {
                     return 1;
                 }
-                if (_cards[i] < hand2Cards[i])
+                if (_cards[i].IsHigherThan(hand2Cards[i]) == false)
                 {
                     return -1;
                 }
             }
             return 0;
         }
+
+        var cards2Count = _cards2.Count;
         var hand2Cards2 = hand2._cards2;
-        
-        for (var i = 0; i < _cards2.Count; i++)
+        for (var i = 0; i < cards2Count; i++)
         {
-            if (_cards2[i] > hand2Cards2[i])
+            if (_cards2[i].IsHigherThan(hand2Cards2[i]) == true)
             {
                 return 1;
             }
-            if (_cards2[i] < hand2Cards2[i])
+            if (_cards2[i].IsHigherThan(hand2Cards2[i]) == false)
             {
                 return -1;
             }
@@ -109,9 +111,15 @@ public class Hand(int bid, bool runningPartOne = true) : IComparable<Hand>
 
     public void AddCard(char card)
     {
+
         if (runningPartOne)
+        {
             _cards.Add(CardExtensions.Parse(card));
-        else
-            _cards2.Add(Card2Extensions.Parse(card));
+            return;
+        }
+
+        var parsedCard = Card2Extensions.Parse(card);
+        _containsJoker = _containsJoker || parsedCard == Card2.J;
+        _cards2.Add(parsedCard);
     }
 }

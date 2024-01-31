@@ -39,4 +39,19 @@ public static class Card2Extensions
             _ => throw new Exception()
         };
     }
+    
+    public static bool? IsHigherThan(this Card2 card1, Card2 card2)
+    {
+        if ((int) card1 > (int) card2)
+        {
+            return true;
+        }
+
+        if ((int) card1 < (int) card2)
+        {
+            return false;
+        }
+
+        return null;
+    }
 }

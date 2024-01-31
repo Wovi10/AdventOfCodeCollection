@@ -5,9 +5,9 @@ namespace AdventOfCode2023_1;
 
 public class Day07 : DayBase
 {
-    private static readonly List<string> Input = SharedMethods.GetInput("07", true);
+    private static readonly List<string> Input = SharedMethods.GetInput("07", IsMock);
     private List<Hand> _hands = new();
-    private static bool _runningPartOne = true;
+    private static bool _runningPartOne;
 
     protected override void PartOne()
     {
@@ -32,6 +32,7 @@ public class Day07 : DayBase
 
     private void ProcessInput()
     {
+        _hands.Clear();
         foreach (var line in Input)
         {
             var hand = new Hand(0, _runningPartOne);
