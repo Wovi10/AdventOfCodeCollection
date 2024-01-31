@@ -5,8 +5,6 @@ namespace AdventOfCode2023_1;
 
 public class Day02:DayBase
 {
-    private static readonly List<string> Input = SharedMethods.GetInput("02");
-
     public static readonly Dictionary<char, int> InputConfig = new()
     {
         {'r', 12},{'g', 13}, {'b', 14}

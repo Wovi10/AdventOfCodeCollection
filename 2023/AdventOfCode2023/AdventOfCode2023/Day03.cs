@@ -5,8 +5,6 @@ namespace AdventOfCode2023_1;
 
 public class Day03: DayBase
 {
-    private static readonly List<string> Input = SharedMethods.GetInput("03");
-
     protected override void PartOne()
     {
         var result = GetSumPartNumbers();

@@ -2,10 +2,11 @@
 
 using AdventOfCode2023_1;
 
-// new Day01().Run(1,"Trebuchet?!");
-// new Day02().Run(2,"Cube Conundrum");
-// new Day03().Run(3, "Gear Ratios");
-// new Day04().Run(4, "Scratchcards");
-// new Day05().Run(5, "If You Give A Seed A Fertilizer");
-// new Day06().Run(6, "Wait For It");
-new Day07().Run(7, "Camel Cards");
+// new Day01().Run("01","Trebuchet?!");
+// new Day02().Run("02","Cube Conundrum");
+// new Day03().Run("03", "Gear Ratios");
+// new Day04().Run("04", "Scratchcards");
+// new Day05().Run("05", "If You Give A Seed A Fertilizer");
+// new Day06().Run("06", "Wait For It");
+// new Day07().Run("07", "Camel Cards");
+new Day08().Run("08", "Haunted Wasteland", PartsToRun.Part1, false);

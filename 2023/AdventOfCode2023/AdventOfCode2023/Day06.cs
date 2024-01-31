@@ -5,7 +5,6 @@ namespace AdventOfCode2023_1;
 
 public class Day06:DayBase
 {
-    private static readonly List<string> Input = SharedMethods.GetInput("06");
     private readonly List<Race> _races = new();
     private static bool _runningPartOne = true;
 

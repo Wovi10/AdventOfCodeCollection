@@ -2,7 +2,7 @@
 
 public static class SharedMethods
 {
-    public static void WriteBeginText(int day, string title)
+    public static void WriteBeginText(string day, string title)
     {
         Console.WriteLine($"Starting day {day} challenge: {title}");
     }

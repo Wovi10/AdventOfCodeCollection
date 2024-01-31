@@ -5,8 +5,6 @@ namespace AdventOfCode2023_1;
 
 public class Day04: DayBase
 {
-    private static readonly List<string> Input = SharedMethods.GetInput("04");
-
     protected override void PartOne()
     {
         var result = GetSumScratchCardPoints();
