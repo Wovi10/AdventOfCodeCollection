@@ -24,7 +24,7 @@ public class Day08 : DayBase
         SharedMethods.AnswerPart(2, result);
     }
 
-    private int CalculateSteps()
+    private long CalculateSteps()
     {
         ProcessInput();
         var result = _runningPartOne ? StartStepping() : StartSteppingPart2();
@@ -72,16 +72,12 @@ public class Day08 : DayBase
     
     #region Part 2
 
-    private int StartSteppingPart2()
+    private long StartSteppingPart2()
     {
         var startingNodes = _nodes.Where(node => node.IsStart()).ToList();
-        var lcm = 1;
-        foreach (var startingNode in startingNodes)
-        {
-            var counter = CalculateNumberOfSteps(startingNode);
-            lcm = MathUtil.Lcm(lcm, counter);
-        }
-        return lcm;
+        return startingNodes
+            .Select(CalculateNumberOfSteps)
+            .Aggregate(1L, (current, counter) => MathUtil.Lcm(current, counter));
     }
 
     private int CalculateNumberOfSteps(Node startingNode)
@@ -91,8 +87,8 @@ public class Day08 : DayBase
         while(!currentNode.IsEnd()){
             var isLeft = _instructions[counter++ % _instructions.Count];
             currentNode = isLeft
-                ? _nodes.First(node => node.Name == currentNode.LeftNodeName) 
-                : _nodes.First(node => node.Name == currentNode.RightNodeName);
+                ? _nodes.First(node => currentNode.LeftNodeName == node.Name) 
+                : _nodes.First(node => currentNode.RightNodeName == node.Name);
         }
 
         return counter;

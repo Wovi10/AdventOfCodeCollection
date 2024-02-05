@@ -1,17 +1,25 @@
 ﻿namespace AdventOfCode2023_1.Models.Day08;
 
-public class MathUtil
+public static class MathUtil
 {
-    public static int Gcd(int a, int b)
+    /// <summary>
+    /// Greatest Common Factor
+    /// The biggest number that can divide both a and b
+    /// </summary>
+    public static long Gcf(long a, long b)
     {
         if (a == 0 && b == 0)
             return 1;
-        return b == 0 
+        return b == 0
             ? a 
-            : Gcd(b, a % b);
+            : Gcf(b, a % b);
     }
 
-    public static int Lcm(int a, int b) {
-        return Math.Abs(a * b) / Gcd(a, b);
+    /// <summary>
+    /// Least Common Multiple
+    /// The smallest number that both a and b can divide
+    /// </summary>
+    public static long Lcm(long a, long b) {
+        return a*b / Gcf(a, b);
     }
 }
