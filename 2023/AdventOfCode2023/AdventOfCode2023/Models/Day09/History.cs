@@ -25,18 +25,23 @@ public class History
         }
     }
 
-    public void Extrapolate()
+    public void Extrapolate(bool runningPartOne = true)
     {
-        if (_nextStep != null) 
-            _nextStep.Extrapolate();
-        else
+        if (runningPartOne)
         {
-            _sequence.Add(0);
+            if (_nextStep != null) 
+                _nextStep.Extrapolate();
+            else
+            {
+                _sequence.Add(0);
+                AddedValue = _sequence.Last();
+                return;
+            }
+
+            _sequence.Add(_nextStep._sequence.Last() + _sequence.Last());
             AddedValue = _sequence.Last();
             return;
         }
-
-        _sequence.Add(_nextStep._sequence.Last() + _sequence.Last());
-        AddedValue = _sequence.Last();
+        
     }
 }
