@@ -30,9 +30,9 @@ public static class TileTypeExtensions
         };
     }
 
-    public static TileType ToTileType(this string tileInput)
+    public static TileType ToTileType(this char tileInput)
     {
-        return tileInput[0] switch
+        return tileInput switch
         {
             '|' => TileType.NorthSouth,
             '-' => TileType.EastWest,

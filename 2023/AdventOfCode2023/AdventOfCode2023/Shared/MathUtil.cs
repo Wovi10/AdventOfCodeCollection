@@ -1,4 +1,4 @@
-﻿namespace AdventOfCode2023_1.Models.Day08;
+﻿namespace AdventOfCode2023_1.Shared;
 
 public static class MathUtil
 {
@@ -22,4 +22,10 @@ public static class MathUtil
     public static long Lcm(long a, long b) {
         return a*b / Gcf(a, b);
     }
+    
+    public static int GetHighest(int a, int b) => a > b ? a : b;
+    public static int GetLowest(int a, int b) => a < b ? a : b;
+    
+    public static long GetHighest(long a, long b) => a > b ? a : b;
+    public static long GetLowest(long a, long b) => a < b ? a : b;
 }

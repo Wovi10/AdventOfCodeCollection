@@ -51,7 +51,7 @@ public static class SharedMethods
 
     private static string GetFilePath(string day)
     {
-        const string mockDay = Constants.IsMock ? "MockDay" : "Day";
-        return $"{Constants.RootInputPath}/Day{day}/{mockDay}Day{day}.in";
+        const string mock = Constants.IsMock ? "Mock" : Constants.EmptyString;
+        return $"{Constants.RootInputPath}/Day{day}/{mock}Day{day}.in";
     }
 }
