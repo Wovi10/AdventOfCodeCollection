@@ -10,4 +10,4 @@ using AdventOfCode2023_1;
 // new Day06().Run("06", "Wait For It");
 // new Day07().Run("07", "Camel Cards");
 // new Day08().Run("08", "Haunted Wasteland");
-new Day09().Run("09", "Mirage Maintenance");
+new Day09().Run("09", "Mirage Maintenance", PartsToRun.Part1);
