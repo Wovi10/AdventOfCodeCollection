@@ -7,12 +7,15 @@ public abstract class DayBase
     private static string _day = "";
     private static bool _isMock = true;
     protected static List<string> Input = new();
+    protected static bool RunningPartOne = true;
+    
     public void Run(string day, string title, PartsToRun partsToRun = PartsToRun.Both, bool isMock = false)
     {
         _day = day;
         _isMock = isMock;
         Input = SharedMethods.GetInput(day, isMock);
         SharedMethods.WriteBeginText(day, title);
+        RunningPartOne = true;
         switch (partsToRun)
         {
             case PartsToRun.Part1:
@@ -24,6 +27,7 @@ public abstract class DayBase
             case PartsToRun.Both:
             default:
                 PartOne();
+                RunningPartOne = false;
                 PartTwo();
                 break;
         }

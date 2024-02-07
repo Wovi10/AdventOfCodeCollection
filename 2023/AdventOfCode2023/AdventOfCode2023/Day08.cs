@@ -8,18 +8,15 @@ public class Day08 : DayBase
     private const char Left = 'L';
     private readonly List<bool> _instructions = new();
     private readonly List<Node> _nodes = new();
-    private bool _runningPartOne;
 
     protected override void PartOne()
     {
-        _runningPartOne = true;
         var result = CalculateSteps();
         SharedMethods.AnswerPart(1, result);
     }
 
     protected override void PartTwo()
     {
-        _runningPartOne = false;
         var result = CalculateSteps();
         SharedMethods.AnswerPart(2, result);
     }
@@ -27,7 +24,7 @@ public class Day08 : DayBase
     private long CalculateSteps()
     {
         ProcessInput();
-        var result = _runningPartOne ? StartStepping() : StartSteppingPart2();
+        var result = RunningPartOne ? StartStepping() : StartSteppingPart2();
         return result;
     }
 
@@ -55,7 +52,7 @@ public class Day08 : DayBase
             var nodeName = line.Substring(0, 3);
             var leftNodeName = line.Substring(7, 3);
             var rightNodeName = line.Substring(12, 3);
-            var node = new Node(nodeName, leftNodeName, rightNodeName, _runningPartOne);
+            var node = new Node(nodeName, leftNodeName, rightNodeName, RunningPartOne);
             _nodes.Add(node);
         }
     }
