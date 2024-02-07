@@ -6,18 +6,15 @@ namespace AdventOfCode2023_1;
 public class Day07 : DayBase
 {
     private List<Hand> _hands = new();
-    private static bool _runningPartOne;
 
     protected override void PartOne()
     {
-        _runningPartOne = true;
         var result = GetTotalWinnings();
         SharedMethods.AnswerPart(1, result);
     }
 
     protected override void PartTwo()
     {
-        _runningPartOne = false;
         var result = GetTotalWinnings();
         SharedMethods.AnswerPart(2, result);
     }
@@ -34,7 +31,7 @@ public class Day07 : DayBase
         _hands.Clear();
         foreach (var line in Input)
         {
-            var hand = new Hand(0, _runningPartOne);
+            var hand = new Hand(0, RunningPartOne);
             var lineParts = line.Split(Constants.Space).ToList();
             var cards = lineParts.First();
             hand.Bid = int.Parse(lineParts.Last());
