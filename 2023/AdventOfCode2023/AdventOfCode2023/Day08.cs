@@ -8,28 +8,33 @@ public class Day08 : DayBase
     private const char Left = 'L';
     private readonly List<bool> _instructions = new();
     private readonly List<Node> _nodes = new();
+    private bool _runningPartOne;
+
     protected override void PartOne()
     {
+        _runningPartOne = true;
         var result = CalculateSteps();
         SharedMethods.AnswerPart(1, result);
     }
 
     protected override void PartTwo()
     {
-        var result = 0;
+        _runningPartOne = false;
+        var result = CalculateSteps();
         SharedMethods.AnswerPart(2, result);
     }
-    
-    private int CalculateSteps()
+
+    private long CalculateSteps()
     {
         ProcessInput();
-        var result = StartStepping();
+        var result = _runningPartOne ? StartStepping() : StartSteppingPart2();
         return result;
     }
 
     private void ProcessInput()
     {
         _instructions.Clear();
+        _nodes.Clear();
         GetInstructions();
         GetNodes();
     }
@@ -50,33 +55,44 @@ public class Day08 : DayBase
             var nodeName = line.Substring(0, 3);
             var leftNodeName = line.Substring(7, 3);
             var rightNodeName = line.Substring(12, 3);
-            var node = new Node(nodeName, leftNodeName, rightNodeName);
+            var node = new Node(nodeName, leftNodeName, rightNodeName, _runningPartOne);
             _nodes.Add(node);
         }
     }
 
+    #region Part 1
+
     private int StartStepping()
     {
-        var currentNode = _nodes.First(node => node.IsStart);
-        var endReached = false;
+        var currentNode = _nodes.First(node => node.IsStart());
+        return CalculateNumberOfSteps(currentNode);
+    }
+
+    #endregion
+    
+    #region Part 2
+
+    private long StartSteppingPart2()
+    {
+        var startingNodes = _nodes.Where(node => node.IsStart()).ToList();
+        return startingNodes
+            .Select(CalculateNumberOfSteps)
+            .Aggregate(1L, (current, counter) => MathUtil.Lcm(current, counter));
+    }
+
+    private int CalculateNumberOfSteps(Node startingNode)
+    {
+        var currentNode = startingNode;
         var counter = 0;
-        do
-        {
-            foreach (var isLeft in _instructions)
-            {
-                counter++;
-                var nextNode = isLeft 
-                    ? _nodes.First(node => node.Name == currentNode.LeftNodeName) 
-                    : _nodes.First(node => node.Name == currentNode.RightNodeName);
-                if (nextNode.IsEnd)
-                {
-                    endReached = true;
-                    break;
-                }
-                currentNode = nextNode;
-            }
-        }while(!endReached);
+        while(!currentNode.IsEnd()){
+            var isLeft = _instructions[counter++ % _instructions.Count];
+            currentNode = isLeft
+                ? _nodes.First(node => currentNode.LeftNodeName == node.Name) 
+                : _nodes.First(node => currentNode.RightNodeName == node.Name);
+        }
 
         return counter;
     }
+
+    #endregion
 }

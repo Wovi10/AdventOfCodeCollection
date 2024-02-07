@@ -2,18 +2,27 @@
 
 public class Node
 {
-    public Node(string name, string leftNodeName, string rightNodeName)
+    public Node(string name, string leftNodeName, string rightNodeName, bool runningPartOne)
     {
         Name = name;
         LeftNodeName = leftNodeName;
         RightNodeName = rightNodeName;
-        IsStart = name == "AAA";
-        IsEnd = name == "ZZZ";
+        RunningPartOne = runningPartOne;
     }
+
+    public readonly bool RunningPartOne;
 
     public readonly string Name;
     public readonly string LeftNodeName;
     public readonly string RightNodeName;
-    public readonly bool IsStart;
-    public readonly bool IsEnd;
+
+    public bool IsStart()
+    {
+        return (!RunningPartOne && Name.EndsWith('A')) || (RunningPartOne && Name == "AAA");
+    }
+
+    public bool IsEnd()
+    {
+        return (!RunningPartOne && Name.EndsWith('Z')) || (RunningPartOne && Name == "ZZZ");
+    }
 }
