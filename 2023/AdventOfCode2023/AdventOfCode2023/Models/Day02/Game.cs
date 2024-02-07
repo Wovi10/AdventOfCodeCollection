@@ -22,9 +22,14 @@ public class Game
 
     private bool IsValidGame()
     {
+        
+        var inputConfig = new Dictionary<char, int>()
+        {
+            {'r', 12},{'g', 13}, {'b', 14}
+        };
         foreach (var (key, value) in Colours)
         {
-            if (AdventOfCode2023_1.Day02.InputConfig.ContainsKey(key) && AdventOfCode2023_1.Day02.InputConfig[key] < value)
+            if (inputConfig.TryGetValue(key, out int inputConfigValue) && inputConfigValue < value)
                 return false;
         }
 

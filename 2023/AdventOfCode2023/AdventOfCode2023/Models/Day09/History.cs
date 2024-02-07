@@ -1,13 +1,10 @@
-﻿namespace AdventOfCode2023_1.Models.Day09;
+﻿using AdventOfCode2023_1.Shared;
 
-public class History
+namespace AdventOfCode2023_1.Models.Day09;
+
+public class History(List<long> sequence)
 {
-    public History(List<long> sequence)
-    {
-        _sequence = sequence;
-    }
-
-    private readonly List<long> _sequence;
+    private readonly List<long> _sequence = sequence;
     private History? _nextStep;
     public long AddedValue;
 
@@ -27,16 +24,45 @@ public class History
 
     public void Extrapolate()
     {
-        if (_nextStep != null) 
-            _nextStep.Extrapolate();
-        else
+        _nextStep?.Extrapolate();
+
+        if (Variables.RunningPartOne)
         {
-            _sequence.Add(0);
+            if (_nextStep == null)
+            {
+                _sequence.Add(0);
+                AddedValue = _sequence.Last();
+                return;
+            }
+
+            _sequence.Add(_nextStep._sequence.Last() + _sequence.Last());
             AddedValue = _sequence.Last();
             return;
         }
 
-        _sequence.Add(_nextStep._sequence.Last() + _sequence.Last());
-        AddedValue = _sequence.Last();
+        RightShiftSequence();
+        if (_nextStep == null)
+        {
+            _sequence[0] = 0;
+            AddedValue = _sequence.First();
+            return;
+        }
+
+        _sequence[0] = _sequence[1] - _nextStep._sequence.First();
+        AddedValue = _sequence.First();
+    }
+
+    private void RightShiftSequence()
+    {
+        _sequence.Add(_sequence.Last());
+        for (var i = _sequence.Count - 1; i > 0; i--)
+        {
+            _sequence[i] = _sequence[i - 1];
+        }
+
+        if (_nextStep != null)
+        {
+            _nextStep.RightShiftSequence();
+        }
     }
 }

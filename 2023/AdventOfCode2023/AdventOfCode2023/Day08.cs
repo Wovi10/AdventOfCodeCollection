@@ -24,7 +24,7 @@ public class Day08 : DayBase
     private long CalculateSteps()
     {
         ProcessInput();
-        var result = RunningPartOne ? StartStepping() : StartSteppingPart2();
+        var result = Variables.RunningPartOne ? StartStepping() : StartSteppingPart2();
         return result;
     }
 
@@ -52,7 +52,7 @@ public class Day08 : DayBase
             var nodeName = line.Substring(0, 3);
             var leftNodeName = line.Substring(7, 3);
             var rightNodeName = line.Substring(12, 3);
-            var node = new Node(nodeName, leftNodeName, rightNodeName, RunningPartOne);
+            var node = new Node(nodeName, leftNodeName, rightNodeName);
             _nodes.Add(node);
         }
     }

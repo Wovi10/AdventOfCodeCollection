@@ -5,11 +5,6 @@ namespace AdventOfCode2023_1;
 
 public class Day02:DayBase
 {
-    public static readonly Dictionary<char, int> InputConfig = new()
-    {
-        {'r', 12},{'g', 13}, {'b', 14}
-    };
-
     protected override void PartOne()
     {
         var result = GetListPossibleGames().Sum();
