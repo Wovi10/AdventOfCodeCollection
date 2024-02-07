@@ -5,8 +5,13 @@ public static class SharedMethods
     public static void WriteBeginText(string day, string title) 
         => Console.WriteLine($"Starting day {day} challenge: {title}");
 
-    public static void AnswerPart(int part, object result)
-        => Console.WriteLine($"{Constants.LineReturn}Answer of part {part} is: \n{result}");
+    public static void AnswerPart(object result)
+        => Console.WriteLine($"{Constants.LineReturn}Answer of part {GetRunningPart()} is: \n{result}");
+
+    private static string GetRunningPart()
+    {
+        return Variables.RunningPartOne ? "1" : "2";
+    }
 
     public static List<string> GetInput(string day)
     {

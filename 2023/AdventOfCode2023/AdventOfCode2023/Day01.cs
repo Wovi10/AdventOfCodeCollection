@@ -8,13 +8,13 @@ public class Day01:DayBase
     protected override void PartOne()
     {
         var result = GetCalibrationSum();
-        SharedMethods.AnswerPart(1, result);
+        SharedMethods.AnswerPart(result);
     }
 
     protected override void PartTwo()
     {
         var result = GetCalibrationSum(@"\d|one|two|three|four|five|six|seven|eight|nine");
-        SharedMethods.AnswerPart(2, result);
+        SharedMethods.AnswerPart(result);
     }
 
     private static int GetCalibrationSum(string regexMatch = @"\d")

@@ -8,13 +8,13 @@ public class Day09 : DayBase
     protected override void PartOne()
     {
         var result = PredictValue();
-        SharedMethods.AnswerPart(1, result);
+        SharedMethods.AnswerPart(result);
     }
 
     protected override void PartTwo()
     {
         var result = PredictValue();
-        SharedMethods.AnswerPart(2, result);
+        SharedMethods.AnswerPart(result);
     }
     
     private static long PredictValue()

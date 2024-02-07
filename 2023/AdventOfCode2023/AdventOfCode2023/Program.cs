@@ -11,4 +11,4 @@ using AdventOfCode2023_1;
 // new Day07().Run("07", "Camel Cards");
 // new Day08().Run("08", "Haunted Wasteland");
 // new Day09().Run("09", "Mirage Maintenance");
-new Day10().Run("10", "Pipe Maze", PartsToRun.Part1);
+new Day10().Run("10", "Pipe Maze");

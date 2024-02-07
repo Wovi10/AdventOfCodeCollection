@@ -12,13 +12,13 @@ public class Day08 : DayBase
     protected override void PartOne()
     {
         var result = CalculateSteps();
-        SharedMethods.AnswerPart(1, result);
+        SharedMethods.AnswerPart(result);
     }
 
     protected override void PartTwo()
     {
         var result = CalculateSteps();
-        SharedMethods.AnswerPart(2, result);
+        SharedMethods.AnswerPart(result);
     }
 
     private long CalculateSteps()

@@ -10,13 +10,13 @@ public class Day06:DayBase
     protected override void PartOne()
     {
         var result = GetTotalWaysToWin();
-        SharedMethods.AnswerPart(1, result);
+        SharedMethods.AnswerPart(result);
     }
 
     protected override void PartTwo()
     {
         var result = GetTotalWaysToWin();
-        SharedMethods.AnswerPart(2, result);
+        SharedMethods.AnswerPart(result);
     }
 
     #region Part 1
