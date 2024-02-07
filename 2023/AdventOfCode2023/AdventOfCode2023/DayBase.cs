@@ -8,7 +8,7 @@ public abstract class DayBase
     
     public void Run(string day, string title, PartsToRun partsToRun = PartsToRun.Both)
     {
-        Input = SharedMethods.GetInput(day, Constants.IsMock);
+        Input = SharedMethods.GetInput(day);
         SharedMethods.WriteBeginText(day, title);
         Variables.RunningPartOne = true;
         switch (partsToRun)
