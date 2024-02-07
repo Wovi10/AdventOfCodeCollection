@@ -7,16 +7,17 @@ public class Day09 : DayBase
 {
     protected override void PartOne()
     {
-        var result = PredictNextValue();
+        var result = PredictValue();
         SharedMethods.AnswerPart(1, result);
     }
 
     protected override void PartTwo()
     {
-        throw new NotImplementedException();
+        var result = PredictValue();
+        SharedMethods.AnswerPart(2, result);
     }
     
-    private static long PredictNextValue()
+    private static long PredictValue()
     {
         var historySelection = GetHistorySelection();
         var addedValues = new List<long>();

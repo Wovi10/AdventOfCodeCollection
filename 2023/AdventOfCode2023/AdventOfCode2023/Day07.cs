@@ -31,7 +31,7 @@ public class Day07 : DayBase
         _hands.Clear();
         foreach (var line in Input)
         {
-            var hand = new Hand(0, RunningPartOne);
+            var hand = new Hand(0);
             var lineParts = line.Split(Constants.Space).ToList();
             var cards = lineParts.First();
             hand.Bid = int.Parse(lineParts.Last());

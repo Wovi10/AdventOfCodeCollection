@@ -13,4 +13,5 @@ public static class Constants
     public const string HashTag = "#";
     public const bool IsDebug = true;
     public const string EmptyString = "";
+    public const bool IsMock = false;
 }

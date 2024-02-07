@@ -29,8 +29,8 @@ public class Day06:DayBase
 
     private static int GetWaysToWin(Race race)
     {
-        var duration = RunningPartOne ? race.DurationInt : race.DurationLong;
-        var record = RunningPartOne ? race.RecordInt : race.RecordLong;
+        var duration = Variables.RunningPartOne ? race.DurationInt : race.DurationLong;
+        var record = Variables.RunningPartOne ? race.RecordInt : race.RecordLong;
         var waysToWin = 0;
         for (var i = 0; i <= duration; i++)
         {
@@ -50,7 +50,7 @@ public class Day06:DayBase
         _races.Clear();
         var times = Input.First().Split(Constants.Space).ToList().Where(x => int.TryParse(x, out _)).Select(int.Parse).ToList();
         var distances = Input.Last().Split(Constants.Space).ToList().Where(x => int.TryParse(x, out _)).Select(int.Parse).ToList();
-        if (RunningPartOne)
+        if (Variables.RunningPartOne)
         {
             for (var i = 0; i < times.Count; i++)
             {
