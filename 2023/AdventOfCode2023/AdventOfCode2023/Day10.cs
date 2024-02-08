@@ -5,7 +5,8 @@ namespace AdventOfCode2023_1;
 
 public class Day10 : DayBase
 {
-    private Dictionary<string, Tile> _tilesDictionary;
+    // private Dictionary<string, Tile> _tilesDictionary;
+    private List<Tile> _tilesList;
     protected override void PartOne()
     {
         var result = CalculateFurthestPosition();
@@ -20,33 +21,44 @@ public class Day10 : DayBase
     private int CalculateFurthestPosition()
     {
         var maze = new Maze(Input);
-        _tilesDictionary = maze.TilesDictionary;
-        var startingTile = _tilesDictionary.First(x => x.Value.TileType == TileType.StartingPosition).Value;
-        var pathTried = new List<string>();
-        pathTried = TryAllPaths(startingTile, pathTried);
+        _tilesList = maze.TilesList;
+        // _tilesDictionary = maze.TilesDictionary;
+        var startingTile = _tilesList.First(x => x.TileType == TileType.StartingPosition);
+        TryAllPaths();
 
-        var highestDistance = _tilesDictionary.Max(x => x.Value.DistanceFromStart);
+        var highestDistance = _tilesList.Max(x => x.DistanceFromStart);
         return highestDistance;
     }
 
-    private List<string> TryAllPaths(Tile startingTile, List<string> pathTried)
+    private void TryAllPaths()
     {
-        var startingTileCoordinates = startingTile.Coordinates.ToString();
-        foreach (var adjacentTile in startingTile.AdjacentTiles)
+        foreach (var tile in _tilesList)
         {
-            pathTried.Clear();
-            pathTried.Add(startingTileCoordinates);
-            CalculateDistances(adjacentTile, startingTileCoordinates);
-            foreach (var (_, value) in _tilesDictionary) 
-                value.TriedEverything = false;
+            var distanceToStart = CalculateDistanceToStart(tile);
         }
-
-        return pathTried;
     }
 
-    private void CalculateDistances(string adjacentTile, string previousTile, int currentDistance = 0)
+    private int CalculateDistanceToStart(Tile tile, Coordinates? previousTile = null)
     {
-        var tile = _tilesDictionary[adjacentTile];
+        var adjacentTiles = tile.AdjacentTiles;
+        previousTile ??= tile.Coordinates;
+        foreach (var adjacentTile in adjacentTiles)
+        {
+            if (adjacentTile.Equals(previousTile))
+                continue;
+            tile.DistanceFromStart++;
+            var nextTile = _tilesList.FirstOrDefault(t =>  adjacentTile.Equals(t.Coordinates));
+            if (nextTile == null)
+                continue;
+            CalculateDistanceToStart(nextTile, tile.Coordinates);
+        }
+
+        return tile.DistanceFromStart;
+    }
+
+    private void CalculateDistances(Coordinates adjacentTile, Coordinates previousTile, int currentDistance = 0)
+    {
+        var tile = _tilesList.First(x => x.Coordinates == adjacentTile);
         if (tile.TriedEverything)
             return;
 
@@ -54,8 +66,8 @@ public class Day10 : DayBase
 
         if (tile.AdjacentTiles[0] != previousTile)
             CalculateDistances(tile.AdjacentTiles[0], adjacentTile, currentDistance);
-        else if(tile.AdjacentTiles[1] != previousTile) 
-            CalculateDistances(tile.AdjacentTiles[0], adjacentTile, currentDistance);
+        if(tile.AdjacentTiles[1] != previousTile) 
+            CalculateDistances(tile.AdjacentTiles[1], adjacentTile, currentDistance);
 
         tile.TriedEverything = true;
     }

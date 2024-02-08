@@ -6,15 +6,15 @@ public class Maze
 {
     public Maze(List<string> inputLines)
     {
-        BuildTileDictionary(inputLines);
+        BuildTileList(inputLines);
         CalculateAdjacentTiles();
     }
 
-    public Dictionary<string, Tile> TilesDictionary = new();
+    public List<Tile> TilesList = new();
     private int _mazeWidth;
     private int _mazeLength;
 
-    private void BuildTileDictionary(List<string> inputLines)
+    private void BuildTileList(List<string> inputLines)
     {
         _mazeLength = inputLines.Count;
         for (var mazeLineCounter = 0; mazeLineCounter < inputLines.Count; mazeLineCounter++)
@@ -25,14 +25,14 @@ public class Maze
             {
                 var tileChar = line[tileCounter];
                 var tile = new Tile(tileChar, mazeLineCounter, tileCounter, _mazeWidth, _mazeLength);
-                TilesDictionary.Add(tile.Coordinates.ToString(), tile);
+                TilesList.Add(tile);
             }
         }
     }
 
     private void CalculateAdjacentTiles()
     {
-        foreach (var (_, tile) in TilesDictionary)
+        foreach (var tile in TilesList)
         {
             switch (tile.TileType)
             {
@@ -67,10 +67,11 @@ public class Maze
                     throw new ArgumentOutOfRangeException();
             }
 
-            if (tile.AdjacentTiles.Count == 2 || tile.TileType == TileType.StartingPosition) 
+            if (tile.AdjacentTiles.Count == 2 || tile.TileType == TileType.StartingPosition)
                 continue;
-            tile.AdjacentTiles.Clear();
+            tile.TileType = TileType.Ground;
         }
+        TilesList = TilesList.Where(t => t.TileType != TileType.Ground).ToList();
     }
 
     private void AddNorthTile(Tile tile)
@@ -78,7 +79,7 @@ public class Maze
         var northTileCoords = tile.NorthTile;
         if (string.IsNullOrWhiteSpace(northTileCoords)) 
             return;
-        var northTile = TilesDictionary[northTileCoords];
+        var northTile = TilesList.First(t => t.Coordinates.ToString() == northTileCoords);
         if (northTile.TileType == TileType.Ground)
             return;
         
@@ -92,7 +93,7 @@ public class Maze
         var eastTileCoords = tile.EastTile;
         if (string.IsNullOrWhiteSpace(eastTileCoords)) 
             return;
-        var eastTile = TilesDictionary[eastTileCoords];
+        var eastTile = TilesList.First(t => t.Coordinates.ToString() == eastTileCoords);
         if (eastTile.TileType == TileType.Ground)
             return;
 
@@ -106,7 +107,7 @@ public class Maze
         var southTileCoords = tile.SouthTile;
         if (string.IsNullOrWhiteSpace(southTileCoords)) 
             return;
-        var southTile = TilesDictionary[southTileCoords];
+        var southTile = TilesList.First(t => t.Coordinates.ToString() == southTileCoords);
         if (southTile.TileType == TileType.Ground)
             return;
 
@@ -120,7 +121,7 @@ public class Maze
         var westTileCoords = tile.WestTile;
         if (string.IsNullOrWhiteSpace(westTileCoords)) 
             return;
-        var westTile = TilesDictionary[westTileCoords];
+        var westTile = TilesList.First(t => t.Coordinates.ToString() == westTileCoords);
         if (westTile.TileType == TileType.Ground)
             return;
 
@@ -129,10 +130,10 @@ public class Maze
             westTile.AddAdjacentTile(tile.Coordinates);
     }
 
-    private void PrintTilesDictionary()
+    private void PrintTilesList()
     {
         var currentLine = 0;
-        foreach (var (_, tile) in TilesDictionary)
+        foreach (var tile in TilesList)
         {
             if (tile.Coordinates.YCoordinate != currentLine)
             {

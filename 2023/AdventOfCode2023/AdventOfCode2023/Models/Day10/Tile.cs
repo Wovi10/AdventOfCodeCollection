@@ -20,7 +20,7 @@ public class Tile
     public readonly string EastTile;
     public readonly string SouthTile;
     public readonly string WestTile;
-    public readonly List<string> AdjacentTiles = new();
+    public readonly List<Coordinates> AdjacentTiles = new();
     public int DistanceFromStart { get; set; }
 
     public readonly Coordinates Coordinates;
@@ -30,8 +30,8 @@ public class Tile
     {
         if (coordinates == null) 
             return;
-        if(!AdjacentTiles.Contains(coordinates.ToString()))
-            AdjacentTiles.Add(coordinates.ToString());
+        if(!AdjacentTiles.Contains(coordinates))
+            AdjacentTiles.Add(coordinates);
     }
 
     public void SetDistanceFromStart(int currentDistance)

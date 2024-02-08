@@ -11,6 +11,24 @@ public class Coordinates
     public readonly int XCoordinate;
     public readonly int YCoordinate;
 
+    public override bool Equals(object? obj)
+    {
+        if (obj is Coordinates coordinates)
+            return Equals(coordinates);
+
+        return false;
+    }
+
+    protected bool Equals(Coordinates other)
+    {
+        return XCoordinate == other.XCoordinate && YCoordinate == other.YCoordinate;
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(XCoordinate, YCoordinate);
+    }
+
     public override string ToString()
     {
         return $"({XCoordinate},{YCoordinate})";
