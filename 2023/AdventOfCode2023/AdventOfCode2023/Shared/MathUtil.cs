@@ -28,4 +28,11 @@ public static class MathUtil
     
     public static long GetHighest(long a, long b) => a > b ? a : b;
     public static long GetLowest(long a, long b) => a < b ? a : b;
+
+    public static int GetHalfRoundUp(int a)
+    {
+        if (a % 2 == 0)
+            return a / 2;
+        return a / 2 + 1;
+    }
 }
