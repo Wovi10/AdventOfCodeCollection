@@ -5,7 +5,7 @@ namespace AdventOfCode2023_1;
 public abstract class DayBase
 {
     protected static List<string> Input = new();
-    
+
     public void Run(string day, string title)
     {
         Input = SharedMethods.GetInput(day);
@@ -28,6 +28,7 @@ public abstract class DayBase
             default:
                 throw new ArgumentOutOfRangeException();
         }
+
         Console.WriteLine();
     }
 

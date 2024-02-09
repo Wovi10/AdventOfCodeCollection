@@ -3,7 +3,7 @@ using AdventOfCode2023_1.Shared;
 
 namespace AdventOfCode2023_1;
 
-public class Day01:DayBase
+public class Day01 : DayBase
 {
     protected override void PartOne()
     {
@@ -19,15 +19,15 @@ public class Day01:DayBase
 
     private static int GetCalibrationSum(string regexMatch = @"\d")
     {
-        var calList = GetCalibrationList(regexMatch); 
+        var calList = GetCalibrationList(regexMatch);
         return calList.Sum();
     }
 
     private static List<int> GetCalibrationList(string regex = @"\d")
     {
         return Input
-            .Select(inputLine => new {inputLine, firstNumber = Regex.Match(inputLine, regex)})
-            .Select(t => new {t, lastNumber = Regex.Match(t.inputLine, regex, RegexOptions.RightToLeft)})
+            .Select(inputLine => new { inputLine, firstNumber = Regex.Match(inputLine, regex) })
+            .Select(t => new { t, lastNumber = Regex.Match(t.inputLine, regex, RegexOptions.RightToLeft) })
             .Select(t => ParseMatch(t.t.firstNumber.Value) * 10 + ParseMatch(t.lastNumber.Value))
             .ToList();
     }

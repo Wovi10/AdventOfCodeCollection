@@ -1,4 +1,6 @@
-﻿namespace AdventOfCode2023_1.Models.Day07;
+﻿using UtilsCSharp;
+
+namespace AdventOfCode2023_1.Models.Day07;
 
 public enum Card2
 {
@@ -39,19 +41,7 @@ public static class Card2Extensions
             _ => throw new Exception()
         };
     }
-    
+
     public static bool? IsHigherThan(this Card2 card1, Card2 card2)
-    {
-        if ((int) card1 > (int) card2)
-        {
-            return true;
-        }
-
-        if ((int) card1 < (int) card2)
-        {
-            return false;
-        }
-
-        return null;
-    }
+        => MathUtils.IsGreaterThan((int)card1, (int)card2);
 }

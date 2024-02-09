@@ -67,7 +67,7 @@ public class Day08 : DayBase
     }
 
     #endregion
-    
+
     #region Part 2
 
     private long StartSteppingPart2()
@@ -82,10 +82,11 @@ public class Day08 : DayBase
     {
         var currentNode = startingNode;
         var counter = 0;
-        while(!currentNode.IsEnd()){
+        while (!currentNode.IsEnd())
+        {
             var isLeft = _instructions[counter++ % _instructions.Count];
             currentNode = isLeft
-                ? _nodes.First(node => currentNode.LeftNodeName == node.Name) 
+                ? _nodes.First(node => currentNode.LeftNodeName == node.Name)
                 : _nodes.First(node => currentNode.RightNodeName == node.Name);
         }
 

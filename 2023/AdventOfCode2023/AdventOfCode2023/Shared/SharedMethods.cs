@@ -2,7 +2,7 @@
 
 public static class SharedMethods
 {
-    public static void WriteBeginText(string day, string title) 
+    public static void WriteBeginText(string day, string title)
         => Console.WriteLine($"Starting day {day} challenge: {title}");
 
     public static void AnswerPart(object result)
@@ -27,12 +27,12 @@ public static class SharedMethods
         var percentage = (int)(progress * 100);
         WritePercentage(percentage);
     }
-    
+
     private static long? _previousPercentage;
 
     private static void WritePercentage(int percentage)
     {
-        if (_previousPercentage == percentage) 
+        if (_previousPercentage == percentage)
             return;
         _previousPercentage = percentage;
 
@@ -40,10 +40,10 @@ public static class SharedMethods
 
         var spaces = new string(Convert.ToChar(Constants.Space), 10 - percentageDec);
         var percentageString = new string(Convert.ToChar(Constants.HashTag), percentageDec);
-        
+
         Console.Write($"{Constants.LineReturn}[{percentageString}{spaces}] {percentage:D2}%");
     }
-    
+
     private static List<string> SplitInputFile(string inputFile)
     {
         return inputFile.Split(Constants.LineSeparator).ToList();

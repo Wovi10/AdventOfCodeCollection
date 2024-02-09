@@ -4,12 +4,12 @@ public class Coordinates
 {
     public Coordinates(int xCoordinate, int yCoordinate)
     {
-        XCoordinate = xCoordinate;
-        YCoordinate = yCoordinate;
+        _xCoordinate = xCoordinate;
+        _yCoordinate = yCoordinate;
     }
 
-    public readonly int XCoordinate;
-    public readonly int YCoordinate;
+    private readonly int _xCoordinate;
+    private readonly int _yCoordinate;
 
     public override bool Equals(object? obj)
     {
@@ -19,18 +19,18 @@ public class Coordinates
         return false;
     }
 
-    protected bool Equals(Coordinates other)
+    public bool Equals(Coordinates other)
     {
-        return XCoordinate == other.XCoordinate && YCoordinate == other.YCoordinate;
+        return _xCoordinate == other._xCoordinate && _yCoordinate == other._yCoordinate;
     }
 
     public override int GetHashCode()
     {
-        return HashCode.Combine(XCoordinate, YCoordinate);
+        return HashCode.Combine(_xCoordinate, _yCoordinate);
     }
 
     public override string ToString()
     {
-        return $"({XCoordinate},{YCoordinate})";
+        return $"({_xCoordinate},{_yCoordinate})";
     }
 }

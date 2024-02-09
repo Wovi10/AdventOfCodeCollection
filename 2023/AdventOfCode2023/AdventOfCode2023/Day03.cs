@@ -3,7 +3,7 @@ using AdventOfCode2023_1.Shared;
 
 namespace AdventOfCode2023_1;
 
-public class Day03: DayBase
+public class Day03 : DayBase
 {
     protected override void PartOne()
     {
@@ -18,6 +18,7 @@ public class Day03: DayBase
     }
 
     # region Part 1
+
     private static int GetSumPartNumbers()
     {
         return GetPartNumbers().Sum();
@@ -113,9 +114,11 @@ public class Day03: DayBase
 
         return symbolIndices;
     }
+
     # endregion
-    
+
     # region Part 2
+
     private static int GetSumGearRatios()
     {
         return GetGearRatios().Sum();
@@ -139,14 +142,17 @@ public class Day03: DayBase
             if (engineSymbol.Symbol != gearSymbol)
                 continue;
 
-            var previousLineNumbers = engineNumbers.Where(engineNumber => engineNumber.RowIndex == engineSymbol.RowIndex - 1).ToList();
+            var previousLineNumbers = engineNumbers
+                .Where(engineNumber => engineNumber.RowIndex == engineSymbol.RowIndex - 1).ToList();
             CheckLine(previousLineNumbers, engineSymbol);
-            var ownLineNumbers = engineNumbers.Where(engineNumber => engineNumber.RowIndex == engineSymbol.RowIndex).ToList();
+            var ownLineNumbers = engineNumbers.Where(engineNumber => engineNumber.RowIndex == engineSymbol.RowIndex)
+                .ToList();
             CheckLine(ownLineNumbers, engineSymbol);
-            var nextLineNumbers = engineNumbers.Where(engineNumber => engineNumber.RowIndex == engineSymbol.RowIndex + 1).ToList();
+            var nextLineNumbers = engineNumbers
+                .Where(engineNumber => engineNumber.RowIndex == engineSymbol.RowIndex + 1).ToList();
             CheckLine(nextLineNumbers, engineSymbol);
 
-            engineSymbol.IsGear = engineSymbol.AdjacentPartNumbers is {Count: >= 2};
+            engineSymbol.IsGear = engineSymbol.AdjacentPartNumbers is { Count: >= 2 };
 
             if (!engineSymbol.IsGear) continue;
             engineSymbol.GearRatio = engineSymbol.GetGearRatio();
@@ -174,12 +180,14 @@ public class Day03: DayBase
                     if (engineSymbol.AdjacentPartNumbers != null)
                         engineSymbol.AdjacentPartNumbers.Add(ownLineNumbers);
                     else
-                        engineSymbol.AdjacentPartNumbers = new List<EngineNumber> {ownLineNumbers};
+                        engineSymbol.AdjacentPartNumbers = new List<EngineNumber> { ownLineNumbers };
                     break;
                 }
+
                 counter++;
             } while (counter <= ownLineNumbers.NumberLength);
         }
     }
+
     # endregion
 }
