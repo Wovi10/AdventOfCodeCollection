@@ -57,4 +57,46 @@ public class Tile
             DistanceFromStart = currentDistance;
         DistanceFromStart = MathUtil.GetLowest(currentDistance, DistanceFromStart);
     }
+    
+    public bool TileIsCoupled(Tile? adjacentTile)
+    {
+        return adjacentTile != null 
+               && (NorthIsCoupled(adjacentTile) ||
+                   EastIsCoupled(adjacentTile) ||
+                   SouthIsCoupled(adjacentTile)||
+                   WestIsCoupled(adjacentTile));
+    }
+
+    private bool NorthIsCoupled(Tile adjacentTile)
+    {
+        return IsCoupled(adjacentTile, Direction.North);
+    }
+
+    private bool EastIsCoupled(Tile adjacentTile)
+    {
+        return IsCoupled(adjacentTile, Direction.East);
+    }
+
+    private bool SouthIsCoupled(Tile adjacentTile)
+    {
+        return IsCoupled(adjacentTile, Direction.South);
+    }
+    private bool WestIsCoupled(Tile adjacentTile)
+    {
+        return IsCoupled(adjacentTile, Direction.West);
+    }
+    
+    private bool IsCoupled(Tile adjacentTile, Direction direction)
+    {
+        var coordinates = Coordinates;
+
+        return direction switch
+        {
+            Direction.North => NorthTile != null && Equals(adjacentTile.SouthTile, coordinates),
+            Direction.East => EastTile != null && Equals(adjacentTile.WestTile, coordinates),
+            Direction.South => SouthTile != null && Equals(adjacentTile.NorthTile, coordinates),
+            Direction.West => WestTile != null && Equals(adjacentTile.EastTile, coordinates),
+            _ => throw new ArgumentException("Invalid direction.")
+        };
+    }
 }

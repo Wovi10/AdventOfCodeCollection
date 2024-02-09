@@ -16,10 +16,10 @@ public class Day10 : DayBase
         throw new NotImplementedException();
     }
 
-    private int CalculateFurthestDistanceFromStart()
+    private static int CalculateFurthestDistanceFromStart()
     {
         var maze = new Maze(Input);
-        var loopLength = maze.TileDictionary.Count;
-        return loopLength/2 - 1;
+        var loopLength = maze.GetLoopLength();
+        return (loopLength - 1) / 2;
     }
 }

@@ -8,10 +8,13 @@ public class Maze
     {
         BuildTileDictionary(inputLines);
         CalculateAdjacentTiles();
-        FilterNoneLoopPipes();
+        // FilterNoneLoopPipes(); // Still leaves small loops that can coexist with the main loop
+        FilterNoneMainLoopPipes(); // Removes small loops that coexist with the main loop
+        PrintMaze();
     }
 
-    public Dictionary<Coordinates, Tile> TileDictionary = new();
+    private Dictionary<Coordinates, Tile> _tileDictionary = new();
+    private readonly Dictionary<Coordinates, Tile> _mainLoopTileDictionary = new();
     private int _mazeWidth;
     private int _mazeLength;
 
@@ -28,14 +31,14 @@ public class Maze
                 var tile = new Tile(tileChar, mazeLineCounter, tileCounter, _mazeWidth, _mazeLength);
                 if(tile.TileType == TileType.Ground)
                     continue;
-                TileDictionary.Add(tile.Coordinates, tile);
+                _tileDictionary.Add(tile.Coordinates, tile);
             }
         }
     }
 
     private void CalculateAdjacentTiles()
     {
-        foreach (var (_, tile) in TileDictionary)
+        foreach (var (_, tile) in _tileDictionary)
         {
             switch (tile.TileType)
             {
@@ -86,7 +89,7 @@ public class Maze
                 continue;
             tile.TileType = TileType.Ground;
         }
-        TileDictionary = TileDictionary.Where(t => t.Value.TileType != TileType.Ground).ToDictionary();
+        _tileDictionary = _tileDictionary.Where(t => t.Value.TileType != TileType.Ground).ToDictionary();
     }
 
     private void AddNorthTile(Tile tile)
@@ -94,7 +97,7 @@ public class Maze
         var northTileCoords = tile.NorthTile;
         if (northTileCoords == null) 
             return;
-        var northTile = TileDictionary.FirstOrDefault(t => t.Key.Equals(northTileCoords)).Value;
+        var northTile = _tileDictionary.FirstOrDefault(t => t.Key.Equals(northTileCoords)).Value;
         if (northTile == null)
             return;
 
@@ -108,7 +111,7 @@ public class Maze
         var eastTileCoords = tile.EastTile;
         if (eastTileCoords == null) 
             return;
-        var eastTile = TileDictionary.FirstOrDefault(t => t.Key.Equals(eastTileCoords)).Value;
+        var eastTile = _tileDictionary.FirstOrDefault(t => t.Key.Equals(eastTileCoords)).Value;
         if (eastTile == null)
             return;
 
@@ -122,7 +125,7 @@ public class Maze
         var southTileCoords = tile.SouthTile;
         if (southTileCoords == null) 
             return;
-        var southTile = TileDictionary.FirstOrDefault(t => t.Key.Equals(southTileCoords)).Value;
+        var southTile = _tileDictionary.FirstOrDefault(t => t.Key.Equals(southTileCoords)).Value;
         if (southTile == null)
             return;
 
@@ -136,7 +139,7 @@ public class Maze
         var westTileCoords = tile.WestTile;
         if (westTileCoords == null) 
             return;
-        var westTile = TileDictionary.FirstOrDefault(t => t.Key.Equals(westTileCoords)).Value;
+        var westTile = _tileDictionary.FirstOrDefault(t => t.Key.Equals(westTileCoords)).Value;
         if (westTile == null)
             return;
 
@@ -147,58 +150,69 @@ public class Maze
 
     private void FilterNoneLoopPipes()
     {
-        foreach (var (_, tile) in TileDictionary)
+        var somethingChanged = false;
+        foreach (var (_, tile) in _tileDictionary)
         {
             if (tile.TileType == TileType.StartingPosition)
                 continue;
-            var firstAdjacentTile = TileDictionary.FirstOrDefault(t => t.Key.Equals(tile.AdjacentTiles[0])).Value;
-            var secondAdjacentTile = TileDictionary.FirstOrDefault(t => t.Key.Equals(tile.AdjacentTiles[1])).Value;
+            var firstAdjacentTile = _tileDictionary.FirstOrDefault(t => t.Key.Equals(tile.AdjacentTiles[0])).Value;
+            var secondAdjacentTile = _tileDictionary.FirstOrDefault(t => t.Key.Equals(tile.AdjacentTiles[1])).Value;
 
-            if (!TilesAreCoupled(tile, firstAdjacentTile) || !TilesAreCoupled(tile, secondAdjacentTile))
-                tile.TileType = TileType.Ground;
+            if (tile.TileIsCoupled(firstAdjacentTile) && tile.TileIsCoupled(secondAdjacentTile)) 
+                continue;
+            tile.TileType = TileType.Ground;
+            somethingChanged = true;
         }
-        TileDictionary = TileDictionary.Where(t => t.Value.TileType != TileType.Ground).ToDictionary();
+        _tileDictionary = _tileDictionary.Where(t => t.Value.TileType != TileType.Ground).ToDictionary();
+        if (somethingChanged)
+            FilterNoneLoopPipes();
     }
 
-    private static bool TilesAreCoupled(Tile tile, Tile? adjacentTile)
+    private void FilterNoneMainLoopPipes()
     {
-        return adjacentTile != null 
-               && (NorthIsCoupled(tile, adjacentTile) ||
-                   EastIsCoupled(tile, adjacentTile) ||
-                   SouthIsCoupled(tile, adjacentTile)||
-                   WestIsCoupled(tile, adjacentTile));
-    }
-
-    private static bool NorthIsCoupled(Tile tile, Tile adjacentTile)
-    {
-        return IsCoupled(tile, adjacentTile, Direction.North);
-    }
-
-    private static bool EastIsCoupled(Tile tile, Tile adjacentTile)
-    {
-        return IsCoupled(tile, adjacentTile, Direction.East);
-    }
-
-    private static bool SouthIsCoupled(Tile tile, Tile adjacentTile)
-    {
-        return IsCoupled(tile, adjacentTile, Direction.South);
-    }
-    private static bool WestIsCoupled(Tile tile, Tile adjacentTile)
-    {
-        return IsCoupled(tile, adjacentTile, Direction.West);
-    }
-    
-    private static bool IsCoupled(Tile tile, Tile adjacentTile, Direction direction)
-    {
-        var coordinates = tile.Coordinates;
-
-        return direction switch
+        var firstTile = _tileDictionary.First(kvp => kvp.Value.TileType == TileType.StartingPosition).Value;
+        _mainLoopTileDictionary.Add(firstTile.Coordinates, firstTile);
+        var currentTile = firstTile;
+        while (true)
         {
-            Direction.North => tile.NorthTile != null && Equals(adjacentTile.SouthTile, coordinates),
-            Direction.East => tile.EastTile != null && Equals(adjacentTile.WestTile, coordinates),
-            Direction.South => tile.SouthTile != null && Equals(adjacentTile.NorthTile, coordinates),
-            Direction.West => tile.WestTile != null && Equals(adjacentTile.EastTile, coordinates),
-            _ => throw new ArgumentException("Invalid direction.")
-        };
+            var nextTile = _tileDictionary.First(t => t.Key.Equals(currentTile.AdjacentTiles[0])).Value;
+            if(_mainLoopTileDictionary.ContainsKey(nextTile.Coordinates))
+            {
+                nextTile = _tileDictionary.First(t => t.Key.Equals(currentTile.AdjacentTiles[1])).Value;
+                if (_mainLoopTileDictionary.ContainsKey(nextTile.Coordinates))
+                    break;
+            }
+
+            _mainLoopTileDictionary.Add(nextTile.Coordinates, nextTile);
+
+            currentTile = nextTile;
+        }
+    }
+
+    private void PrintMaze()
+    {
+        for (var i = 0; i < _mazeLength; i++)
+        {
+            for (var j = 0; j < _mazeWidth; j++)
+            {
+                var coordToPrint = new Coordinates(j, i);
+                var tile = _mainLoopTileDictionary.FirstOrDefault(t => t.Key.Equals(coordToPrint)).Value;
+                var tileTypeChar = tile?.TileType.ToChar() ?? TileType.Ground.ToChar();
+
+                if (tile == null)
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                }
+
+                Console.Write(tileTypeChar);
+                Console.ResetColor();
+            }
+            Console.WriteLine();
+        }
+    }
+
+    public int GetLoopLength()
+    {
+        return _mainLoopTileDictionary.Count;
     }
 }
