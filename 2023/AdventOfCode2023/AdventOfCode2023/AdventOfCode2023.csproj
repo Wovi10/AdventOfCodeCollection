@@ -7,4 +7,10 @@
         <Nullable>enable</Nullable>
         <RootNamespace>AdventOfCode2023_1</RootNamespace>
     </PropertyGroup>
+
+    <ItemGroup>
+      <Reference Include="UtilsCSharp">
+        <HintPath>..\..\..\..\UtilsCSharp\UtilsCSharp\bin\Debug\net8.0\UtilsCSharp.dll</HintPath>
+      </Reference>
+    </ItemGroup>
 </Project>

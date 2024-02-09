@@ -1,5 +1,6 @@
 ﻿using AdventOfCode2023_1.Models.Day08;
 using AdventOfCode2023_1.Shared;
+using UtilsCSharp;
 
 namespace AdventOfCode2023_1;
 
@@ -74,7 +75,7 @@ public class Day08 : DayBase
         var startingNodes = _nodes.Where(node => node.IsStart()).ToList();
         return startingNodes
             .Select(CalculateNumberOfSteps)
-            .Aggregate(1L, (current, counter) => MathUtil.Lcm(current, counter));
+            .Aggregate(1L, (current, counter) => MathUtils.Lcm(current, counter));
     }
 
     private int CalculateNumberOfSteps(Node startingNode)

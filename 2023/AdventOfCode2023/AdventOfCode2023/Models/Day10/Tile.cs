@@ -1,4 +1,4 @@
-﻿using AdventOfCode2023_1.Shared;
+﻿using UtilsCSharp;
 
 namespace AdventOfCode2023_1.Models.Day10;
 
@@ -55,7 +55,7 @@ public class Tile
     {
         if (DistanceFromStart == 0)
             DistanceFromStart = currentDistance;
-        DistanceFromStart = MathUtil.GetLowest(currentDistance, DistanceFromStart);
+        DistanceFromStart = MathUtils.GetLowest(currentDistance, DistanceFromStart);
     }
     
     public bool TileIsCoupled(Tile? adjacentTile)

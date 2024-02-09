@@ -1,4 +1,5 @@
 ﻿using AdventOfCode2023_1.Shared;
+using UtilsCSharp;
 
 namespace AdventOfCode2023_1.Models.Day10;
 
@@ -187,6 +188,8 @@ public class Maze
 
             currentTile = nextTile;
         }
+
+        var hallo = MathUtils.Add(1, 2);
     }
 
     private void PrintMaze()
