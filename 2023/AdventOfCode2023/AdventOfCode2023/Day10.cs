@@ -20,6 +20,6 @@ public class Day10 : DayBase
     {
         var maze = new Maze(Input);
         var loopLength = maze.GetLoopLength();
-        return (loopLength - 1) / 2;
+        return loopLength / 2;
     }
 }

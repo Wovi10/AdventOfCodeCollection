@@ -7,7 +7,7 @@ public class Maze
         BuildTileDictionary(inputLines);
         CalculateAdjacentTiles();
         FilterNoneMainLoopPipes();
-        PrintMaze();
+        // PrintMaze();
     }
 
     private Dictionary<Coordinates, Tile> _tileDictionary = new();
@@ -40,40 +40,28 @@ public class Maze
             switch (tile.TileType)
             {
                 case TileType.NorthSouth:
-                    AddNorthTile(tile);
-                    AddSouthTile(tile);
-                    tile.EastTile = null;
-                    tile.WestTile = null;
+                    tile.AddNorthTile(_tileDictionary);
+                    tile.AddSouthTile(_tileDictionary);
                     break;
                 case TileType.EastWest:
-                    AddEastTile(tile);
-                    AddWestTile(tile);
-                    tile.NorthTile = null;
-                    tile.SouthTile = null;
+                    tile.AddEastTile(_tileDictionary);
+                    tile.AddWestTile(_tileDictionary);
                     break;
                 case TileType.NorthEast:
-                    AddNorthTile(tile);
-                    AddEastTile(tile);
-                    tile.SouthTile = null;
-                    tile.WestTile = null;
+                    tile.AddNorthTile(_tileDictionary);
+                    tile.AddEastTile(_tileDictionary);
                     break;
                 case TileType.NorthWest:
-                    AddNorthTile(tile);
-                    AddWestTile(tile);
-                    tile.SouthTile = null;
-                    tile.EastTile = null;
+                    tile.AddNorthTile(_tileDictionary);
+                    tile.AddWestTile(_tileDictionary);
                     break;
                 case TileType.SouthWest:
-                    AddSouthTile(tile);
-                    AddWestTile(tile);
-                    tile.NorthTile = null;
-                    tile.EastTile = null;
+                    tile.AddSouthTile(_tileDictionary);
+                    tile.AddWestTile(_tileDictionary);
                     break;
                 case TileType.SouthEast:
-                    AddEastTile(tile);
-                    AddSouthTile(tile);
-                    tile.NorthTile = null;
-                    tile.WestTile = null;
+                    tile.AddEastTile(_tileDictionary);
+                    tile.AddSouthTile(_tileDictionary);
                     break;
                 case TileType.StartingPosition:
                     break;
@@ -88,62 +76,6 @@ public class Maze
         }
 
         _tileDictionary = _tileDictionary.Where(t => t.Value.TileType != TileType.Ground).ToDictionary();
-    }
-
-    private void AddNorthTile(Tile tile)
-    {
-        var northTileCoords = tile.NorthTile;
-        if (northTileCoords == null)
-            return;
-        var northTile = _tileDictionary.FirstOrDefault(t => t.Key.Equals(northTileCoords)).Value;
-        if (northTile == null)
-            return;
-
-        tile.AddAdjacentTile(northTile.Coordinates);
-        if (northTile.TileType == TileType.StartingPosition)
-            northTile.AddAdjacentTile(tile.Coordinates);
-    }
-
-    private void AddEastTile(Tile tile)
-    {
-        var eastTileCoords = tile.EastTile;
-        if (eastTileCoords == null)
-            return;
-        var eastTile = _tileDictionary.FirstOrDefault(t => t.Key.Equals(eastTileCoords)).Value;
-        if (eastTile == null)
-            return;
-
-        tile.AddAdjacentTile(eastTile.Coordinates);
-        if (eastTile.TileType == TileType.StartingPosition)
-            eastTile.AddAdjacentTile(tile.Coordinates);
-    }
-
-    private void AddSouthTile(Tile tile)
-    {
-        var southTileCoords = tile.SouthTile;
-        if (southTileCoords == null)
-            return;
-        var southTile = _tileDictionary.FirstOrDefault(t => t.Key.Equals(southTileCoords)).Value;
-        if (southTile == null)
-            return;
-
-        tile.AddAdjacentTile(southTile.Coordinates);
-        if (southTile.TileType == TileType.StartingPosition)
-            southTile.AddAdjacentTile(tile.Coordinates);
-    }
-
-    private void AddWestTile(Tile tile)
-    {
-        var westTileCoords = tile.WestTile;
-        if (westTileCoords == null)
-            return;
-        var westTile = _tileDictionary.FirstOrDefault(t => t.Key.Equals(westTileCoords)).Value;
-        if (westTile == null)
-            return;
-
-        tile.AddAdjacentTile(westTile.Coordinates);
-        if (westTile.TileType == TileType.StartingPosition)
-            westTile.AddAdjacentTile(tile.Coordinates);
     }
 
     private void FilterNoneMainLoopPipes()
