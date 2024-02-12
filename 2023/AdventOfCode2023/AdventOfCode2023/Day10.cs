@@ -13,7 +13,8 @@ public class Day10 : DayBase
 
     protected override void PartTwo()
     {
-        throw new NotImplementedException();
+        var result = CalculateEnclosedTiles();
+        SharedMethods.AnswerPart(result);
     }
 
     private static int CalculateFurthestDistanceFromStart()
@@ -21,5 +22,11 @@ public class Day10 : DayBase
         var maze = new Maze(Input);
         var loopLength = maze.GetLoopLength();
         return loopLength / 2;
+    }
+
+    private int CalculateEnclosedTiles()
+    {
+        var maze = new Maze(Input);
+        return maze.CalculateEnclosedTiles();
     }
 }
