@@ -8,15 +8,15 @@ public class Day09 : DayBase
     protected override void PartOne()
     {
         var result = PredictValue();
-        SharedMethods.AnswerPart(1, result);
+        SharedMethods.AnswerPart(result);
     }
 
     protected override void PartTwo()
     {
         var result = PredictValue();
-        SharedMethods.AnswerPart(2, result);
+        SharedMethods.AnswerPart(result);
     }
-    
+
     private static long PredictValue()
     {
         var historySelection = GetHistorySelection();
@@ -34,11 +34,12 @@ public class Day09 : DayBase
     private static List<History> GetHistorySelection()
     {
         return Input
-            .Select(line => line
-                                    .Split(Constants.Space)
-                                    .Where(x => long.TryParse(x, out _))
-                                    .Select(long.Parse)
-                                    .ToList()
+            .Select(line =>
+                line
+                    .Split(Constants.Space)
+                    .Where(x => long.TryParse(x, out _))
+                    .Select(long.Parse)
+                    .ToList()
             )
             .Select(historyAsList => new History(historyAsList))
             .ToList();

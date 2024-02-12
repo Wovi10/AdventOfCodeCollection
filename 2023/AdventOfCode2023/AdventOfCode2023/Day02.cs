@@ -3,18 +3,18 @@ using AdventOfCode2023_1.Shared;
 
 namespace AdventOfCode2023_1;
 
-public class Day02:DayBase
+public class Day02 : DayBase
 {
     protected override void PartOne()
     {
         var result = GetListPossibleGames().Sum();
-        SharedMethods.AnswerPart(1, result);
+        SharedMethods.AnswerPart(result);
     }
 
     protected override void PartTwo()
     {
         var result = GetListPartTwoGames().Sum();
-        SharedMethods.AnswerPart(2, result);
+        SharedMethods.AnswerPart(result);
     }
 
     private static List<int> GetListPartTwoGames()

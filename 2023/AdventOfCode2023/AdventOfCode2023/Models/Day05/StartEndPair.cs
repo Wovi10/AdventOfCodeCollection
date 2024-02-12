@@ -30,7 +30,7 @@ public class StartEndPair
 
     private static List<StartEndPair> GetRidOfOverlaps(List<StartEndPair> startEndPairs)
     {
-        if (startEndPairs.Count == 0) 
+        if (startEndPairs.Count == 0)
             return startEndPairs;
 
         var result = new List<StartEndPair>();
@@ -53,6 +53,7 @@ public class StartEndPair
                 var newPair = new StartEndPair(currentPair.Start, nextPair.End);
                 currentPair = newPair;
             }
+
             result.Add(currentPair);
             currentPair = nextPair;
         }

@@ -25,6 +25,7 @@ public class Set
 
             Colours.TryAdd(key, amount);
         }
+
         return Colours;
     }
 }

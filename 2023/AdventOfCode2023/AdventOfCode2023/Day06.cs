@@ -3,24 +3,22 @@ using AdventOfCode2023_1.Shared;
 
 namespace AdventOfCode2023_1;
 
-public class Day06:DayBase
+public class Day06 : DayBase
 {
     private readonly List<Race> _races = new();
 
     protected override void PartOne()
     {
         var result = GetTotalWaysToWin();
-        SharedMethods.AnswerPart(1, result);
+        SharedMethods.AnswerPart(result);
     }
 
     protected override void PartTwo()
     {
         var result = GetTotalWaysToWin();
-        SharedMethods.AnswerPart(2, result);
+        SharedMethods.AnswerPart(result);
     }
 
-    #region Part 1
-    
     private int GetTotalWaysToWin()
     {
         ProcessFile();
@@ -35,21 +33,30 @@ public class Day06:DayBase
         for (var i = 0; i <= duration; i++)
         {
             var distance = i * (duration - i);
-            if (distance > record) 
+            if (distance > record)
                 waysToWin += 1;
         }
 
         return waysToWin;
     }
 
-    #endregion
-    
-
     private void ProcessFile()
     {
         _races.Clear();
-        var times = Input.First().Split(Constants.Space).ToList().Where(x => int.TryParse(x, out _)).Select(int.Parse).ToList();
-        var distances = Input.Last().Split(Constants.Space).ToList().Where(x => int.TryParse(x, out _)).Select(int.Parse).ToList();
+        var times = Input
+            .First()
+            .Split(Constants.Space)
+            .ToList()
+            .Where(x => int.TryParse(x, out _))
+            .Select(int.Parse)
+            .ToList();
+        var distances = Input
+            .Last()
+            .Split(Constants.Space)
+            .ToList()
+            .Where(x => int.TryParse(x, out _))
+            .Select(int.Parse)
+            .ToList();
         if (Variables.RunningPartOne)
         {
             for (var i = 0; i < times.Count; i++)

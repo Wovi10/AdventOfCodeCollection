@@ -5,13 +5,13 @@ namespace AdventOfCode2023_1;
 public abstract class DayBase
 {
     protected static List<string> Input = new();
-    
-    public void Run(string day, string title, PartsToRun partsToRun = PartsToRun.Both)
+
+    public void Run(string day, string title)
     {
         Input = SharedMethods.GetInput(day);
         SharedMethods.WriteBeginText(day, title);
         Variables.RunningPartOne = true;
-        switch (partsToRun)
+        switch (Constants.PartToRun)
         {
             case PartsToRun.Part1:
                 PartOne();
@@ -21,12 +21,14 @@ public abstract class DayBase
                 PartTwo();
                 break;
             case PartsToRun.Both:
-            default:
                 PartOne();
                 Variables.RunningPartOne = false;
                 PartTwo();
                 break;
+            default:
+                throw new ArgumentOutOfRangeException();
         }
+
         Console.WriteLine();
     }
 

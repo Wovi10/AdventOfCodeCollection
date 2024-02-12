@@ -2,11 +2,16 @@
 
 public static class SharedMethods
 {
-    public static void WriteBeginText(string day, string title) 
+    public static void WriteBeginText(string day, string title)
         => Console.WriteLine($"Starting day {day} challenge: {title}");
 
-    public static void AnswerPart(int part, object result)
-        => Console.WriteLine($"{Constants.LineReturn}Answer of part {part} is: \n{result}");
+    public static void AnswerPart(object result)
+        => Console.WriteLine($"{Constants.LineReturn}Answer of part {GetRunningPart()} is: \n{result}");
+
+    private static string GetRunningPart()
+    {
+        return Variables.RunningPartOne ? "1" : "2";
+    }
 
     public static List<string> GetInput(string day)
     {
@@ -22,12 +27,12 @@ public static class SharedMethods
         var percentage = (int)(progress * 100);
         WritePercentage(percentage);
     }
-    
+
     private static long? _previousPercentage;
 
     private static void WritePercentage(int percentage)
     {
-        if (_previousPercentage == percentage) 
+        if (_previousPercentage == percentage)
             return;
         _previousPercentage = percentage;
 
@@ -35,10 +40,10 @@ public static class SharedMethods
 
         var spaces = new string(Convert.ToChar(Constants.Space), 10 - percentageDec);
         var percentageString = new string(Convert.ToChar(Constants.HashTag), percentageDec);
-        
+
         Console.Write($"{Constants.LineReturn}[{percentageString}{spaces}] {percentage:D2}%");
     }
-    
+
     private static List<string> SplitInputFile(string inputFile)
     {
         return inputFile.Split(Constants.LineSeparator).ToList();
@@ -46,7 +51,7 @@ public static class SharedMethods
 
     private static string GetFilePath(string day)
     {
-        const string mockDay = Constants.IsMock ? "MockDay" : "Day";
-        return $"{Constants.RootInputPath}/Day{day}/{mockDay}Day{day}.in";
+        const string mock = Constants.IsMock ? "Mock" : Constants.EmptyString;
+        return $"{Constants.RootInputPath}/Day{day}/{mock}Day{day}.in";
     }
 }

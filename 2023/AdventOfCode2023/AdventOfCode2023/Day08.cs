@@ -1,5 +1,6 @@
 ﻿using AdventOfCode2023_1.Models.Day08;
 using AdventOfCode2023_1.Shared;
+using UtilsCSharp;
 
 namespace AdventOfCode2023_1;
 
@@ -12,13 +13,13 @@ public class Day08 : DayBase
     protected override void PartOne()
     {
         var result = CalculateSteps();
-        SharedMethods.AnswerPart(1, result);
+        SharedMethods.AnswerPart(result);
     }
 
     protected override void PartTwo()
     {
         var result = CalculateSteps();
-        SharedMethods.AnswerPart(2, result);
+        SharedMethods.AnswerPart(result);
     }
 
     private long CalculateSteps()
@@ -66,7 +67,7 @@ public class Day08 : DayBase
     }
 
     #endregion
-    
+
     #region Part 2
 
     private long StartSteppingPart2()
@@ -74,17 +75,18 @@ public class Day08 : DayBase
         var startingNodes = _nodes.Where(node => node.IsStart()).ToList();
         return startingNodes
             .Select(CalculateNumberOfSteps)
-            .Aggregate(1L, (current, counter) => MathUtil.Lcm(current, counter));
+            .Aggregate(1L, (current, counter) => MathUtils.Lcm(current, counter));
     }
 
     private int CalculateNumberOfSteps(Node startingNode)
     {
         var currentNode = startingNode;
         var counter = 0;
-        while(!currentNode.IsEnd()){
+        while (!currentNode.IsEnd())
+        {
             var isLeft = _instructions[counter++ % _instructions.Count];
             currentNode = isLeft
-                ? _nodes.First(node => currentNode.LeftNodeName == node.Name) 
+                ? _nodes.First(node => currentNode.LeftNodeName == node.Name)
                 : _nodes.First(node => currentNode.RightNodeName == node.Name);
         }
 

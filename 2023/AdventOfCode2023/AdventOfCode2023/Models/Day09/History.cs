@@ -15,6 +15,7 @@ public class History(List<long> sequence)
         {
             nextStepSequence.Add(_sequence[i + 1] - _sequence[i]);
         }
+
         _nextStep = new History(nextStepSequence);
         if (_nextStep._sequence.Any(x => x != 0))
         {
@@ -60,9 +61,6 @@ public class History(List<long> sequence)
             _sequence[i] = _sequence[i - 1];
         }
 
-        if (_nextStep != null)
-        {
-            _nextStep.RightShiftSequence();
-        }
+        _nextStep?.RightShiftSequence();
     }
 }

@@ -22,10 +22,9 @@ public class Game
 
     private bool IsValidGame()
     {
-        
         var inputConfig = new Dictionary<char, int>()
         {
-            {'r', 12},{'g', 13}, {'b', 14}
+            { 'r', 12 }, { 'g', 13 }, { 'b', 14 }
         };
         foreach (var (key, value) in Colours)
         {
@@ -49,7 +48,7 @@ public class Game
         return aggregate;
     }
 
-    private Dictionary<char,int> DecideColours(List<Set> sets)
+    private Dictionary<char, int> DecideColours(List<Set> sets)
     {
         Colours = new Dictionary<char, int>();
         foreach (var set in sets)

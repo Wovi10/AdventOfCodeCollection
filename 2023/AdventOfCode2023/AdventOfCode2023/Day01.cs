@@ -3,31 +3,31 @@ using AdventOfCode2023_1.Shared;
 
 namespace AdventOfCode2023_1;
 
-public class Day01:DayBase
+public class Day01 : DayBase
 {
     protected override void PartOne()
     {
         var result = GetCalibrationSum();
-        SharedMethods.AnswerPart(1, result);
+        SharedMethods.AnswerPart(result);
     }
 
     protected override void PartTwo()
     {
         var result = GetCalibrationSum(@"\d|one|two|three|four|five|six|seven|eight|nine");
-        SharedMethods.AnswerPart(2, result);
+        SharedMethods.AnswerPart(result);
     }
 
     private static int GetCalibrationSum(string regexMatch = @"\d")
     {
-        var calList = GetCalibrationList(regexMatch); 
+        var calList = GetCalibrationList(regexMatch);
         return calList.Sum();
     }
 
     private static List<int> GetCalibrationList(string regex = @"\d")
     {
         return Input
-            .Select(inputLine => new {inputLine, firstNumber = Regex.Match(inputLine, regex)})
-            .Select(t => new {t, lastNumber = Regex.Match(t.inputLine, regex, RegexOptions.RightToLeft)})
+            .Select(inputLine => new { inputLine, firstNumber = Regex.Match(inputLine, regex) })
+            .Select(t => new { t, lastNumber = Regex.Match(t.inputLine, regex, RegexOptions.RightToLeft) })
             .Select(t => ParseMatch(t.t.firstNumber.Value) * 10 + ParseMatch(t.lastNumber.Value))
             .ToList();
     }

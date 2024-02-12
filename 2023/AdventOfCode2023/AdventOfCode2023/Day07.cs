@@ -10,13 +10,13 @@ public class Day07 : DayBase
     protected override void PartOne()
     {
         var result = GetTotalWinnings();
-        SharedMethods.AnswerPart(1, result);
+        SharedMethods.AnswerPart(result);
     }
 
     protected override void PartTwo()
     {
         var result = GetTotalWinnings();
-        SharedMethods.AnswerPart(2, result);
+        SharedMethods.AnswerPart(result);
     }
 
     private int GetTotalWinnings()
@@ -36,7 +36,7 @@ public class Day07 : DayBase
             var cards = lineParts.First();
             hand.Bid = int.Parse(lineParts.Last());
 
-            foreach (var card in cards) 
+            foreach (var card in cards)
                 hand.AddCard(card);
 
             hand.SetType();
@@ -47,7 +47,7 @@ public class Day07 : DayBase
     private void CalculateWinnings()
     {
         OrderHands();
-        for (var i = 0; i < _hands.Count; i++) 
+        for (var i = 0; i < _hands.Count; i++)
             _hands[i].Winnings = _hands[i].Bid * (i + 1);
     }
 

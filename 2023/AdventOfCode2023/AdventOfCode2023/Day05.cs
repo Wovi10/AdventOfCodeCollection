@@ -21,7 +21,7 @@ public class Day05 : DayBase
     protected override void PartOne()
     {
         var result = GetLowestLocationNumber();
-        SharedMethods.AnswerPart(1, result);
+        SharedMethods.AnswerPart(result);
         EmptyLists();
     }
 
@@ -40,7 +40,7 @@ public class Day05 : DayBase
     protected override void PartTwo()
     {
         var result = GetLowestLocationNumberPart2();
-        SharedMethods.AnswerPart(2, result);
+        SharedMethods.AnswerPart(result);
     }
 
     #region Part1
@@ -181,7 +181,8 @@ public class Day05 : DayBase
 
     private static long TestLocation(long seed, List<SeedMapping> mappings)
     {
-        foreach (var seedMapping in mappings.Where(seedMapping => seedMapping.SourceStart <= seed).Where(seedMapping => seedMapping.SourceEnd >= seed))
+        foreach (var seedMapping in mappings.Where(seedMapping => seedMapping.SourceStart <= seed)
+                     .Where(seedMapping => seedMapping.SourceEnd >= seed))
         {
             return seedMapping.MapValue(seed);
         }

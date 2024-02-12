@@ -3,21 +3,22 @@ using AdventOfCode2023_1.Shared;
 
 namespace AdventOfCode2023_1;
 
-public class Day04: DayBase
+public class Day04 : DayBase
 {
     protected override void PartOne()
     {
         var result = GetSumScratchCardPoints();
-        SharedMethods.AnswerPart(1, result);
+        SharedMethods.AnswerPart(result);
     }
 
     protected override void PartTwo()
     {
         var result = GetTotalNumberCards();
-        SharedMethods.AnswerPart(2, result);
+        SharedMethods.AnswerPart(result);
     }
 
     #region Part 1
+
     private static int GetSumScratchCardPoints()
     {
         return GetScratchCardPoints().Sum();
@@ -44,15 +45,17 @@ public class Day04: DayBase
         }
 
         if (!needPoints) return scratchCards;
-        
-        foreach (var scratchCard in scratchCards) 
+
+        foreach (var scratchCard in scratchCards)
             scratchCard.CalculatePoints();
 
         return scratchCards;
     }
+
     #endregion
 
     #region Part 2
+
     private static int GetTotalNumberCards()
     {
         var scratchCards = GetScratchCards();
@@ -75,10 +78,11 @@ public class Day04: DayBase
                 var counter = scratchCard.CardId + 1;
                 if (counter > initialCount)
                     continue;
-                foreach (var scratchCardToAdjust in scratchCard.MatchingNumbers.Select(_ => scratchCards.FirstOrDefault(card => card.CardId == counter)))
+                foreach (var scratchCardToAdjust in scratchCard.MatchingNumbers.Select(_ =>
+                             scratchCards.FirstOrDefault(card => card.CardId == counter)))
                 {
                     counter++;
-                    if (scratchCardToAdjust != null) 
+                    if (scratchCardToAdjust != null)
                         scratchCardToAdjust.NumTimesToRun++;
                 }
             }
