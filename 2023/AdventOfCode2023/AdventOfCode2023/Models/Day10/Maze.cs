@@ -177,10 +177,8 @@ public class Maze
                 var tile = _mainLoopTileDictionary.FirstOrDefault(t => t.Key.Equals(coordToPrint)).Value;
                 var tileTypeChar = tile?.TileType.ToChar() ?? TileType.Ground.ToChar();
 
-                if (tile == null)
-                {
+                if (tile == null) 
                     Console.ForegroundColor = ConsoleColor.Red;
-                }
 
                 Console.Write(tileTypeChar);
                 Console.ResetColor();
