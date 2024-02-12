@@ -45,4 +45,18 @@ public static class TileTypeExtensions
             _ => throw new ArgumentOutOfRangeException(nameof(tileInput), tileInput, "Invalid tile input.")
         };
     }
+
+    public static bool IsOpposite(this TileType tileType, TileType toCompare)
+    {
+        return tileType switch
+        {
+            TileType.NorthEast => toCompare == TileType.SouthWest,
+            TileType.NorthWest => toCompare == TileType.SouthEast,
+            TileType.SouthWest => toCompare == TileType.NorthEast,
+            TileType.SouthEast => toCompare == TileType.NorthWest,
+            TileType.EastWest => true,
+            TileType.NorthSouth => true,
+            _ => throw new ArgumentOutOfRangeException(nameof(tileType), tileType, null)
+        };
+    }
 }

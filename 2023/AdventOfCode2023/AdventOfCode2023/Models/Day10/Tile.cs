@@ -5,6 +5,10 @@ public class Tile
     public Tile(char tileChar, int mazeLineCounter, int tileCounter, int mazeWidth, int mazeLength)
     {
         TileType = tileChar.ToTileType();
+        if (TileType == TileType.StartingPosition)
+        {
+            IsStartingPosition = true;
+        }
         var isTopLineAndNorth = mazeLineCounter == 0 &&
                                 TileType is TileType.NorthEast or TileType.NorthSouth or TileType.NorthWest;
         var isLeftLineAndWest = tileCounter == 0 &&
@@ -13,7 +17,7 @@ public class Tile
                                    TileType is TileType.SouthEast or TileType.SouthWest or TileType.NorthSouth;
         var isRightLineAndEast = tileCounter == mazeWidth - 1 &&
                                  TileType is TileType.EastWest or TileType.SouthEast or TileType.NorthEast;
-
+        
         var pointsOut = isTopLineAndNorth || isLeftLineAndWest || isBottomLineAndSouth || isRightLineAndEast;
         if (pointsOut) 
             TileType = TileType.Ground;
@@ -67,6 +71,7 @@ public class Tile
     public Coordinates? EastTile;
     public Coordinates? SouthTile;
     public Coordinates? WestTile;
+    public bool IsStartingPosition;
     public readonly List<Coordinates> AdjacentTiles = new();
 
     public readonly Coordinates Coordinates;
