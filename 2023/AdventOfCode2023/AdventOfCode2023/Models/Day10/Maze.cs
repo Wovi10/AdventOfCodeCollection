@@ -16,6 +16,8 @@ public class Maze
     private readonly Dictionary<Coordinates, Tile> _mainLoopTileDictionary = new();
     private int _mazeWidth;
     private int _mazeLength;
+    private const string YAxis = "y";
+    private const string XAxis = "x";
 
     private void BuildTileDictionary(List<string> inputLines)
     {
@@ -170,113 +172,82 @@ public class Maze
 
     private int CountEdgeCrossesNorth(Coordinates startCoordinates)
     {
-        var edgesCrossed = 0;
-        var xCoord = startCoordinates.GetXCoordinate();
-        var lastWasWall = false;
-        var firstInWall = TileType.Ground;
-        for (var i = startCoordinates.GetYCoordinate()-1; i >= 0; i--)
-        {
-            var coordinateToCheck = new Coordinates(xCoord, i);
-            var tileToCheck = _mainLoopTileDictionary.FirstOrDefault(t => t.Key.Equals(coordinateToCheck)).Value;
+        var startPoint = startCoordinates.GetYCoordinate() - 1;
+        const int endPoint = 0;
+        var constantCoordinatePart = startCoordinates.GetXCoordinate();
 
-            if (tileToCheck == null)
-            {
-                lastWasWall = false;
-                continue;
-            }
-
-            if (tileToCheck.TileType is TileType.NorthSouth)
-                continue;
-
-            if (tileToCheck.TileType is TileType.EastWest)
-            {
-                edgesCrossed++;
-                lastWasWall = false;
-                continue;
-            }
-
-            if (!lastWasWall)
-            {
-                edgesCrossed++;
-                firstInWall = tileToCheck.TileType;
-                lastWasWall = true;
-                continue;
-            }
-
-            if (tileToCheck.TileType.IsOpposite(firstInWall)) 
-                continue;
-            edgesCrossed--; // Just ran on top of the wall, did not cross it.
-            lastWasWall = false;
-        }
-
-        return edgesCrossed;
+        return CountEdgesCrossed(startPoint, endPoint, constantCoordinatePart, YAxis);
     }
 
     private int CountEdgeCrossesEast(Coordinates startCoordinates)
     {
-        var edgesCrossed = 0;
-        var yCoord = startCoordinates.GetYCoordinate();
-        var lastWasWall = false;
-        var firstInWall = TileType.Ground;
-        for (var i = startCoordinates.GetXCoordinate()+1; i < _mazeWidth; i++)
-        {
-            var coordinateToCheck = new Coordinates(i, yCoord);
-            var tileToCheck = _mainLoopTileDictionary.FirstOrDefault(t => t.Key.Equals(coordinateToCheck)).Value;
+        var startPoint = startCoordinates.GetXCoordinate()+1;
+        var endPoint = _mazeWidth;
+        var constantCoordinatePart = startCoordinates.GetYCoordinate();
 
-            if (tileToCheck == null)
-            {
-                lastWasWall = false;
-                continue;
-            }
-
-            if (tileToCheck.TileType is TileType.EastWest)
-                continue;
-
-            if (tileToCheck.TileType is TileType.NorthSouth)
-            {
-                edgesCrossed++;
-                lastWasWall = false;
-                continue;
-            }
-
-            if (!lastWasWall)
-            {
-                edgesCrossed++;
-                firstInWall = tileToCheck.TileType;
-                lastWasWall = true;
-                continue;
-            }
-
-            if (tileToCheck.TileType.IsOpposite(firstInWall)) 
-                continue;
-            edgesCrossed--; // Just ran on top of the wall, did not cross it.
-            lastWasWall = false;
-        }
-
-        return edgesCrossed;
+        return CountEdgesCrossed(startPoint, endPoint, constantCoordinatePart, XAxis);
     }
 
     private int CountEdgeCrossesSouth(Coordinates startCoordinates)
     {
+        var startPoint = startCoordinates.GetYCoordinate()+1;
+        var endPoint = _mazeLength;
+        var constantCoordinatePart = startCoordinates.GetXCoordinate();
+
+        return CountEdgesCrossed(startPoint, endPoint, constantCoordinatePart, YAxis);
+    }
+
+    private int CountEdgeCrossesWest(Coordinates startCoordinates)
+    {
+        var startPoint = startCoordinates.GetXCoordinate()-1;
+        const int endPoint = 0;
+        var constantCoordinatePart = startCoordinates.GetYCoordinate();
+
+        return CountEdgesCrossed(startPoint, endPoint, constantCoordinatePart, XAxis);
+    }
+
+    private int CountEdgesCrossed(int startPoint, int endPoint, int constantCoordinatePart, string workingAxis)
+    {
+        var isOnYAxis = workingAxis == YAxis;
         var edgesCrossed = 0;
-        var xCoord = startCoordinates.GetXCoordinate();
+        TileType tileTypeToSkip;
+        TileType tileTypeToCheck;
+        switch (isOnYAxis)
+        {
+            case true:
+                tileTypeToSkip = TileType.NorthSouth;
+                tileTypeToCheck = TileType.EastWest;
+                break;
+            case false:
+                tileTypeToSkip = TileType.EastWest;
+                tileTypeToCheck = TileType.NorthSouth;
+                break;
+        }
+
         var lastWasWall = false;
         var firstInWall = TileType.Ground;
-        for (var i = startCoordinates.GetYCoordinate()+1; i < _mazeLength; i++)
+        var decrement = endPoint == 0;
+        for (var i = startPoint; ShouldStop(i, endPoint);)
         {
-            var coordinateToCheck = new Coordinates(xCoord, i);
+            var coordinateToCheck = isOnYAxis
+                                        ? new Coordinates(constantCoordinatePart, i)
+                                        : new Coordinates(i, constantCoordinatePart);
+
+            if (decrement) i--; 
+            else i++;
+
             var tileToCheck = _mainLoopTileDictionary.FirstOrDefault(t => t.Key.Equals(coordinateToCheck)).Value;
-            
+
             if (tileToCheck == null)
             {
                 lastWasWall = false;
                 continue;
             }
 
-            if (tileToCheck.TileType is TileType.NorthSouth)
+            if (tileToCheck.TileType == tileTypeToSkip)
                 continue;
 
-            if (tileToCheck.TileType is TileType.EastWest)
+            if (tileToCheck.TileType == tileTypeToCheck)
             {
                 edgesCrossed++;
                 lastWasWall = false;
@@ -300,48 +271,9 @@ public class Maze
         return edgesCrossed;
     }
 
-    private int CountEdgeCrossesWest(Coordinates startCoordinates)
+    private static bool ShouldStop(int index, int endPoint)
     {
-        var edgesCrossed = 0;
-        var yCoord = startCoordinates.GetYCoordinate();
-        var lastWasWall = false;
-        var firstInWall = TileType.Ground;
-        for (var i = startCoordinates.GetXCoordinate()-1; i >= 0; i--)
-        {
-            var coordinateToCheck = new Coordinates(i, yCoord);
-            var tileToCheck = _mainLoopTileDictionary.FirstOrDefault(t => t.Key.Equals(coordinateToCheck)).Value;
-            
-            if (tileToCheck == null)
-            {
-                lastWasWall = false;
-                continue;
-            }
-
-            if (tileToCheck.TileType is TileType.EastWest)
-                continue;
-
-            if (tileToCheck.TileType is TileType.NorthSouth)
-            {
-                edgesCrossed++;
-                lastWasWall = false;
-                continue;
-            }
-
-            if (!lastWasWall)
-            {
-                edgesCrossed++;
-                firstInWall = tileToCheck.TileType;
-                lastWasWall = true;
-                continue;
-            }
-
-            if (tileToCheck.TileType.IsOpposite(firstInWall)) 
-                continue;
-            edgesCrossed--; // Just ran on top of the wall, did not cross it.
-            lastWasWall = false;
-        }
-
-        return edgesCrossed;
+        return endPoint == 0 ? index >= endPoint : index < endPoint;
     }
 
     private Direction FindClosestEdge(Coordinates coordinates)
