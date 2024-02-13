@@ -11,6 +11,12 @@ public class Coordinates
     private readonly int _xCoordinate;
     private readonly int _yCoordinate;
 
+    public int GetYCoordinate()
+        => _yCoordinate;
+
+    public int GetXCoordinate()
+        => _xCoordinate;
+    
     public override bool Equals(object? obj)
     {
         if (obj is Coordinates coordinates)

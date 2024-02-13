@@ -5,6 +5,10 @@ public class Tile
     public Tile(char tileChar, int mazeLineCounter, int tileCounter, int mazeWidth, int mazeLength)
     {
         TileType = tileChar.ToTileType();
+        if (TileType == TileType.StartingPosition)
+        {
+            IsStartingPosition = true;
+        }
         var isTopLineAndNorth = mazeLineCounter == 0 &&
                                 TileType is TileType.NorthEast or TileType.NorthSouth or TileType.NorthWest;
         var isLeftLineAndWest = tileCounter == 0 &&
@@ -13,7 +17,7 @@ public class Tile
                                    TileType is TileType.SouthEast or TileType.SouthWest or TileType.NorthSouth;
         var isRightLineAndEast = tileCounter == mazeWidth - 1 &&
                                  TileType is TileType.EastWest or TileType.SouthEast or TileType.NorthEast;
-
+        
         var pointsOut = isTopLineAndNorth || isLeftLineAndWest || isBottomLineAndSouth || isRightLineAndEast;
         if (pointsOut) 
             TileType = TileType.Ground;
@@ -67,6 +71,7 @@ public class Tile
     public Coordinates? EastTile;
     public Coordinates? SouthTile;
     public Coordinates? WestTile;
+    public bool IsStartingPosition;
     public readonly List<Coordinates> AdjacentTiles = new();
 
     public readonly Coordinates Coordinates;
@@ -92,8 +97,11 @@ public static class TileExtensions
             return;
 
         tile.AddAdjacentTile(northTile.Coordinates);
-        if (northTile.TileType == TileType.StartingPosition)
-            northTile.AddAdjacentTile(tile.Coordinates);
+
+        if (northTile.TileType != TileType.StartingPosition) 
+            return;
+        northTile.AddAdjacentTile(tile.Coordinates);
+        northTile.SouthTile = tile.Coordinates;
     }
     
     public static void AddEastTile(this Tile tile, Dictionary<Coordinates,Tile> tileDictionary)
@@ -106,8 +114,11 @@ public static class TileExtensions
             return;
 
         tile.AddAdjacentTile(eastTile.Coordinates);
-        if (eastTile.TileType == TileType.StartingPosition)
-            eastTile.AddAdjacentTile(tile.Coordinates);
+
+        if (eastTile.TileType != TileType.StartingPosition) 
+            return;
+        eastTile.AddAdjacentTile(tile.Coordinates);
+        eastTile.WestTile = tile.Coordinates;
     }
     
     public static void AddSouthTile(this Tile tile, Dictionary<Coordinates, Tile> tileDictionary)
@@ -120,8 +131,11 @@ public static class TileExtensions
             return;
 
         tile.AddAdjacentTile(southTile.Coordinates);
-        if (southTile.TileType == TileType.StartingPosition)
-            southTile.AddAdjacentTile(tile.Coordinates);
+
+        if (southTile.TileType != TileType.StartingPosition) 
+            return;
+        southTile.AddAdjacentTile(tile.Coordinates);
+        southTile.NorthTile = tile.Coordinates;
     }
     
     public static void AddWestTile(this Tile tile, Dictionary<Coordinates, Tile> tileDictionary)
@@ -134,7 +148,10 @@ public static class TileExtensions
             return;
 
         tile.AddAdjacentTile(westTile.Coordinates);
-        if (westTile.TileType == TileType.StartingPosition)
-            westTile.AddAdjacentTile(tile.Coordinates);
+
+        if (westTile.TileType != TileType.StartingPosition) 
+            return;
+        westTile.AddAdjacentTile(tile.Coordinates);
+        westTile.EastTile = tile.Coordinates;
     }
 }
