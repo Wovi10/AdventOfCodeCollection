@@ -125,7 +125,7 @@ public class Maze
                 var tile = _mainLoopTileDictionary.FirstOrDefault(t => t.Key.Equals(coordToPrint)).Value;
                 var tileTypeChar = tile?.TileType.ToChar() ?? TileType.Ground.ToChar();
 
-                if (tile == null) 
+                if (tile == null)
                     Console.ForegroundColor = ConsoleColor.Red;
 
                 Console.Write(tileTypeChar);
@@ -162,7 +162,7 @@ public class Maze
                     _ => throw new ArgumentOutOfRangeException()
                 };
 
-                if (edgesCrossed % 2 != 0) 
+                if (edgesCrossed % 2 != 0)
                     enclosedTiles++;
             }
         }
@@ -181,7 +181,7 @@ public class Maze
 
     private int CountEdgeCrossesEast(Coordinates startCoordinates)
     {
-        var startPoint = startCoordinates.GetXCoordinate()+1;
+        var startPoint = startCoordinates.GetXCoordinate() + 1;
         var endPoint = _mazeWidth;
         var constantCoordinatePart = startCoordinates.GetYCoordinate();
 
@@ -190,7 +190,7 @@ public class Maze
 
     private int CountEdgeCrossesSouth(Coordinates startCoordinates)
     {
-        var startPoint = startCoordinates.GetYCoordinate()+1;
+        var startPoint = startCoordinates.GetYCoordinate() + 1;
         var endPoint = _mazeLength;
         var constantCoordinatePart = startCoordinates.GetXCoordinate();
 
@@ -199,7 +199,7 @@ public class Maze
 
     private int CountEdgeCrossesWest(Coordinates startCoordinates)
     {
-        var startPoint = startCoordinates.GetXCoordinate()-1;
+        var startPoint = startCoordinates.GetXCoordinate() - 1;
         const int endPoint = 0;
         var constantCoordinatePart = startCoordinates.GetYCoordinate();
 
@@ -210,6 +210,7 @@ public class Maze
     {
         var isOnYAxis = workingAxis == YAxis;
         var edgesCrossed = 0;
+
         TileType tileTypeToSkip;
         TileType tileTypeToCheck;
         switch (isOnYAxis)
@@ -224,48 +225,52 @@ public class Maze
                 break;
         }
 
-        var lastWasWall = false;
+        var isFirstPartOfWall = true;
         var firstInWall = TileType.Ground;
         var decrement = endPoint == 0;
+
         for (var i = startPoint; ShouldStop(i, endPoint);)
         {
             var coordinateToCheck = isOnYAxis
-                                        ? new Coordinates(constantCoordinatePart, i)
-                                        : new Coordinates(i, constantCoordinatePart);
+                ? new Coordinates(constantCoordinatePart, i)
+                : new Coordinates(i, constantCoordinatePart);
 
-            if (decrement) i--; 
+            if (decrement) i--;
             else i++;
 
             var tileToCheck = _mainLoopTileDictionary.FirstOrDefault(t => t.Key.Equals(coordinateToCheck)).Value;
 
             if (tileToCheck == null)
             {
-                lastWasWall = false;
+                isFirstPartOfWall = true;
+                continue;
+            }
+
+            if (tileToCheck.TileType == tileTypeToCheck)
+            {
+                edgesCrossed++;
+                isFirstPartOfWall = true;
+                continue;
+            }
+
+            if (isFirstPartOfWall)
+            {
+                edgesCrossed++;
+                firstInWall = tileToCheck.TileType;
+                isFirstPartOfWall = false;
                 continue;
             }
 
             if (tileToCheck.TileType == tileTypeToSkip)
                 continue;
 
-            if (tileToCheck.TileType == tileTypeToCheck)
+            if (tileToCheck.TileType.IsOpposite(firstInWall))
             {
-                edgesCrossed++;
-                lastWasWall = false;
+                isFirstPartOfWall = true;
                 continue;
             }
-
-            if (!lastWasWall)
-            {
-                edgesCrossed++;
-                firstInWall = tileToCheck.TileType;
-                lastWasWall = true;
-                continue;
-            }
-
-            if (tileToCheck.TileType.IsOpposite(firstInWall)) 
-                continue;
             edgesCrossed--; // Just ran on top of the wall, did not cross it.
-            lastWasWall = false;
+            isFirstPartOfWall = true;
         }
 
         return edgesCrossed;
