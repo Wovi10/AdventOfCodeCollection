@@ -26,7 +26,7 @@ public static class TileTypeExtensions
             TileType.SouthEast => 'F',
             TileType.Ground => '.',
             TileType.StartingPosition => 'S',
-            _ => throw new ArgumentOutOfRangeException(nameof(tileType), tileType, "Invalid tile type.")
+            _ => '.'
         };
     }
 
@@ -42,7 +42,7 @@ public static class TileTypeExtensions
             'F' => TileType.SouthEast,
             '.' => TileType.Ground,
             'S' => TileType.StartingPosition,
-            _ => throw new ArgumentOutOfRangeException(nameof(tileInput), tileInput, "Invalid tile input.")
+            _ => TileType.Ground
         };
     }
 

@@ -78,6 +78,7 @@ public class Maze
         }
 
         _tileDictionary = _tileDictionary.Where(t => t.Value.TileType != TileType.Ground).ToDictionary();
+
         var startingTile = _tileDictionary.First(t => t.Value.IsStartingPosition).Value;
         startingTile.TileType = startingTile switch
         {
@@ -187,6 +188,13 @@ public class Maze
             if (tileToCheck.TileType is TileType.NorthSouth)
                 continue;
 
+            if (tileToCheck.TileType is TileType.EastWest)
+            {
+                edgesCrossed++;
+                lastWasWall = false;
+                continue;
+            }
+
             if (!lastWasWall)
             {
                 edgesCrossed++;
@@ -195,8 +203,10 @@ public class Maze
                 continue;
             }
 
-            if (!tileToCheck.TileType.IsOpposite(firstInWall)) 
-                edgesCrossed++;
+            if (tileToCheck.TileType.IsOpposite(firstInWall)) 
+                continue;
+            edgesCrossed--; // Just ran on top of the wall, did not cross it.
+            lastWasWall = false;
         }
 
         return edgesCrossed;
@@ -222,6 +232,13 @@ public class Maze
             if (tileToCheck.TileType is TileType.EastWest)
                 continue;
 
+            if (tileToCheck.TileType is TileType.NorthSouth)
+            {
+                edgesCrossed++;
+                lastWasWall = false;
+                continue;
+            }
+
             if (!lastWasWall)
             {
                 edgesCrossed++;
@@ -230,8 +247,10 @@ public class Maze
                 continue;
             }
 
-            if (!tileToCheck.TileType.IsOpposite(firstInWall)) 
-                edgesCrossed++;
+            if (tileToCheck.TileType.IsOpposite(firstInWall)) 
+                continue;
+            edgesCrossed--; // Just ran on top of the wall, did not cross it.
+            lastWasWall = false;
         }
 
         return edgesCrossed;
@@ -257,6 +276,13 @@ public class Maze
             if (tileToCheck.TileType is TileType.NorthSouth)
                 continue;
 
+            if (tileToCheck.TileType is TileType.EastWest)
+            {
+                edgesCrossed++;
+                lastWasWall = false;
+                continue;
+            }
+
             if (!lastWasWall)
             {
                 edgesCrossed++;
@@ -265,8 +291,10 @@ public class Maze
                 continue;
             }
 
-            if (!tileToCheck.TileType.IsOpposite(firstInWall)) 
-                edgesCrossed++;
+            if (tileToCheck.TileType.IsOpposite(firstInWall)) 
+                continue;
+            edgesCrossed--; // Just ran on top of the wall, did not cross it.
+            lastWasWall = false;
         }
 
         return edgesCrossed;
@@ -292,6 +320,13 @@ public class Maze
             if (tileToCheck.TileType is TileType.EastWest)
                 continue;
 
+            if (tileToCheck.TileType is TileType.NorthSouth)
+            {
+                edgesCrossed++;
+                lastWasWall = false;
+                continue;
+            }
+
             if (!lastWasWall)
             {
                 edgesCrossed++;
@@ -300,8 +335,10 @@ public class Maze
                 continue;
             }
 
-            if (!tileToCheck.TileType.IsOpposite(firstInWall)) 
-                edgesCrossed++;
+            if (tileToCheck.TileType.IsOpposite(firstInWall)) 
+                continue;
+            edgesCrossed--; // Just ran on top of the wall, did not cross it.
+            lastWasWall = false;
         }
 
         return edgesCrossed;
