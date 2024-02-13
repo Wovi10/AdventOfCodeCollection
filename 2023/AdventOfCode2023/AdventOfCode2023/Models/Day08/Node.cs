@@ -16,12 +16,10 @@ public class Node
     public readonly string RightNodeName;
 
     public bool IsStart()
-    {
-        return (!Variables.RunningPartOne && Name.EndsWith('A')) || (Variables.RunningPartOne && Name == "AAA");
-    }
+        => (Variables.RunningPartOne && Name == "AAA") ||
+           (!Variables.RunningPartOne && Name.EndsWith('A'));
 
     public bool IsEnd()
-    {
-        return (!Variables.RunningPartOne && Name.EndsWith('Z')) || (Variables.RunningPartOne && Name == "ZZZ");
-    }
+        => (Variables.RunningPartOne && Name == "ZZZ") ||
+           (!Variables.RunningPartOne && Name.EndsWith('Z'));
 }

@@ -6,12 +6,12 @@ public abstract class DayBase
 {
     protected static List<string> Input = new();
 
-    public void Run(string day, string title)
+    public void Run(string day, string title, PartsToRun partToRun = Constants.PartToRun)
     {
         Input = SharedMethods.GetInput(day);
         SharedMethods.WriteBeginText(day, title);
         Variables.RunningPartOne = true;
-        switch (Constants.PartToRun)
+        switch (partToRun)
         {
             case PartsToRun.Part1:
                 PartOne();

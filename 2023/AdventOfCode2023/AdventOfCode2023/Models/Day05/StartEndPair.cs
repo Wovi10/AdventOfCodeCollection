@@ -16,6 +16,7 @@ public class StartEndPair
     public static List<StartEndPair> GetPairs(List<long> seedsToTest)
     {
         var result = new List<StartEndPair>();
+
         for (var i = 0; i < seedsToTest.Count; i += 2)
         {
             var start = seedsToTest[i];
@@ -23,9 +24,7 @@ public class StartEndPair
             result.Add(new StartEndPair(start, range));
         }
 
-        result = GetRidOfOverlaps(result);
-
-        return result;
+        return GetRidOfOverlaps(result);
     }
 
     private static List<StartEndPair> GetRidOfOverlaps(List<StartEndPair> startEndPairs)
@@ -43,16 +42,15 @@ public class StartEndPair
             {
                 result.Add(currentPair);
                 currentPair = nextPair;
+
                 if (i == sortedStartEndPairs.Count - 1)
                     result.Add(nextPair);
+
                 continue;
             }
 
-            if (currentPair.End < nextPair.End)
-            {
-                var newPair = new StartEndPair(currentPair.Start, nextPair.End);
-                currentPair = newPair;
-            }
+            if (currentPair.End < nextPair.End) 
+                currentPair = new StartEndPair(currentPair.Start, nextPair.End);
 
             result.Add(currentPair);
             currentPair = nextPair;

@@ -11,16 +11,14 @@ public class History(List<long> sequence)
     public void CalculateNextSequence()
     {
         var nextStepSequence = new List<long>();
-        for (var i = 0; i < _sequence.Count - 1; i++)
-        {
+
+        for (var i = 0; i < _sequence.Count - 1; i++) 
             nextStepSequence.Add(_sequence[i + 1] - _sequence[i]);
-        }
 
         _nextStep = new History(nextStepSequence);
-        if (_nextStep._sequence.Any(x => x != 0))
-        {
+
+        if (_nextStep._sequence.Any(x => x != 0)) 
             _nextStep.CalculateNextSequence();
-        }
     }
 
     public void Extrapolate()
@@ -29,27 +27,21 @@ public class History(List<long> sequence)
 
         if (Variables.RunningPartOne)
         {
-            if (_nextStep == null)
-            {
-                _sequence.Add(0);
-                AddedValue = _sequence.Last();
-                return;
-            }
+            var itemToAdd = _nextStep == null 
+                                    ? 0 
+                                    : _sequence.Last() + _nextStep._sequence.Last();
 
-            _sequence.Add(_nextStep._sequence.Last() + _sequence.Last());
+            _sequence.Add(itemToAdd);
             AddedValue = _sequence.Last();
             return;
         }
 
         RightShiftSequence();
-        if (_nextStep == null)
-        {
-            _sequence[0] = 0;
-            AddedValue = _sequence.First();
-            return;
-        }
 
-        _sequence[0] = _sequence[1] - _nextStep._sequence.First();
+        _sequence[0] = _nextStep == null 
+                        ? 0 
+                        : _sequence[1] - _nextStep._sequence.First();
+
         AddedValue = _sequence.First();
     }
 

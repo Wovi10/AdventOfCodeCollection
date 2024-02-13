@@ -22,13 +22,15 @@ public class ScratchCard
     private static List<int> ConvertToList(string inputString)
     {
         var separatedString = inputString.Split(Constants.Space).ToList();
-        return separatedString.Where(number => int.TryParse(number, out _)).Select(int.Parse).ToList();
+        return separatedString
+                .Select(number => int.TryParse(number, out var parsedNumber) ? parsedNumber: (int?)null)
+                .Where(parsedNumber => parsedNumber.HasValue)
+                .Select(parsedNumber => parsedNumber!.Value)
+                .ToList();
     }
 
     private List<int> CalculateMatchingNumbers()
-    {
-        return CardNumbers.Where(number => WinningNumbers.Contains(number)).ToList();
-    }
+        => CardNumbers.Where(number => WinningNumbers.Contains(number)).ToList();
 
     public void CalculatePoints()
     {

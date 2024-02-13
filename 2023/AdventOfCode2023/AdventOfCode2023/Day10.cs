@@ -24,7 +24,7 @@ public class Day10 : DayBase
         return loopLength / 2;
     }
 
-    private int CalculateEnclosedTiles()
+    private static int CalculateEnclosedTiles()
     {
         var maze = new Maze(Input);
         return maze.CalculateEnclosedTiles();

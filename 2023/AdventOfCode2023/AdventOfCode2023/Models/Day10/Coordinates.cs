@@ -16,7 +16,7 @@ public class Coordinates
 
     public int GetXCoordinate()
         => _xCoordinate;
-    
+
     public override bool Equals(object? obj)
     {
         if (obj is Coordinates coordinates)
@@ -26,17 +26,8 @@ public class Coordinates
     }
 
     public bool Equals(Coordinates other)
-    {
-        return _xCoordinate == other._xCoordinate && _yCoordinate == other._yCoordinate;
-    }
+        => _xCoordinate == other._xCoordinate && _yCoordinate == other._yCoordinate;
 
     public override int GetHashCode()
-    {
-        return HashCode.Combine(_xCoordinate, _yCoordinate);
-    }
-
-    public override string ToString()
-    {
-        return $"({_xCoordinate},{_yCoordinate})";
-    }
+        => HashCode.Combine(_xCoordinate, _yCoordinate);
 }

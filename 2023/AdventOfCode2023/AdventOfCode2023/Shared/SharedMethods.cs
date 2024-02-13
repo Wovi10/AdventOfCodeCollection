@@ -9,9 +9,7 @@ public static class SharedMethods
         => Console.WriteLine($"{Constants.LineReturn}Answer of part {GetRunningPart()} is: \n{result}");
 
     private static string GetRunningPart()
-    {
-        return Variables.RunningPartOne ? "1" : "2";
-    }
+        => Variables.RunningPartOne ? "1" : "2";
 
     public static List<string> GetInput(string day)
     {
@@ -34,6 +32,7 @@ public static class SharedMethods
     {
         if (_previousPercentage == percentage)
             return;
+
         _previousPercentage = percentage;
 
         var percentageDec = percentage / 10;

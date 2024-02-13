@@ -20,9 +20,7 @@ public class Day03 : DayBase
     # region Part 1
 
     private static int GetSumPartNumbers()
-    {
-        return GetPartNumbers().Sum();
-    }
+        => GetPartNumbers().Sum();
 
     private static List<int> GetPartNumbers()
     {
@@ -30,6 +28,58 @@ public class Day03 : DayBase
         var engineNumbers = DecideNumbers();
         var partNumbers = DecidePartNumbers(symbolIndices, engineNumbers);
         return partNumbers.Select(pn => pn.Number).ToList();
+    }
+
+    private static List<EngineSymbol> DecideSymbolIndices()
+    {
+        var symbolIndices = new List<EngineSymbol>();
+        for (var i = 0; i < Input.Count; i++)
+        {
+            var line = Input[i].Trim();
+            for (var j = 0; j < line.Length; j++)
+            {
+                var symbol = line[j];
+
+                if (int.TryParse(line[j].ToString(), out _) || line[j] == Constants.Dot[0]) continue;
+
+                var engineSymbol = new EngineSymbol(i, j, symbol);
+                engineSymbol.IsGear = engineSymbol.Symbol == Constants.Asterisk;
+                symbolIndices.Add(engineSymbol);
+            }
+        }
+
+        return symbolIndices;
+    }
+
+    private static List<EngineNumber> DecideNumbers()
+    {
+        var output = new List<EngineNumber>();
+        for (var i = 0; i < Input.Count; i++)
+        {
+            var line = Input[i].Trim();
+            for (var j = 0; j < line.Length; j++)
+            {
+                var symbol = line[j];
+                if (!int.TryParse(symbol.ToString(), out var number)) continue;
+                var engineNumber = new EngineNumber(i, j, 1, number);
+
+                var nextSymbol = line[j + 1];
+
+                while (j + 1 < line.Length && int.TryParse(nextSymbol.ToString(), out var nextNumber))
+                {
+                    engineNumber.NumberLength += 1;
+                    engineNumber.Number = Convert.ToInt32(engineNumber.Number + Constants.EmptyString + nextNumber);
+                    j++;
+
+                    if (j + 1 >= line.Length) continue;
+                    nextSymbol = line[j + 1];
+                }
+
+                output.Add(engineNumber);
+            }
+        }
+
+        return output;
     }
 
     private static List<EngineNumber> DecidePartNumbers(List<EngineSymbol> symbolIndices,
@@ -63,66 +113,12 @@ public class Day03 : DayBase
         return partNumbers;
     }
 
-    private static List<EngineNumber> DecideNumbers()
-    {
-        var output = new List<EngineNumber>();
-        for (var i = 0; i < Input.Count; i++)
-        {
-            var line = Input[i].Trim();
-            for (var j = 0; j < line.Length; j++)
-            {
-                var symbol = line[j];
-                if (!int.TryParse(symbol.ToString(), out var number)) continue;
-                var engineNumber = new EngineNumber(i, j, 1, number);
-
-                var nextSymbol = line[j + 1];
-
-                while (j + 1 < line.Length && int.TryParse(nextSymbol.ToString(), out var nextNumber))
-                {
-                    engineNumber.NumberLength += 1;
-                    engineNumber.Number = Convert.ToInt32(engineNumber.Number + "" + nextNumber);
-                    j++;
-                    if (j + 1 >= line.Length) continue;
-                    nextSymbol = line[j + 1];
-                }
-
-                output.Add(engineNumber);
-            }
-        }
-
-
-        return output;
-    }
-
-    private static List<EngineSymbol> DecideSymbolIndices()
-    {
-        var symbolIndices = new List<EngineSymbol>();
-        for (var i = 0; i < Input.Count; i++)
-        {
-            var line = Input[i].Trim();
-            for (var j = 0; j < line.Length; j++)
-            {
-                var symbol = line[j];
-
-                if (int.TryParse(line[j].ToString(), out _) || line[j] == '.') continue;
-
-                var engineSymbol = new EngineSymbol(i, j, symbol);
-                engineSymbol.IsGear = engineSymbol.Symbol == "*";
-                symbolIndices.Add(engineSymbol);
-            }
-        }
-
-        return symbolIndices;
-    }
-
     # endregion
 
     # region Part 2
 
     private static int GetSumGearRatios()
-    {
-        return GetGearRatios().Sum();
-    }
+        => GetGearRatios().Sum();
 
     private static List<int> GetGearRatios()
     {
@@ -138,8 +134,7 @@ public class Day03 : DayBase
         var gears = new List<EngineSymbol>();
         foreach (var engineSymbol in engineSymbols)
         {
-            const string gearSymbol = "*";
-            if (engineSymbol.Symbol != gearSymbol)
+            if (engineSymbol.Symbol != Constants.Asterisk)
                 continue;
 
             var previousLineNumbers = engineNumbers

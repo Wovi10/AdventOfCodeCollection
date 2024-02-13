@@ -14,22 +14,6 @@ public enum TileType
 
 public static class TileTypeExtensions
 {
-    public static char ToChar(this TileType tileType)
-    {
-        return tileType switch
-        {
-            TileType.NorthSouth => '|',
-            TileType.EastWest => '-',
-            TileType.NorthEast => 'L',
-            TileType.NorthWest => 'J',
-            TileType.SouthWest => '7',
-            TileType.SouthEast => 'F',
-            TileType.Ground => '.',
-            TileType.StartingPosition => 'S',
-            _ => '.'
-        };
-    }
-
     public static TileType ToTileType(this char tileInput)
     {
         return tileInput switch
@@ -56,6 +40,8 @@ public static class TileTypeExtensions
             TileType.SouthEast => toCompare == TileType.NorthWest,
             TileType.EastWest => true,
             TileType.NorthSouth => true,
+            TileType.Ground => throw new ArgumentOutOfRangeException(nameof(tileType), tileType, null),
+            TileType.StartingPosition => throw new ArgumentOutOfRangeException(nameof(tileType), tileType, null),
             _ => throw new ArgumentOutOfRangeException(nameof(tileType), tileType, null)
         };
     }

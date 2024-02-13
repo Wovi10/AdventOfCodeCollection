@@ -10,9 +10,8 @@ public class SeedMapping
     }
 
     public readonly long SourceStart;
-    private readonly long _destinationStart;
-
     public readonly long SourceEnd;
+    private readonly long _destinationStart;
 
     public long MapValue(long sourceValue)
     {

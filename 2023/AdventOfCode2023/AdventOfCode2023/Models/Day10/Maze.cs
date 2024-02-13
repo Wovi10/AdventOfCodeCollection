@@ -9,7 +9,6 @@ public class Maze
         BuildTileDictionary(inputLines);
         CalculateAdjacentTiles();
         FilterNoneMainLoopPipes();
-        // PrintMaze();
     }
 
     private Dictionary<Coordinates, Tile> _tileDictionary = new();
@@ -26,6 +25,7 @@ public class Maze
         {
             var line = inputLines[mazeLineCounter].Trim();
             _mazeWidth = _mazeWidth == 0 ? line.Length : _mazeWidth;
+
             for (var tileCounter = 0; tileCounter < line.Length; tileCounter++)
             {
                 var tileChar = line[tileCounter];
@@ -115,31 +115,8 @@ public class Maze
         }
     }
 
-    private void PrintMaze()
-    {
-        for (var i = 0; i < _mazeLength; i++)
-        {
-            for (var j = 0; j < _mazeWidth; j++)
-            {
-                var coordToPrint = new Coordinates(j, i);
-                var tile = _mainLoopTileDictionary.FirstOrDefault(t => t.Key.Equals(coordToPrint)).Value;
-                var tileTypeChar = tile?.TileType.ToChar() ?? TileType.Ground.ToChar();
-
-                if (tile == null)
-                    Console.ForegroundColor = ConsoleColor.Red;
-
-                Console.Write(tileTypeChar);
-                Console.ResetColor();
-            }
-
-            Console.WriteLine();
-        }
-    }
-
     public int GetLoopLength()
-    {
-        return _mainLoopTileDictionary.Count;
-    }
+        => _mainLoopTileDictionary.Count;
 
     public int CalculateEnclosedTiles()
     {
@@ -168,6 +145,27 @@ public class Maze
         }
 
         return enclosedTiles;
+    }
+
+    private Direction FindClosestEdge(Coordinates coordinates)
+    {
+        var distanceNorth = coordinates.GetYCoordinate();
+        var distanceEast = _mazeWidth - coordinates.GetXCoordinate();
+        var distanceSouth = _mazeLength - coordinates.GetYCoordinate();
+        var distanceWest = coordinates.GetXCoordinate();
+        var lowest = MathUtils.GetLowest(distanceNorth, distanceSouth);
+        lowest = MathUtils.GetLowest(lowest, distanceEast);
+        lowest = MathUtils.GetLowest(lowest, distanceWest);
+
+        if (lowest == distanceNorth)
+            return Direction.North;
+
+        if (lowest == distanceEast)
+            return Direction.East;
+
+        return lowest == distanceSouth
+            ? Direction.South
+            : Direction.West;
     }
 
     private int CountEdgeCrossesNorth(Coordinates startCoordinates)
@@ -269,6 +267,7 @@ public class Maze
                 isFirstPartOfWall = true;
                 continue;
             }
+
             edgesCrossed--; // Just ran on top of the wall, did not cross it.
             isFirstPartOfWall = true;
         }
@@ -277,28 +276,5 @@ public class Maze
     }
 
     private static bool ShouldStop(int index, int endPoint)
-    {
-        return endPoint == 0 ? index >= endPoint : index < endPoint;
-    }
-
-    private Direction FindClosestEdge(Coordinates coordinates)
-    {
-        var distanceNorth = coordinates.GetYCoordinate();
-        var distanceEast = _mazeWidth - coordinates.GetXCoordinate();
-        var distanceSouth = _mazeLength - coordinates.GetYCoordinate();
-        var distanceWest = coordinates.GetXCoordinate();
-        var lowest = MathUtils.GetLowest(distanceNorth, distanceSouth);
-        lowest = MathUtils.GetLowest(lowest, distanceEast);
-        lowest = MathUtils.GetLowest(lowest, distanceWest);
-
-        if (lowest == distanceNorth)
-            return Direction.North;
-
-        if (lowest == distanceEast)
-            return Direction.East;
-
-        return lowest == distanceSouth
-            ? Direction.South
-            : Direction.West;
-    }
+        =>endPoint == 0 ? index >= endPoint : index < endPoint;
 }
