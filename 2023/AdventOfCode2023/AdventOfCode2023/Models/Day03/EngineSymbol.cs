@@ -10,7 +10,7 @@ public class EngineSymbol(int rowIndex, int columnIndex, char symbol)
     public int GearRatio { get; set; }
 
     internal int GetGearRatio()
-    {
-        return AdjacentPartNumbers?.Aggregate(1, (current, partNumber) => current * partNumber.Number) ?? 0;
-    }
+        => AdjacentPartNumbers?
+            .Aggregate(1, (current, partNumber) => current * partNumber.Number)
+           ?? 0;
 }

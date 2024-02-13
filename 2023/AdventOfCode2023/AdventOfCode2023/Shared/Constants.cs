@@ -2,8 +2,10 @@
 
 public static class Constants
 {
+    public const string Asterisk = "*";
     public const string Colon = ":";
     public const string Comma = ",";
+    public const string Dot = ".";
     public const string EmptyString = "";
     public const string HashTag = "#";
     public const string LineReturn = "\r";
@@ -12,10 +14,9 @@ public static class Constants
     public const string RootInputPath = "../../../../Input";
     public const string SemiColon = ";";
     public const string Space = " ";
-    public const string Tab = "\t";
 
     public const bool IsDebug = true;
-    public const bool IsMock = false;
+    public const bool IsMock = true;
 
-    public const PartsToRun PartToRun = PartsToRun.Part2;
+    public const PartsToRun PartToRun = PartsToRun.Part1;
 }

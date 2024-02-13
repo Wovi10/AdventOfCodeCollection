@@ -44,7 +44,7 @@ public class Game
     private int CalculatePower()
     {
         var values = Colours.Select(colour => colour.Value);
-        var aggregate = values.Aggregate((value1, value2) => value1 * value2);
+        var aggregate = values.Aggregate((colourValue1, colourValue2) => colourValue1 * colourValue2);
         return aggregate;
     }
 
@@ -53,12 +53,12 @@ public class Game
         Colours = new Dictionary<char, int>();
         foreach (var set in sets)
         {
-            foreach (var (key, value) in set.Colours)
+            foreach (var (key, colourInt) in set.Colours)
             {
-                if (!Colours.ContainsKey(key))
-                    Colours.Add(key, value);
-                else if (Colours[key] < value)
-                    Colours[key] = value;
+                if (!Colours.TryGetValue(key, out var value))
+                    Colours.Add(key, colourInt);
+                else if (value < colourInt)
+                        Colours[key] = colourInt;
             }
         }
 

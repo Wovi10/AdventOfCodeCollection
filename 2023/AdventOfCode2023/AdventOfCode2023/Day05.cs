@@ -181,8 +181,9 @@ public class Day05 : DayBase
 
     private static long TestLocation(long seed, List<SeedMapping> mappings)
     {
-        foreach (var seedMapping in mappings.Where(seedMapping => seedMapping.SourceStart <= seed)
-                     .Where(seedMapping => seedMapping.SourceEnd >= seed))
+        foreach (var seedMapping in mappings
+                                        .Where(seedMapping => seedMapping.SourceStart <= seed)
+                                        .Where(seedMapping => seedMapping.SourceEnd >= seed))
         {
             return seedMapping.MapValue(seed);
         }

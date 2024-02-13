@@ -82,8 +82,10 @@ public class Hand(int bid) : IComparable<Hand>
     {
         if (hand2 == null)
             return 1;
+
         if (_type.IsHigherThan(hand2._type) == true)
             return 1;
+
         if (_type.IsHigherThan(hand2._type) == false)
             return -1;
 
@@ -104,10 +106,12 @@ public class Hand(int bid) : IComparable<Hand>
 
         var cards2Count = _cards2.Count;
         var hand2Cards2 = hand2._cards2;
+
         for (var i = 0; i < cards2Count; i++)
         {
             if (_cards2[i].IsHigherThan(hand2Cards2[i]) == true)
                 return 1;
+
             if (_cards2[i].IsHigherThan(hand2Cards2[i]) == false)
                 return -1;
         }
