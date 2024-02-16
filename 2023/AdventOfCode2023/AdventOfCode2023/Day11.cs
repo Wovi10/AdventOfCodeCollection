@@ -41,7 +41,7 @@ public class Day11 : DayBase
             _lineLength = _lineLength == 0 ? line.Length : _lineLength;
             foreach (var character in line)
             {
-                if (character == Constants.HashTag[0]) 
+                if (character == Constants.HashTag.First())
                     _galaxies.Add(new Galaxy(characterCounter, lineCounter));
                 characterCounter++;
             }
@@ -80,7 +80,7 @@ public class Day11 : DayBase
             var isEmpty = true;
             foreach (var line in Input)
             {
-                isEmpty = line[i] != Constants.HashTag[0];
+                isEmpty = line[i] != Constants.HashTag.First();
                 if (!isEmpty)
                     break;
             }
