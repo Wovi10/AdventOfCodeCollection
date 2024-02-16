@@ -15,13 +15,15 @@ public class Day11 : DayBase
 
     protected override void PartTwo()
     {
-        throw new NotImplementedException();
+        var result = GetSumOfShortestPaths();
+        SharedMethods.AnswerPart(result);
     }
 
     private long GetSumOfShortestPaths()
     {
         _universe = new Universe(Input);
-        _universe.Enlarge();
+        var enlargementFactor = Variables.RunningPartOne ? 1 : 1000000;
+        _universe.Enlarge(enlargementFactor);
         var galaxyPairs = _universe.GetGalaxyPairs();
         foreach (var galaxyPair in galaxyPairs)
         {

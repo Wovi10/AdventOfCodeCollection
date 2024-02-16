@@ -2,7 +2,7 @@
 
 public class GalaxyPair
 {
-    public int ManhattanDistance;
+    public long ManhattanDistance;
     private readonly Galaxy _galaxy1;
     private readonly Galaxy _galaxy2;
 
