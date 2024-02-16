@@ -2,17 +2,19 @@
 
 public class GalaxyPair
 {
-    public GalaxyPair(Galaxy galaxy1, Galaxy galaxy2)
+    public int ManhattanDistance;
+    private readonly Galaxy _galaxy1;
+    private readonly Galaxy _galaxy2;
+
+    public GalaxyPair(Galaxy galaxy, Galaxy galaxy2)
     {
-        Galaxy1 = galaxy1;
-        Galaxy2 = galaxy2;
+        _galaxy1 = galaxy;
+        _galaxy2 = galaxy2;
     }
 
-    public Galaxy Galaxy1 { get; set; }
-    public Galaxy Galaxy2 { get; set; }
-    
-    public int GetManhattanDistance()
+    public void SetManhattanDistance()
     {
-        return Math.Abs(Galaxy1.XCoordinate - Galaxy2.XCoordinate) + Math.Abs(Galaxy1.YCoordinate - Galaxy2.YCoordinate);
+        ManhattanDistance = Math.Abs(_galaxy1.XCoordinate - _galaxy2.XCoordinate) +
+                             Math.Abs(_galaxy1.YCoordinate - _galaxy2.YCoordinate);
     }
 }
