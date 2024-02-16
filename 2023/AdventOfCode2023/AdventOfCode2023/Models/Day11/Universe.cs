@@ -48,16 +48,20 @@ public class Universe
         return galaxyPairs;
     }
 
-    public void Enlarge()
+    public void Enlarge(int enlargementFactor = 1)
     {
+        if (enlargementFactor != 1) 
+            enlargementFactor--;
+
         var emptyColumns = GetEmptyColumns();
         var emptyRows = GetEmptyRows();
 
         foreach (var galaxy in _galaxies)
         {
-            galaxy.XAfterEnlargement += emptyColumns.Count(emptyColumn => galaxy.XCoordinate > emptyColumn);
-            galaxy.YAfterEnlargement += emptyRows.Count(emptyRow => galaxy.YCoordinate > emptyRow);
-            
+            galaxy.XAfterEnlargement +=
+                (emptyColumns.Count(emptyColumn => galaxy.XCoordinate > emptyColumn) * enlargementFactor);
+            galaxy.YAfterEnlargement += emptyRows.Count(emptyRow => galaxy.YCoordinate > emptyRow) * enlargementFactor;
+
             galaxy.XCoordinate = galaxy.XAfterEnlargement;
             galaxy.YCoordinate = galaxy.YAfterEnlargement;
         }
