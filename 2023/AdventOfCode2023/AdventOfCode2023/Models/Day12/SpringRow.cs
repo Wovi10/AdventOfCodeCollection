@@ -32,6 +32,12 @@ public class SpringRow
     public void SetPossibleArrangements()
     {
         var possibleArrangements = 0;
+        var continuousDamagedWithSpaces = (ContinuousDamagedSprings.Count - 1) + ContinuousDamagedSprings.Sum();
+        if (continuousDamagedWithSpaces == Springs.Count)
+        {
+            PossibleArrangements = 1;
+            return;
+        }
         
     }
 }
