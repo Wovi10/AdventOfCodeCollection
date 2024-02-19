@@ -38,5 +38,15 @@ public class SpringRow
             PossibleArrangements = 1;
             return;
         }
+        
+        // Run over all indices and check for possible arrangements
+        // You can stop earlier if the required length is longer than the remaining springs
+        // You know this if the remaining springs are less than the remaining continuous damaged springs + a space for each one of them - 1
+        // On this index, check for the possible combinations of the number of continuous damaged springs
+        // Go over each of these indices and check for the next possible arrangements
+        // The next possible arrangements can be checked as of the current index + the number of continuous damaged springs + 2 (You have to include a space)
+        // Do this for all the continuous damaged springs until you reach the end of that list
+        // Then go on to the next index and do the same
+        // You can only add 1 to PossibleArrangements if you reach the end of the ContinuousDamagedSprings list
     }
 }
