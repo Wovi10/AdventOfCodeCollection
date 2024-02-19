@@ -38,6 +38,5 @@ public class SpringRow
             PossibleArrangements = 1;
             return;
         }
-        
     }
 }

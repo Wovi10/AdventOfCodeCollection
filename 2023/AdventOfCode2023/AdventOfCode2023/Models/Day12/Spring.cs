@@ -8,4 +8,26 @@ public class Spring
     }
 
     public SpringState State { get; set; }
+    
+    public static implicit operator bool(Spring spring)
+    {
+        return spring.State == SpringState.Operational;
+    }
+
+    public bool IsOperational()
+    {
+        return State == SpringState.Operational;
+    }
+
+    public bool IsPossible(int lengthToCheck, List<Spring> springs, int currentIndex)
+    {
+        lengthToCheck--;
+        if (IsOperational())
+            return false;
+
+        if (lengthToCheck == 0)
+            return true;
+
+        return springs[currentIndex].IsPossible(lengthToCheck, springs, currentIndex + 1);
+    }
 }
