@@ -21,9 +21,10 @@ public class Spring
 
     public bool IsPossible(int lengthToCheck, List<Spring> springs, int currentIndex)
     {
-        lengthToCheck--;
         if (IsOperational())
             return false;
+
+        lengthToCheck--;
 
         if (lengthToCheck == 0)
             return true;
