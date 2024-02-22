@@ -21,7 +21,15 @@ public class Spring
 
     public bool IsPossible(int lengthToCheck, List<Spring> springs, int currentIndex)
     {
-        if (IsOperational())
+        if (currentIndex + lengthToCheck > springs.Count)
+            return false;
+
+        var currentSpring = springs.ElementAtOrDefault(currentIndex);
+
+        if (currentSpring == null)
+            return false;
+
+        if (currentSpring.IsOperational())
             return false;
 
         lengthToCheck--;
@@ -29,6 +37,11 @@ public class Spring
         if (lengthToCheck == 0)
             return true;
 
-        return springs[currentIndex].IsPossible(lengthToCheck, springs, currentIndex + 1);
+        return currentSpring.IsPossible(lengthToCheck, springs, currentIndex + 1);
+    }
+
+    public bool IsDamaged()
+    {
+        return State == SpringState.Damaged;
     }
 }
