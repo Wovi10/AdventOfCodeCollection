@@ -12,4 +12,5 @@ using AdventOfCode2023_1;
 // new Day08().Run("08", "Haunted Wasteland");
 // new Day09().Run("09", "Mirage Maintenance");
 // new Day10().Run("10", "Pipe Maze");
-new Day11().Run("11", "Cosmic Expansion");
+// new Day11().Run("11", "Cosmic Expansion");
+new Day12().Run("12", "Hot Springs");
