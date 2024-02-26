@@ -16,6 +16,7 @@ public class SpringRow
     }
 
     public List<Spring> Springs { get; set; }
+    private List<int> DamagedSpringsIndices => Springs.Select((spring, index) => (spring, index)).Where(spring => spring.spring.IsDamaged()).Select(spring => spring.index).ToList();
     public List<int> ContinuousDamagedSprings { get; set; }
     public int PossibleArrangements { get; set; }
     private List<List<int>> PossibleArrangementsPerLength = new();
@@ -59,8 +60,14 @@ public class SpringRow
         for (var i = 0; i < combinations.Count; i++)
         {
             var combination = combinations[i];
-
-            // Sort combination, if the sorted combination is not equal to the original combination, remove combination from combinations
+            
+            if (!ContainsAllContinuousDamagedSprings(combination))
+            {
+                combinations.RemoveAt(i);
+                i--;
+                continue;
+            }
+            
             if (!IsSorted(combination))
             {
                 combinations.RemoveAt(i);
@@ -80,12 +87,7 @@ public class SpringRow
                     break;
                 }
 
-                var indexAfterLength = currentIndex + ContinuousDamagedSprings[j];
-                var previousSpringIsDamaged = currentIndex > 0 && Springs[currentIndex - 1].IsDamaged();
-                var nextSpringIsDamaged = indexAfterLength < Springs.Count && Springs[indexAfterLength].IsDamaged();
-                var nextIndexOverlaps = currentIndex + ContinuousDamagedSprings[j] >= nextIndex;
-
-                if (previousSpringIsDamaged || nextSpringIsDamaged || nextIndexOverlaps)
+                if (ContainsOverlappingDamagedSprings(currentIndex, nextIndex, ContinuousDamagedSprings[j]))
                 {
                     combinations.RemoveAt(i);
                     i--;
@@ -93,6 +95,38 @@ public class SpringRow
                 }
             }
         }
+    }
+
+    private bool ContainsAllContinuousDamagedSprings(List<int> combination)
+    {
+        return DamagedSpringsIndices.All(damagedSpringIndex => DamagedSpringIndexIsUsed(combination, damagedSpringIndex));
+    }
+
+    private bool DamagedSpringIndexIsUsed(List<int> combination, int damagedSpringIndex)
+    {
+        for (var i = 0; i < combination.Count; i++)
+        {
+            var currentIndex = combination[i];
+            var currentRequiredLength = ContinuousDamagedSprings[i];
+            for (var checkingIndex = currentIndex; checkingIndex < currentIndex + currentRequiredLength; checkingIndex++)
+            {
+                if (damagedSpringIndex == checkingIndex)
+                    return true;
+            }
+        }
+
+        return false;
+    }
+
+    private bool ContainsOverlappingDamagedSprings(int currentIndex, int nextIndex, int requiredLength)
+    {
+        var indexAfterLength = currentIndex + requiredLength;
+
+        var previousSpringIsDamaged = currentIndex > 0 && Springs[currentIndex - 1].IsDamaged();
+        var nextSpringIsDamaged = indexAfterLength < Springs.Count && Springs[indexAfterLength].IsDamaged();
+        var nextIndexOverlaps = currentIndex + requiredLength >= nextIndex;
+
+        return previousSpringIsDamaged || nextSpringIsDamaged || nextIndexOverlaps || currentIndex + requiredLength >= nextIndex;
     }
 
     private static bool IsSorted(List<int> combination)
@@ -119,6 +153,9 @@ public class SpringRow
 
         foreach (var number in lists[index])
         {
+            if (currentCombination.Count != 0 && number <= currentCombination[^1] + 1)
+                continue;
+
             currentCombination.Add(number);
             GenerateCombinationsHelper(lists, index + 1, currentCombination, combinations);
             currentCombination.RemoveAt(currentCombination.Count - 1);
