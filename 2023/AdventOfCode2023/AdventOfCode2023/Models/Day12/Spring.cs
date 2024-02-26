@@ -7,19 +7,19 @@ public class Spring
         State = stateChar.ToSpringState();
     }
 
-    public SpringState State { get; set; }
+    private SpringState State { get; }
     
     public static implicit operator bool(Spring spring)
     {
         return spring.State == SpringState.Operational;
     }
 
-    public bool IsOperational()
+    private bool IsOperational()
     {
         return State == SpringState.Operational;
     }
 
-    public bool IsPossible(int lengthToCheck, List<Spring> springs, int currentIndex)
+    public static bool IsPossible(int lengthToCheck, List<Spring> springs, int currentIndex)
     {
         if (currentIndex + lengthToCheck > springs.Count)
             return false;
@@ -34,10 +34,7 @@ public class Spring
 
         lengthToCheck--;
 
-        if (lengthToCheck == 0)
-            return true;
-
-        return currentSpring.IsPossible(lengthToCheck, springs, currentIndex + 1);
+        return lengthToCheck == 0 || IsPossible(lengthToCheck, springs, currentIndex + 1);
     }
 
     public bool IsDamaged()

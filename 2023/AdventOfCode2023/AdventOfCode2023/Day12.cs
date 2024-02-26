@@ -16,16 +16,15 @@ public class Day12 : DayBase
         throw new NotImplementedException();
     }
 
-    private int GetSumDifferentArrangementCount()
+    private static int GetSumDifferentArrangementCount()
     {
         var springRows = GetSpringRows();
         springRows.ForEach(springRow => springRow.SetPossibleArrangements());
-        
-        
+
         return springRows.Sum(springRow => springRow.PossibleArrangements);
     }
 
-    private List<SpringRow> GetSpringRows()
+    private static List<SpringRow> GetSpringRows()
     {
         return Input.Select(line => new SpringRow(line)).ToList();
     }
