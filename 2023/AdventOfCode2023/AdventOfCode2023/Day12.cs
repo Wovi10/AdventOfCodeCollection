@@ -13,19 +13,21 @@ public class Day12 : DayBase
 
     protected override void PartTwo()
     {
-        throw new NotImplementedException();
+        var result = GetSumDifferentArrangementCount();
+        SharedMethods.AnswerPart(result);
     }
 
-    private static int GetSumDifferentArrangementCount()
+    private static long GetSumDifferentArrangementCount()
     {
         var springRows = GetSpringRows();
-        springRows.ForEach(springRow => springRow.SetPossibleArrangements());
 
-        return springRows.Sum(springRow => springRow.PossibleArrangements);
+        return springRows.Select(springRow =>
+        {
+            Console.Write($"{Constants.LineReturn}Running row {springRows.IndexOf(springRow)+1} of {springRows.Count}");
+            return springRow.GetPossibleArrangements();
+        }).Sum();
     }
 
     private static List<SpringRow> GetSpringRows()
-    {
-        return Input.Select(line => new SpringRow(line)).ToList();
-    }
+        => Input.Select(line => new SpringRow(line)).ToList();
 }

@@ -26,10 +26,7 @@ public class Spring
 
         var currentSpring = springs.ElementAtOrDefault(currentIndex);
 
-        if (currentSpring == null)
-            return false;
-
-        if (currentSpring.IsOperational())
+        if (currentSpring == null || currentSpring.IsOperational())
             return false;
 
         lengthToCheck--;

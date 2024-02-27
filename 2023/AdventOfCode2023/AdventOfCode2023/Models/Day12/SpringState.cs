@@ -19,4 +19,15 @@ public static class SpringStateExtensions
             _ => throw new ArgumentOutOfRangeException(nameof(stateChar), stateChar, null)
         };
     }
+    
+    public static char ToChar(this SpringState state)
+    {
+        return state switch
+        {
+            SpringState.Operational => '.',
+            SpringState.Damaged => '#',
+            SpringState.Unknown => '?',
+            _ => throw new ArgumentOutOfRangeException(nameof(state), state, null)
+        };
+    }
 }

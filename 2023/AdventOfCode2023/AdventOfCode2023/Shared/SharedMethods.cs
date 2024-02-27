@@ -21,9 +21,33 @@ public static class SharedMethods
 
     public static void WritePercentage(long current, long max)
     {
-        var progress = (double)current / max;
-        var percentage = (int)(progress * 100);
+        var progress = (double) current / max;
+        var percentage = (int) (progress * 100);
         WritePercentage(percentage);
+    }
+
+    public static void WritePermille(long current, long max)
+    {
+        var progress = (double) current / max;
+        var promille = (int) (progress * 1000);
+        WritePermille(promille);
+    }
+
+    private static long? _previousPermille;
+
+    private static void WritePermille(int permille)
+    {
+        if (_previousPermille == permille)
+            return;
+
+        _previousPermille = permille;
+
+        var promilleDec = permille / 100;
+
+        var spaces = new string(Convert.ToChar(Constants.Space), 100 - promilleDec);
+        var promilleString = new string(Convert.ToChar(Constants.HashTag), promilleDec);
+
+        Console.Write($"{Constants.LineReturn}[{promilleString}{spaces}] {permille:D3}‰");
     }
 
     private static long? _previousPercentage;

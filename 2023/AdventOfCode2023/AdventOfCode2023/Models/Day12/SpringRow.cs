@@ -1,4 +1,5 @@
-﻿using AdventOfCode2023_1.Shared;
+﻿using System.Reflection.Metadata.Ecma335;
+using AdventOfCode2023_1.Shared;
 
 namespace AdventOfCode2023_1.Models.Day12;
 
@@ -9,136 +10,166 @@ public class SpringRow
         var splitInput = input.Split(Constants.Space);
 
         var springsFromInput = splitInput.First();
-        Springs = SetSprings(springsFromInput);
-        DamagedSpringsIndices = SetDamagedSpringsIndices();
+        SetSprings(springsFromInput);
+        SetDamagedSpringsIndices();
 
         var arrangementsFromInput = splitInput.Last();
-        ContinuousDamagedSprings = SetContinuousArrangements(arrangementsFromInput);
+        SetContinuousArrangements(arrangementsFromInput);
+        _continuousDamagedWithSpaces = _continuousDamagedSprings.Count - 1 + _continuousDamagedSprings.Sum();
     }
 
-    private List<Spring> Springs { get; }
-    private List<int> DamagedSpringsIndices { get; }
-    private List<int> ContinuousDamagedSprings { get; }
-    public int PossibleArrangements { get; private set; }
+    private readonly List<Spring> _springs = [];
+    private readonly List<int> _damagedSpringsIndices = [];
+    private readonly List<int> _continuousDamagedSprings = [];
+    private long _possibleArrangements = 0;
     private readonly List<List<int>> _possibleArrangementsPerLength = [];
-    private List<List<int>> _allPossibleArrangements = [];
+    private readonly int _continuousDamagedWithSpaces = 0;
 
-    private static List<Spring> SetSprings(string springsFromInput)
+    private void SetSprings(string springsFromInput)
     {
-        return springsFromInput.Select(spring => new Spring(spring)).ToList();
-    }
-
-    private List<int> SetDamagedSpringsIndices()
-    {
-        return Springs
-                .Select((spring, index) => (spring, index))
-                .Where(spring => spring.spring.IsDamaged())
-                .Select(spring => spring.index)
-                .ToList();
-    }
-
-    private static List<int> SetContinuousArrangements(string arrangementsFromInput)
-    {
-        return arrangementsFromInput.Split(Constants.Comma).Select(int.Parse).ToList();
-    }
-
-    public void SetPossibleArrangements()
-    {
-        var continuousDamagedWithSpaces = ContinuousDamagedSprings.Count - 1 + ContinuousDamagedSprings.Sum();
-        if (continuousDamagedWithSpaces == Springs.Count)
+        if (Variables.RunningPartOne)
         {
-            PossibleArrangements = 1;
+            foreach (var spring in springsFromInput) 
+                _springs.Add(new Spring(spring));
+
             return;
         }
 
+        for (var i = 0; i < 5; i++)
+        {
+            _springs.AddRange(springsFromInput.Select(spring => new Spring(spring)));
+            _springs.Add(new Spring(SpringState.Unknown.ToChar()));
+        }
+
+        _springs.RemoveAt(_springs.Count - 1);
+    }
+
+    private void SetDamagedSpringsIndices()
+    {
+        for (var i = 0; i < _springs.Count; i++)
+        {
+            if (_springs[i].IsDamaged()) 
+                _damagedSpringsIndices.Add(i);
+        }
+    }
+
+    private void SetContinuousArrangements(string arrangementsFromInput)
+    {
+        if (Variables.RunningPartOne)
+        {
+            _continuousDamagedSprings.AddRange(arrangementsFromInput.Split(Constants.Comma).Select(int.Parse));
+            return;
+        }
+
+        for (var i = 0; i < 5; i++)
+            _continuousDamagedSprings.AddRange(arrangementsFromInput.Split(Constants.Comma).Select(int.Parse));
+    }
+
+    public long GetPossibleArrangements()
+    {
+        if (_continuousDamagedWithSpaces == _springs.Count)
+        {
+            _possibleArrangements = 1;
+            return _possibleArrangements;
+        }
+
         GetPossibleIndicesForLength();
-        GenerateAllCombinations(_possibleArrangementsPerLength);
-        PossibleArrangements = _allPossibleArrangements.Count;
+        CountCombinationsHelper(_possibleArrangementsPerLength, 0, []);
+        return _possibleArrangements;
     }
 
     private void GetPossibleIndicesForLength()
     {
-        foreach (var lengthToCheck in ContinuousDamagedSprings)
+        var continuousCounter = 0;
+        foreach (var lengthToCheck in _continuousDamagedSprings)
         {
+            var usedContinuousDamagedSprings = _continuousDamagedSprings.Take(continuousCounter).ToList();
+            var usedContinuousDamagedWithSpaces = usedContinuousDamagedSprings.Count != 0 
+                            ? usedContinuousDamagedSprings.Sum() + usedContinuousDamagedSprings.Count
+                            : 0;
+            if (continuousCounter == _continuousDamagedSprings.Count)
+                usedContinuousDamagedWithSpaces--;
+
+            var neededLength = _continuousDamagedWithSpaces - usedContinuousDamagedWithSpaces;
+
             var possibility = new List<int>();
 
-            for (var i = 0; i < Springs.Count; i++)
+            for (var i = usedContinuousDamagedWithSpaces; i < _springs.Count; i++)
             {
-                if (Spring.IsPossible(lengthToCheck, Springs, i))
+                if (_springs.Count < i + neededLength)
+                    break;
+
+                if (Spring.IsPossible(lengthToCheck, _springs, i))
                     possibility.Add(i);
             }
 
             _possibleArrangementsPerLength.Add(possibility);
+            continuousCounter++;
         }
     }
 
-    private void GenerateAllCombinations(List<List<int>> lists)
-    {
-        var combinations = new List<List<int>>();
-        GenerateCombinationsHelper(lists, 0, [], combinations);
-        FilterImpossibleCombinations(combinations);
-        _allPossibleArrangements = combinations;
-    }
-
-    private static void GenerateCombinationsHelper(List<List<int>> lists, int index, List<int> currentCombination, List<List<int>> combinations)
+    private void CountCombinationsHelper(List<List<int>> lists, int index, List<int> currentCombination)
     {
         if (index == lists.Count)
         {
-            combinations.Add([..currentCombination]);
+            if (CombinationIsPossible(currentCombination))
+                _possibleArrangements++;
+
             return;
         }
 
         foreach (var number in lists[index])
         {
-            if (currentCombination.Count != 0 && number <= currentCombination[^1] + 1)
+            if (currentCombination.Count == 0 && _springs.Count - index < _continuousDamagedWithSpaces)
+                break;
+
+            if (currentCombination.Count != 0 && (number <= currentCombination[^1] + 1 ||
+                                                  number <= currentCombination[^1] +
+                                                  _continuousDamagedSprings[index - 1]))
+                continue;
+
+            var nextSpringIsDamaged = number + _continuousDamagedSprings[index] < _springs.Count &&
+                                      _springs[number + _continuousDamagedSprings[index]].IsDamaged();
+            if (nextSpringIsDamaged)
                 continue;
 
             currentCombination.Add(number);
-            GenerateCombinationsHelper(lists, index + 1, currentCombination, combinations);
+            CountCombinationsHelper(lists, index + 1, currentCombination);
             currentCombination.RemoveAt(currentCombination.Count - 1);
         }
     }
 
-    private void FilterImpossibleCombinations(List<List<int>> combinations)
+    private bool CombinationIsPossible(List<int> combination)
     {
-        for (var i = 0; i < combinations.Count; i++)
+        if (!ContainsAllContinuousDamagedSprings(combination))
+            return false;
+
+        for (var j = 0; j < combination.Count - 1; j++)
         {
-            var combination = combinations[i];
+            var currentIndex = combination[j];
+            var nextIndex = combination[j + 1];
 
-            if (!ContainsAllContinuousDamagedSprings(combination))
-            {
-                combinations.RemoveAt(i);
-                i--;
+            if (!ContainsOverlappingDamagedSprings(currentIndex, nextIndex, _continuousDamagedSprings[j]))
                 continue;
-            }
 
-            for (var j = 0; j < combination.Count - 1; j++)
-            {
-                var currentIndex = combination[j];
-                var nextIndex = combination[j + 1];
-
-                if (!ContainsOverlappingDamagedSprings(currentIndex, nextIndex, ContinuousDamagedSprings[j])) 
-                    continue;
-
-                combinations.RemoveAt(i);
-                i--;
-                break;
-            }
+            return false;
         }
+
+        return true;
     }
 
     private bool ContainsAllContinuousDamagedSprings(List<int> combination)
-    {
-        return DamagedSpringsIndices.All(damagedSpringIndex => DamagedSpringIndexIsUsed(combination, damagedSpringIndex));
-    }
+        => _damagedSpringsIndices.All(damagedSpringIndex => DamagedSpringIndexIsUsed(combination, damagedSpringIndex));
 
     private bool DamagedSpringIndexIsUsed(List<int> combination, int damagedSpringIndex)
     {
         for (var i = 0; i < combination.Count; i++)
         {
             var currentIndex = combination[i];
-            var currentRequiredLength = ContinuousDamagedSprings[i];
-            for (var checkingIndex = currentIndex; checkingIndex < currentIndex + currentRequiredLength; checkingIndex++)
+            var currentRequiredLength = _continuousDamagedSprings[i];
+            for (var checkingIndex = currentIndex;
+                 checkingIndex < currentIndex + currentRequiredLength;
+                 checkingIndex++)
             {
                 if (damagedSpringIndex == checkingIndex)
                     return true;
@@ -153,10 +184,11 @@ public class SpringRow
         var indexAfterLength = currentIndex + requiredLength;
 
         var hasSpace = currentIndex + 1 >= nextIndex;
-        var previousSpringIsDamaged = currentIndex > 0 && Springs[currentIndex - 1].IsDamaged();
-        var nextSpringIsDamaged = indexAfterLength < Springs.Count && Springs[indexAfterLength].IsDamaged();
+        var previousSpringIsDamaged = currentIndex > 0 && _springs[currentIndex - 1].IsDamaged();
+        var nextSpringIsDamaged = indexAfterLength < _springs.Count && _springs[indexAfterLength].IsDamaged();
         var nextIndexOverlaps = currentIndex + requiredLength >= nextIndex;
 
-        return hasSpace || previousSpringIsDamaged || nextSpringIsDamaged || nextIndexOverlaps || currentIndex + requiredLength >= nextIndex;
+        return hasSpace || previousSpringIsDamaged || nextSpringIsDamaged || nextIndexOverlaps ||
+               currentIndex + requiredLength >= nextIndex;
     }
 }
