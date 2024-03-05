@@ -1,5 +1,4 @@
-﻿using System.Reflection.Metadata.Ecma335;
-using AdventOfCode2023_1.Shared;
+﻿using AdventOfCode2023_1.Shared;
 
 namespace AdventOfCode2023_1.Models.Day12;
 
@@ -99,7 +98,11 @@ public class SpringRow
                 if (_springs.Count < i + neededLength)
                     break;
 
-                if (Spring.IsPossible(lengthToCheck, _springs, i))
+                var previousSpring = _springs.ElementAtOrDefault(i - 1);
+                var currentSpring = _springs[i];
+                var lastInLength = _springs.ElementAtOrDefault(i + neededLength - 1);
+
+                if (lastInLength != null && Spring.IsPossible(previousSpring, currentSpring, lastInLength))
                     possibility.Add(i);
             }
 

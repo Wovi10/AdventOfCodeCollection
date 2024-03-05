@@ -21,17 +21,30 @@ public class Spring
 
     public static bool IsPossible(int lengthToCheck, List<Spring> springs, int currentIndex)
     {
-        if (currentIndex + lengthToCheck > springs.Count)
+        var nextOperationalIndex = springs.FindIndex(currentIndex, spring => spring.IsOperational());
+        var hasEnoughSpace = nextOperationalIndex - currentIndex >= lengthToCheck;
+
+        if (!hasEnoughSpace)
             return false;
 
-        var currentSpring = springs.ElementAtOrDefault(currentIndex);
+        var previousWasDamaged = springs.ElementAtOrDefault(currentIndex - 1)?.IsDamaged() ?? false;
 
-        if (currentSpring == null || currentSpring.IsOperational())
+        if (previousWasDamaged)
             return false;
 
-        lengthToCheck--;
+        var lastSpringInLength = springs.ElementAtOrDefault(currentIndex + lengthToCheck - 1);
+        var lastSpringInLengthIsDamaged = lastSpringInLength?.IsDamaged() ?? false;
 
-        return lengthToCheck == 0 || IsPossible(lengthToCheck, springs, currentIndex + 1);
+        return !lastSpringInLengthIsDamaged;
+    }
+    
+    public static bool IsPossible(Spring? previousSpring, Spring currentSpring, Spring lastInLength)
+    {
+        var previousIsDamaged = previousSpring?.IsDamaged() ?? false;
+        var currentIsOperational = currentSpring.IsOperational();
+        var lastInLengthIsDamaged = lastInLength.IsDamaged();
+
+        return !previousIsDamaged && !currentIsOperational && !lastInLengthIsDamaged;
     }
 
     public bool IsDamaged()
