@@ -102,7 +102,8 @@ public class SpringRow
                 var currentSpring = _springs[i];
                 var lastInLength = _springs.ElementAtOrDefault(i + neededLength - 1);
 
-                if (lastInLength != null && Spring.IsPossible(previousSpring, currentSpring, lastInLength))
+                // if (lastInLength != null && Spring.IsPossible(previousSpring, currentSpring, lastInLength))
+                if (Spring.IsPossible(neededLength, _springs, i))
                     possibility.Add(i);
             }
 
