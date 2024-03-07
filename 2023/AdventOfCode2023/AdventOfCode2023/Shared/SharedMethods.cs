@@ -85,6 +85,6 @@ public static class SharedMethods
         return $"{Constants.RootInputPath}/Day{day}/{mock}Day{day}.in";
     }
 
-    private static void ClearCurrentConsoleLine() 
+    public static void ClearCurrentConsoleLine() 
         => Console.Write("\r" + new string(' ', Console.WindowWidth) + "\r");
 }

@@ -5,16 +5,18 @@ namespace AdventOfCode2023_1;
 
 public class Day10 : DayBase
 {
-    protected override void PartOne()
+    protected override Task PartOne()
     {
         var result = CalculateFurthestDistanceFromStart();
         SharedMethods.AnswerPart(result);
+        return Task.CompletedTask;
     }
 
-    protected override void PartTwo()
+    protected override Task PartTwo()
     {
         var result = CalculateEnclosedTiles();
         SharedMethods.AnswerPart(result);
+        return Task.CompletedTask;
     }
 
     private static int CalculateFurthestDistanceFromStart()

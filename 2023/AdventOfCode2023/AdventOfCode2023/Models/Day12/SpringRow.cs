@@ -197,4 +197,17 @@ public class SpringRow
         return hasSpace || previousSpringIsDamaged || nextSpringIsDamaged || nextIndexOverlaps ||
                currentIndex + requiredLength >= nextIndex;
     }
+
+    public Task<long> GetPossibleArrangementsAsync<TResult>()
+    {
+        if (_continuousDamagedWithSpaces == _springs.Count)
+        {
+            _possibleArrangements = 1;
+            return Task.FromResult(_possibleArrangements);
+        }
+
+        GetPossibleIndicesForLength();
+        CountCombinationsHelper(_possibleArrangementsPerLength, 0, []);
+        return Task.FromResult(_possibleArrangements);
+    }
 }

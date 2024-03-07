@@ -10,16 +10,18 @@ public class Day08 : DayBase
     private readonly List<bool> _instructions = new();
     private readonly List<Node> _nodes = new();
 
-    protected override void PartOne()
+    protected override Task PartOne()
     {
         var result = CalculateSteps();
         SharedMethods.AnswerPart(result);
+        return Task.CompletedTask;
     }
 
-    protected override void PartTwo()
+    protected override Task PartTwo()
     {
         var result = CalculateSteps();
         SharedMethods.AnswerPart(result);
+        return Task.CompletedTask;
     }
 
     private long CalculateSteps()

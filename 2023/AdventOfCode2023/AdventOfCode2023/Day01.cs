@@ -5,16 +5,18 @@ namespace AdventOfCode2023_1;
 
 public class Day01 : DayBase
 {
-    protected override void PartOne()
+    protected override Task PartOne()
     {
         var result = GetCalibrationSum();
         SharedMethods.AnswerPart(result);
+        return Task.CompletedTask;
     }
 
-    protected override void PartTwo()
+    protected override Task PartTwo()
     {
         var result = GetCalibrationSum(@"\d|one|two|three|four|five|six|seven|eight|nine");
         SharedMethods.AnswerPart(result);
+        return Task.CompletedTask;
     }
 
     private static int GetCalibrationSum(string regexMatch = @"\d")

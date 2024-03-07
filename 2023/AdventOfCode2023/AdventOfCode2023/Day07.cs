@@ -7,16 +7,18 @@ public class Day07 : DayBase
 {
     private List<Hand> _hands = new();
 
-    protected override void PartOne()
+    protected override Task PartOne()
     {
         var result = GetTotalWinnings();
         SharedMethods.AnswerPart(result);
+        return Task.CompletedTask;
     }
 
-    protected override void PartTwo()
+    protected override Task PartTwo()
     {
         var result = GetTotalWinnings();
         SharedMethods.AnswerPart(result);
+        return Task.CompletedTask;
     }
 
     private int GetTotalWinnings()

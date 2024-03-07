@@ -5,16 +5,18 @@ namespace AdventOfCode2023_1;
 
 public class Day04 : DayBase
 {
-    protected override void PartOne()
+    protected override Task PartOne()
     {
         var result = GetSumScratchCardPoints();
         SharedMethods.AnswerPart(result);
+        return Task.CompletedTask;
     }
 
-    protected override void PartTwo()
+    protected override Task PartTwo()
     {
         var result = GetTotalNumberCards();
         SharedMethods.AnswerPart(result);
+        return Task.CompletedTask;
     }
 
     #region Part 1

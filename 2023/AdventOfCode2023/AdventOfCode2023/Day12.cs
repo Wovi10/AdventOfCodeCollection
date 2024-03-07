@@ -5,27 +5,42 @@ namespace AdventOfCode2023_1;
 
 public class Day12 : DayBase
 {
-    protected override void PartOne()
+    protected override async Task PartOne()
     {
-        var result = GetSumDifferentArrangementCount();
+        var result = await GetSumDifferentArrangementCount().ConfigureAwait(false);
         SharedMethods.AnswerPart(result);
     }
 
-    protected override void PartTwo()
+    protected override async Task PartTwo()
     {
-        var result = GetSumDifferentArrangementCount();
+        var result = await GetSumDifferentArrangementCount().ConfigureAwait(false);
         SharedMethods.AnswerPart(result);
     }
 
-    private static long GetSumDifferentArrangementCount()
+    private static async Task<long> GetSumDifferentArrangementCount()
     {
         var springRows = GetSpringRows();
-
-        return springRows.Select(springRow =>
+        var totalTasks = springRows.Count;
+        var completedTasks = 0;
+        var progress = new Progress<long>(current =>
         {
-            Console.Write($"{Constants.LineReturn}Running row {springRows.IndexOf(springRow)+1} of {springRows.Count}");
-            return springRow.GetPossibleArrangements();
-        }).Sum();
+            SharedMethods.ClearCurrentConsoleLine();
+            Console.Write($"Running part {current} of {totalTasks}");
+        });
+
+        var tasks = springRows.Select(springRow => springRow.GetPossibleArrangementsAsync<long>());
+        var results = Constants.IsDebug
+            ? await Task.WhenAll(tasks.Select(async task =>
+            {
+                var result = await task.ConfigureAwait(false);
+                Interlocked.Increment(ref completedTasks);
+                ((IProgress<long>) progress).Report(completedTasks);
+                return result;
+            })).ConfigureAwait(false)
+            : await Task.WhenAll(tasks).ConfigureAwait(false);
+
+        return results.Sum();
+        // return springRows.Select(springRow => springRow.GetPossibleArrangements()).Sum();
     }
 
     private static List<SpringRow> GetSpringRows()

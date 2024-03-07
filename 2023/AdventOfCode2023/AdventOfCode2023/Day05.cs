@@ -18,11 +18,12 @@ public class Day05 : DayBase
 
     private long _lowestLocation = long.MaxValue;
 
-    protected override void PartOne()
+    protected override Task PartOne()
     {
         var result = GetLowestLocationNumber();
         SharedMethods.AnswerPart(result);
         EmptyLists();
+        return Task.CompletedTask;
     }
 
     private void EmptyLists()
@@ -37,10 +38,11 @@ public class Day05 : DayBase
         _humidToLoc.Clear();
     }
 
-    protected override void PartTwo()
+    protected override Task PartTwo()
     {
         var result = GetLowestLocationNumberPart2();
         SharedMethods.AnswerPart(result);
+        return Task.CompletedTask;
     }
 
     #region Part1
