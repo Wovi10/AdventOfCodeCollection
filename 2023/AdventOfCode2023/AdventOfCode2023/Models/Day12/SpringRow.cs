@@ -17,7 +17,7 @@ public class SpringRow
         _continuousDamagedWithSpaces = _continuousDamagedSprings.Count - 1 + _continuousDamagedSprings.Sum();
     }
 
-    private readonly List<Spring> _springs = [];
+    private readonly List<SpringType> _springs = [];
     private readonly List<int> _damagedSpringsIndices = [];
     private readonly List<int> _continuousDamagedSprings = [];
     private long _possibleArrangements = 0;
@@ -28,16 +28,16 @@ public class SpringRow
     {
         if (Variables.RunningPartOne)
         {
-            foreach (var spring in springsFromInput) 
-                _springs.Add(new Spring(spring));
+            foreach (var springChar in springsFromInput) 
+                _springs.Add(springChar.ToSpringState());
 
             return;
         }
 
         for (var i = 0; i < 5; i++)
         {
-            _springs.AddRange(springsFromInput.Select(spring => new Spring(spring)));
-            _springs.Add(new Spring(SpringState.Unknown.ToChar()));
+            _springs.AddRange(springsFromInput.Select(springChar => springChar.ToSpringState()));
+            _springs.Add(SpringType.Unknown);
         }
 
         _springs.RemoveAt(_springs.Count - 1);
@@ -89,21 +89,23 @@ public class SpringRow
             if (continuousCounter == _continuousDamagedSprings.Count)
                 usedContinuousDamagedWithSpaces--;
 
-            var neededLength = _continuousDamagedWithSpaces - usedContinuousDamagedWithSpaces;
+            var minLengthNeeded = _continuousDamagedWithSpaces - usedContinuousDamagedWithSpaces;
 
             var possibility = new List<int>();
 
             for (var i = usedContinuousDamagedWithSpaces; i < _springs.Count; i++)
             {
-                if (_springs.Count < i + neededLength)
+                if (_springs.Count < i + minLengthNeeded)
                     break;
 
                 var previousSpring = _springs.ElementAtOrDefault(i - 1);
                 var currentSpring = _springs[i];
-                var lastInLength = _springs.ElementAtOrDefault(i + neededLength - 1);
+                var nextSpring = _springs.ElementAtOrDefault(i + 1);
+                var lastInLength = _springs.ElementAtOrDefault(i + minLengthNeeded - 1);
+                var followingSprings = _springs[i..(lengthToCheck + i)];
+                var firstAfterLength = _springs.ElementAtOrDefault(i + lengthToCheck);
 
-                // if (lastInLength != null && Spring.IsPossible(previousSpring, currentSpring, lastInLength))
-                if (Spring.IsPossible(neededLength, _springs, i))
+                if (currentSpring.IsPossible(previousSpring, nextSpring, lastInLength, followingSprings, firstAfterLength))
                     possibility.Add(i);
             }
 
