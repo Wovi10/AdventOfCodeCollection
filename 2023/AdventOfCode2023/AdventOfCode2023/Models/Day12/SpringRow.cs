@@ -198,7 +198,7 @@ public class SpringRow
                currentIndex + requiredLength >= nextIndex;
     }
 
-    public Task<long> GetPossibleArrangementsAsync<TResult>()
+    public Task<long> GetPossibleArrangementsAsync()
     {
         if (_continuousDamagedWithSpaces == _springs.Count)
         {

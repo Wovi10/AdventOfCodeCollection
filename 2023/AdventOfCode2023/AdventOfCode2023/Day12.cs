@@ -28,7 +28,7 @@ public class Day12 : DayBase
             Console.Write($"Running part {current} of {totalTasks}");
         });
 
-        var tasks = springRows.Select(springRow => springRow.GetPossibleArrangementsAsync<long>());
+        var tasks = springRows.Select(springRow => springRow.GetPossibleArrangementsAsync());
         var results = Constants.IsDebug
             ? await Task.WhenAll(tasks.Select(async task =>
             {
