@@ -7,16 +7,18 @@ public class Day11 : DayBase
 {
     private Universe? _universe;
 
-    protected override void PartOne()
+    protected override Task PartOne()
     {
         var result = GetSumOfShortestPaths();
         SharedMethods.AnswerPart(result);
+        return Task.CompletedTask;
     }
 
-    protected override void PartTwo()
+    protected override Task PartTwo()
     {
         var result = GetSumOfShortestPaths();
         SharedMethods.AnswerPart(result);
+        return Task.CompletedTask;
     }
 
     private long GetSumOfShortestPaths()
