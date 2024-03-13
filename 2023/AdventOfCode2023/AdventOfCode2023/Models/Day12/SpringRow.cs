@@ -17,12 +17,12 @@ public class SpringRow
         _continuousDamagedWithSpaces = _continuousDamagedSprings.Count - 1 + _continuousDamagedSprings.Sum();
     }
 
-    private readonly List<SpringType> _springs = [];
-    private readonly List<int> _damagedSpringsIndices = [];
-    private readonly List<int> _continuousDamagedSprings = [];
-    private long _possibleArrangements = 0;
-    private readonly List<List<int>> _possibleArrangementsPerLength = [];
-    private readonly int _continuousDamagedWithSpaces = 0;
+    private readonly List<SpringType> _springs = new();
+    private readonly List<int> _damagedSpringsIndices = new();
+    private readonly List<int> _continuousDamagedSprings = new();
+    private long _possibleArrangements;
+    private readonly List<List<int>> _possibleArrangementsPerLength = new();
+    private readonly int _continuousDamagedWithSpaces;
 
     private void SetSprings(string springsFromInput)
     {
@@ -73,19 +73,16 @@ public class SpringRow
         }
 
         GetPossibleIndicesForLength();
-        CountCombinationsHelper(_possibleArrangementsPerLength, 0, []);
+        CountCombinationsHelper(_possibleArrangementsPerLength, 0, new List<int>());
         return _possibleArrangements;
     }
 
     private void GetPossibleIndicesForLength()
     {
         var continuousCounter = 0;
+        var usedContinuousDamagedWithSpaces = 0;
         foreach (var lengthToCheck in _continuousDamagedSprings)
         {
-            var usedContinuousDamagedSprings = _continuousDamagedSprings.Take(continuousCounter).ToList();
-            var usedContinuousDamagedWithSpaces = usedContinuousDamagedSprings.Count != 0 
-                            ? usedContinuousDamagedSprings.Sum() + usedContinuousDamagedSprings.Count
-                            : 0;
             if (continuousCounter == _continuousDamagedSprings.Count)
                 usedContinuousDamagedWithSpaces--;
 
@@ -111,6 +108,7 @@ public class SpringRow
 
             _possibleArrangementsPerLength.Add(possibility);
             continuousCounter++;
+            usedContinuousDamagedWithSpaces += lengthToCheck + 1;
         }
     }
 
@@ -207,7 +205,7 @@ public class SpringRow
         }
 
         GetPossibleIndicesForLength();
-        CountCombinationsHelper(_possibleArrangementsPerLength, 0, []);
+        CountCombinationsHelper(_possibleArrangementsPerLength, 0, new List<int>());
         return Task.FromResult(_possibleArrangements);
     }
 }

@@ -42,16 +42,18 @@ public static class SpringStateExtensions
         if (lastInLength == null || followingSprings.Count == 0)
             return false;
 
-        var previousIsDamaged = previousSpring?.IsDamaged() ?? false;
-        var currentIsOperational = currentSpringType.IsOperational();
-        var nextSpringIsDamaged = nextSpring?.IsDamaged() ?? false;
+        if (previousSpring?.IsDamaged() ?? false)
+            return false;
+
+        if (currentSpringType.IsOperational())
+            return false;
 
         if (followingSprings.Count == 1)
-            return !previousIsDamaged && !currentIsOperational && !nextSpringIsDamaged;
+            return !(nextSpring?.IsDamaged() ?? false);
 
-        var firstAfterLengthIsDamaged = firstAfterLength?.IsDamaged() ?? false;
-        var nextInLengthContainOperational = followingSprings.Any(spring => spring.IsOperational());
-        return !previousIsDamaged && !currentIsOperational && !nextInLengthContainOperational &&
-               !firstAfterLengthIsDamaged;
+        if (firstAfterLength?.IsDamaged() ?? false)
+            return false;
+
+        return !followingSprings.Any(spring => spring.IsOperational());
     }
 }

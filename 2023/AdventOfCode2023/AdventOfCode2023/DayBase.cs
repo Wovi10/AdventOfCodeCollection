@@ -5,13 +5,13 @@ namespace AdventOfCode2023_1;
 
 public abstract class DayBase
 {
-    protected static List<string> Input = [];
+    protected static List<string> Input = new();
 
     public async Task Run(string day, string title, PartsToRun partToRun = Constants.PartToRun)
     {
         var watch = new Stopwatch();
         watch.Start();
-        
+
         Input = SharedMethods.GetInput(day);
         SharedMethods.WriteBeginText(day, title);
         Variables.RunningPartOne = true;
