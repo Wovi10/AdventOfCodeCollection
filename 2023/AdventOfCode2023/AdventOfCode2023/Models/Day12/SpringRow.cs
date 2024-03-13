@@ -132,8 +132,10 @@ public class SpringRow
                                                   _continuousDamagedSprings[index - 1]))
                 continue;
 
-            var nextSpringIsDamaged = number + _continuousDamagedSprings[index] < _springs.Count &&
-                                      _springs[number + _continuousDamagedSprings[index]].IsDamaged();
+            var currentDamagedSpring = _continuousDamagedSprings[index];
+
+            var nextSpringIsDamaged = number + currentDamagedSpring < _springs.Count &&
+                                      _springs[number + currentDamagedSpring].IsDamaged();
             if (nextSpringIsDamaged)
                 continue;
 
@@ -148,15 +150,10 @@ public class SpringRow
         if (!ContainsAllContinuousDamagedSprings(combination))
             return false;
 
-        for (var j = 0; j < combination.Count - 1; j++)
+        for (var i = 0; i < combination.Count - 1; i++)
         {
-            var currentIndex = combination[j];
-            var nextIndex = combination[j + 1];
-
-            if (!ContainsOverlappingDamagedSprings(currentIndex, nextIndex, _continuousDamagedSprings[j]))
-                continue;
-
-            return false;
+            if (combination[i] + _continuousDamagedSprings[i] >= combination[i + 1]) 
+                return false;
         }
 
         return true;
@@ -167,33 +164,20 @@ public class SpringRow
 
     private bool DamagedSpringIndexIsUsed(List<int> combination, int damagedSpringIndex)
     {
+        if (combination.Contains(damagedSpringIndex))
+            return true;
+
         for (var i = 0; i < combination.Count; i++)
         {
-            var currentIndex = combination[i];
-            var currentRequiredLength = _continuousDamagedSprings[i];
-            for (var checkingIndex = currentIndex;
-                 checkingIndex < currentIndex + currentRequiredLength;
-                 checkingIndex++)
+            var requiredLength = _continuousDamagedSprings[i];
+            for (var j = 0; j < requiredLength; j++)
             {
-                if (damagedSpringIndex == checkingIndex)
+                if (combination[i] + j == damagedSpringIndex)
                     return true;
             }
         }
 
         return false;
-    }
-
-    private bool ContainsOverlappingDamagedSprings(int currentIndex, int nextIndex, int requiredLength)
-    {
-        var indexAfterLength = currentIndex + requiredLength;
-
-        var hasSpace = currentIndex + 1 >= nextIndex;
-        var previousSpringIsDamaged = currentIndex > 0 && _springs[currentIndex - 1].IsDamaged();
-        var nextSpringIsDamaged = indexAfterLength < _springs.Count && _springs[indexAfterLength].IsDamaged();
-        var nextIndexOverlaps = currentIndex + requiredLength >= nextIndex;
-
-        return hasSpace || previousSpringIsDamaged || nextSpringIsDamaged || nextIndexOverlaps ||
-               currentIndex + requiredLength >= nextIndex;
     }
 
     public Task<long> GetPossibleArrangementsAsync()

@@ -40,7 +40,6 @@ public class Day12 : DayBase
             : await Task.WhenAll(tasks).ConfigureAwait(false);
 
         return results.Sum();
-        // return springRows.Select(springRow => springRow.GetPossibleArrangements()).Sum();
     }
 
     private static List<SpringRow> GetSpringRows()
