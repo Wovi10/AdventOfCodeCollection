@@ -40,7 +40,7 @@ public abstract class DayBase
 
     private static void WriteStopwatchText(long watchElapsedMilliseconds)
     {
-        if (Constants.IsDebug) 
+        if (Constants.IsDebug)
             Console.WriteLine($"Elapsed time: {watchElapsedMilliseconds} ms");
     }
 

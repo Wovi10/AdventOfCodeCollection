@@ -25,7 +25,7 @@ public class Day12 : DayBase
         var progress = new Progress<long>(current =>
         {
             SharedMethods.ClearCurrentConsoleLine();
-            Console.Write($"Running part {current} of {totalTasks}");
+            Console.Write($"Finished {current} parts of {totalTasks}");
         });
 
         var tasks = springRows.Select(springRow => springRow.GetPossibleArrangementsAsync());

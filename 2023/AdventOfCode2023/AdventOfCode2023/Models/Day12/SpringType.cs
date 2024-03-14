@@ -31,29 +31,8 @@ public static class SpringStateExtensions
         };
     }
 
-    private static bool IsOperational(this SpringType state)
+    public static bool IsOperational(this SpringType state)
         => state == SpringType.Operational;
 
     public static bool IsDamaged(this SpringType state) => state == SpringType.Damaged;
-
-    public static bool IsPossible(this SpringType currentSpringType, SpringType? previousSpring, SpringType? nextSpring,
-        SpringType? lastInLength, List<SpringType> followingSprings, SpringType? firstAfterLength)
-    {
-        if (lastInLength == null || followingSprings.Count == 0)
-            return false;
-
-        if (previousSpring?.IsDamaged() ?? false)
-            return false;
-
-        if (currentSpringType.IsOperational())
-            return false;
-
-        if (followingSprings.Count == 1)
-            return !(nextSpring?.IsDamaged() ?? false);
-
-        if (firstAfterLength?.IsDamaged() ?? false)
-            return false;
-
-        return !followingSprings.Any(spring => spring.IsOperational());
-    }
 }
