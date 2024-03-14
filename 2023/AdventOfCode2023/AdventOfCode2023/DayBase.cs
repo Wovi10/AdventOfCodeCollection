@@ -9,6 +9,7 @@ public abstract class DayBase
 
     public async Task Run(string day, string title, PartsToRun partToRun = Constants.PartToRun)
     {
+        WriteStopwatchStartText();
         var watch = new Stopwatch();
         watch.Start();
 
@@ -36,6 +37,12 @@ public abstract class DayBase
         WriteStopwatchText(watch.ElapsedMilliseconds);
 
         Console.WriteLine();
+    }
+
+    private static void WriteStopwatchStartText()
+    {
+        if (Constants.IsDebug)
+            Console.WriteLine($"Started at {DateTime.Now:HH:mm:ss}");
     }
 
     private static void WriteStopwatchText(long watchElapsedMilliseconds)
