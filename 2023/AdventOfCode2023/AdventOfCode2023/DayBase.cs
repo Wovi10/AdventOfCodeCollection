@@ -7,7 +7,7 @@ public abstract class DayBase
 {
     protected static List<string> Input = new();
 
-    public async Task Run(string day, string title, PartsToRun partToRun = Constants.PartToRun)
+    public async Task Run(string day, string title)
     {
         WriteStopwatchStartText();
         var watch = new Stopwatch();
@@ -16,7 +16,7 @@ public abstract class DayBase
         Input = SharedMethods.GetInput(day);
         SharedMethods.WriteBeginText(day, title);
         Variables.RunningPartOne = true;
-        switch (partToRun)
+        switch (Constants.PartToRun)
         {
             case PartsToRun.Part1:
                 await PartOne();
