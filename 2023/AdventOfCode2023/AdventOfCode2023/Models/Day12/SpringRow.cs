@@ -64,20 +64,20 @@ public class SpringRow
             _continuousDamagedSprings.AddRange(arrangementsFromInput.Split(Constants.Comma).Select(int.Parse));
     }
 
-    public Task<long> GetPossibleArrangementsAsync()
+    public async Task<long> GetPossibleArrangementsAsync()
     {
         if (_continuousDamagedWithSpaces != _springs.Count)
         {
             GetPossibleIndicesForLength();
-            CountCombinationsHelper(_possibleArrangementsPerLength);
-            return Task.FromResult(_possibleArrangements);
+            await CountCombinationsHelper(_possibleArrangementsPerLength);
+            return _possibleArrangements;
         }
 
         if(!IsPossibleArrangement())
-            return Task.FromResult<long>(0);
+            return _possibleArrangements;
 
         _possibleArrangements = 1;
-        return Task.FromResult(_possibleArrangements);
+        return _possibleArrangements;
     }
 
     private bool IsPossibleArrangement()
@@ -148,7 +148,7 @@ public class SpringRow
         }
     }
 
-    private void CountCombinationsHelper(List<List<int>> lists)
+    private async Task CountCombinationsHelper(List<List<int>> lists)
     {
         var stack = new Stack<Tuple<int, List<int>>>();
         stack.Push(new Tuple<int, List<int>>(0, new List<int>()));
@@ -160,7 +160,7 @@ public class SpringRow
 
             if (currentIndex == lists.Count)
             {
-                if (CombinationIsPossible(currentList))
+                if (await CombinationIsPossibleAsync(currentList))
                     _possibleArrangements++;
 
                 continue;
@@ -172,7 +172,7 @@ public class SpringRow
 
                 if (currentListIsEmpty && springsCount - currentIndex < _continuousDamagedWithSpaces)
                     break;
-                
+
                 if (!currentListIsEmpty && (number <= currentList[^1] + 1 ||
                                                  number <= currentList[^1] + _continuousDamagedSprings[currentIndex - 1]))
                     continue;
@@ -187,10 +187,15 @@ public class SpringRow
             }
         }
     }
-
-    private bool CombinationIsPossible(List<int> combination)
+    
+    private async Task<bool> CombinationIsPossibleAsync(List<int> combination)
     {
-        if (!ContainsAllContinuousDamagedSprings(combination))
+        return await Task.Run(() => CombinationIsPossible(combination));
+    }
+
+    private async Task<bool> CombinationIsPossible(List<int> combination)
+    {
+        if (!await ContainsAllContinuousDamagedSpringsAsync(combination))
             return false;
 
         for (var i = 0; i < combination.Count - 1; i++)
@@ -202,8 +207,16 @@ public class SpringRow
         return true;
     }
 
-    private bool ContainsAllContinuousDamagedSprings(List<int> combination) 
-        => _damagedSpringsIndices.All(damagedSpringsIndex => DamagedSpringIndexIsUsed(combination, damagedSpringsIndex));
+    private async Task<bool> ContainsAllContinuousDamagedSpringsAsync(List<int> combination)
+    {
+        return await Task.Run(() => ContainsAllContinuousDamagedSprings(combination));
+    }
+
+    private  Task<bool> ContainsAllContinuousDamagedSprings(List<int> combination)
+    {
+        return _damagedSpringsIndices.All(damagedSpringsIndex =>
+            DamagedSpringIndexIsUsed(combination, damagedSpringsIndex));
+    }
 
     private bool DamagedSpringIndexIsUsed(List<int> combination, int damagedSpringIndex)
     {
