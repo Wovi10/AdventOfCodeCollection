@@ -14,4 +14,8 @@
         <HintPath>..\..\..\..\UtilsCSharp\UtilsCSharp\bin\Debug\net8.0\UtilsCSharp.dll</HintPath>
       </Reference>
     </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Wovi10.UtilsCSharp" Version="1.0.0" />
+    </ItemGroup>
 </Project>
