@@ -1,4 +1,5 @@
 ﻿using AdventOfCode2023_1.Shared;
+using UtilsCSharp;
 
 namespace AdventOfCode2023_1.Models.Day12;
 
@@ -14,7 +15,7 @@ public class SpringRow
 
         var arrangementsFromInput = splitInput.Last();
         SetContinuousArrangements(arrangementsFromInput);
-        _continuousDamagedWithSpaces = _continuousDamagedSprings.Count - 1 + _continuousDamagedSprings.Sum();
+        _continuousDamagedWithSpaces = MathUtils.Add(_continuousDamagedSprings, constant: 1);
     }
 
     private readonly List<SpringType> _springs = new();
