@@ -43,5 +43,5 @@ public class Day12 : DayBase
     }
 
     private static List<SpringRow> GetSpringRows()
-        => Input.Select(line => new SpringRow(line)).ToList();
+        => Input.Select((line, index) => new SpringRow(line, index+1)).ToList();
 }

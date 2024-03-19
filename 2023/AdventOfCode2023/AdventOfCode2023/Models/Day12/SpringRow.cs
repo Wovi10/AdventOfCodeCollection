@@ -5,8 +5,9 @@ namespace AdventOfCode2023_1.Models.Day12;
 
 public class SpringRow
 {
-    public SpringRow(string input)
+    public SpringRow(string input, int index)
     {
+        Index = index;
         var splitInput = input.Split(Constants.Space);
 
         var springsFromInput = splitInput.First();
@@ -18,6 +19,7 @@ public class SpringRow
         _continuousDamagedWithSpaces = MathUtils.Add(_continuousDamagedSprings, constant: 1);
     }
 
+    private int Index = 0;
     private readonly List<SpringType> _springs = new();
     private readonly List<int> _damagedSpringsIndices = new();
     private readonly List<int> _continuousDamagedSprings = new();
@@ -216,8 +218,8 @@ public class SpringRow
     private async Task<bool> ContainsAllContinuousDamagedSprings(List<int> combination)
     {
         var tasks = _damagedSpringsIndices.Select(async damagedSpringsIndex => await DamagedSpringIndexIsUsedAsync(combination, damagedSpringsIndex));
-        var result = await Task.WhenAll(tasks);
-        return result.All(result => result);
+        var results = await Task.WhenAll(tasks);
+        return results.All(result => result);
     }
 
     private async Task<bool> DamagedSpringIndexIsUsedAsync(List<int> combination, int damagedSpringIndex)
