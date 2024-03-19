@@ -212,10 +212,16 @@ public class SpringRow
         return await Task.Run(() => ContainsAllContinuousDamagedSprings(combination));
     }
 
-    private  Task<bool> ContainsAllContinuousDamagedSprings(List<int> combination)
+    private async Task<bool> ContainsAllContinuousDamagedSprings(List<int> combination)
     {
-        return _damagedSpringsIndices.All(damagedSpringsIndex =>
-            DamagedSpringIndexIsUsed(combination, damagedSpringsIndex));
+        var tasks = _damagedSpringsIndices.Select(async damagedSpringsIndex => await DamagedSpringIndexIsUsedAsync(combination, damagedSpringsIndex));
+        var result = await Task.WhenAll(tasks);
+        return result.All(result => result);
+    }
+
+    private async Task<bool> DamagedSpringIndexIsUsedAsync(List<int> combination, int damagedSpringIndex)
+    {
+        return await Task.Run(() => DamagedSpringIndexIsUsed(combination, damagedSpringIndex));
     }
 
     private bool DamagedSpringIndexIsUsed(List<int> combination, int damagedSpringIndex)
