@@ -8,13 +8,13 @@ public class Day12 : DayBase
     protected override async Task PartOne()
     {
         var result = await GetSumDifferentArrangementCount().ConfigureAwait(false);
-        SharedMethods.AnswerPart(result);
+        SharedMethods.PrintAnswer(result);
     }
 
     protected override async Task PartTwo()
     {
         var result = await GetSumDifferentArrangementCount().ConfigureAwait(false);
-        SharedMethods.AnswerPart(result);
+        SharedMethods.PrintAnswer(result);
     }
 
     private static async Task<long> GetSumDifferentArrangementCount()

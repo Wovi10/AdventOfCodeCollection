@@ -21,7 +21,7 @@ public class Day05 : DayBase
     protected override Task PartOne()
     {
         var result = GetLowestLocationNumber();
-        SharedMethods.AnswerPart(result);
+        SharedMethods.PrintAnswer(result);
         EmptyLists();
         return Task.CompletedTask;
     }
@@ -41,7 +41,7 @@ public class Day05 : DayBase
     protected override Task PartTwo()
     {
         var result = GetLowestLocationNumberPart2();
-        SharedMethods.AnswerPart(result);
+        SharedMethods.PrintAnswer(result);
         return Task.CompletedTask;
     }
 
@@ -107,7 +107,7 @@ public class Day05 : DayBase
                 if (Constants.IsDebug)
                 {
                     var currentIndex = seed - startEndPair.Start;
-                    SharedMethods.WritePercentage(currentIndex, startEndPair.Range);
+                    SharedMethods.PrintPercentage(currentIndex, startEndPair.Range);
                 }
             }
         }

@@ -8,7 +8,7 @@ public static class SharedMethods
         Console.WriteLine($"Starting day {day} challenge: {title}");
     }
 
-    public static void AnswerPart(object result)
+    public static void PrintAnswer(object result)
     {
         ClearCurrentConsoleLine();
         Console.WriteLine($"{Constants.LineReturn}Answer of part {GetRunningPart()} is: \n{result}");
@@ -25,23 +25,23 @@ public static class SharedMethods
         return SplitInputFile(inputFile);
     }
 
-    public static void WritePercentage(long current, long max)
+    public static void PrintPercentage(long current, long max)
     {
         var progress = (double) current / max;
         var percentage = (int) (progress * 100);
-        WritePercentage(percentage);
+        PrintPercentage(percentage);
     }
 
-    public static void WritePermille(long current, long max)
+    public static void PrintPermille(long current, long max)
     {
         var progress = (double) current / max;
         var promille = (int) (progress * 1000);
-        WritePermille(promille);
+        PrintPermille(promille);
     }
 
     private static long? _previousPermille;
 
-    private static void WritePermille(int permille)
+    private static void PrintPermille(int permille)
     {
         if (_previousPermille == permille)
             return;
@@ -58,7 +58,7 @@ public static class SharedMethods
 
     private static long? _previousPercentage;
 
-    private static void WritePercentage(int percentage)
+    private static void PrintPercentage(int percentage)
     {
         if (_previousPercentage == percentage)
             return;

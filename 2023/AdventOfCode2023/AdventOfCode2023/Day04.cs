@@ -8,14 +8,14 @@ public class Day04 : DayBase
     protected override Task PartOne()
     {
         var result = GetSumScratchCardPoints();
-        SharedMethods.AnswerPart(result);
+        SharedMethods.PrintAnswer(result);
         return Task.CompletedTask;
     }
 
     protected override Task PartTwo()
     {
         var result = GetTotalNumberCards();
-        SharedMethods.AnswerPart(result);
+        SharedMethods.PrintAnswer(result);
         return Task.CompletedTask;
     }
 

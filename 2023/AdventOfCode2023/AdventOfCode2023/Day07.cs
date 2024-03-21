@@ -10,14 +10,14 @@ public class Day07 : DayBase
     protected override Task PartOne()
     {
         var result = GetTotalWinnings();
-        SharedMethods.AnswerPart(result);
+        SharedMethods.PrintAnswer(result);
         return Task.CompletedTask;
     }
 
     protected override Task PartTwo()
     {
         var result = GetTotalWinnings();
-        SharedMethods.AnswerPart(result);
+        SharedMethods.PrintAnswer(result);
         return Task.CompletedTask;
     }
 
