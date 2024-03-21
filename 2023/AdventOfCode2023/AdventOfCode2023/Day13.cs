@@ -26,7 +26,7 @@ public class Day13 : DayBase
             SharedMethods.ClearCurrentConsoleLine();
             Console.Write($"Finished {current} parts of {totalTasks}");
         });
-        
+
         var tasks = patterns.Select(pattern => pattern.GetPatternNotesAsync());
         if (Constants.IsDebug)
         {
@@ -48,11 +48,13 @@ public class Day13 : DayBase
         List<string> lines = new();
         List<Pattern> patterns = new();
 
+        var index = -1;
         foreach (var line in Input)
         {
+            index++;
             if (string.IsNullOrWhiteSpace(line))
             {
-                patterns.Add(new Pattern(lines));
+                patterns.Add(new Pattern(lines, index));
                 lines.Clear();
                 continue;
             }
@@ -60,7 +62,7 @@ public class Day13 : DayBase
             lines.Add(line);
         }
 
-        patterns.Add(new Pattern(lines));
+        patterns.Add(new Pattern(lines, index));
 
         return patterns;
     }

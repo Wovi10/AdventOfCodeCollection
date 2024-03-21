@@ -10,46 +10,18 @@ public class Line
         }
     }
 
-    public List<bool> Rocks = new();
+    public readonly List<bool> Rocks = new();
     public int LinesBeforeMirror { get; set; }
-    public List<int> MirroredPositions = new();
+    private List<int> MirroredPositions = new();
+    private bool _wasTested = false;
 
-    public List<int> GetMirroredPositions()
+    public async Task<List<int>> GetMirroredPositions()
     {
-        MirroredPositions.Sort();
+        if (_wasTested)
+            return MirroredPositions;
+
+        _wasTested = true;
+        MirroredPositions = await Rocks.GetMirroredPositions();
         return MirroredPositions;
-    }
-
-    public async Task<bool> IsSymmetric()
-    {
-        for (var i = 1; i < Rocks.Count-1; i++)
-        {
-            if (CanBeMirrored(i)) 
-                MirroredPositions.Add(i);
-        }
-
-        return MirroredPositions.Count > 0;
-    }
-
-    private bool CanBeMirrored(int position)
-    {
-        var placesFromEnd = Rocks.Count - position;
-
-        var isBeforeMiddle = position.IsBeforeMiddle(Rocks.Count / 2);
-
-        var rangeToCheck = isBeforeMiddle switch
-        {
-            true => Rocks[..(position * 2)],
-            false => Rocks[(position - placesFromEnd)..],
-            null => Rocks
-        };
-
-        for (var i = 0; i < rangeToCheck.Count / 2; i++)
-        {
-            if (rangeToCheck[i] != rangeToCheck[^(i + 1)])
-                return false;
-        }
-
-        return true;
     }
 }

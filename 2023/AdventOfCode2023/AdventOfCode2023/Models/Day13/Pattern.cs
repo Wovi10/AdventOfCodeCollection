@@ -2,40 +2,63 @@
 
 public class Pattern
 {
-    public Pattern(List<string> patternString)
+    public Pattern(List<string> patternString, int index)
     {
+        Index = index;
         foreach (var lineString in patternString)
         {
-            Lines.Add(new Line(lineString));
+            _lines.Add(new Line(lineString));
         }
-        NumColumns = Lines[0].Rocks.Count;
     }
 
-    public List<Line> Lines = new();
-    public int NumColumns = 0;
+    private readonly int Index;
+    private readonly List<Line> _lines = new();
+    private readonly List<List<bool>> _columns = new();
+    private readonly List<List<int>> _mirroredPositions = new();
     public int LinesBeforeMirror = 0;
     public bool MirrorIsVertical = false;
 
     public async Task GetPatternNotesAsync()
     {
-        var firstLine = Lines.First();
-        var firstLineSymmetric = await firstLine.IsSymmetric();
-        if (firstLineSymmetric)
+        var firstLine = _lines.First();
+        var firstMirroredPositions = await firstLine.GetMirroredPositions();
+
+        if (firstMirroredPositions.Count > 0)
         {
-            foreach (var line in Lines.Skip(1))
+            foreach (var line in _lines.Skip(1))
             {
-                if (!await line.IsSymmetric())
-                {
-                    MirrorIsVertical = false;
-                    break;
-                }
+                var mirroredPositions = await line.GetMirroredPositions();
+                if (mirroredPositions.Count > 0) 
+                    continue;
+                break;
             }
-            MirrorIsVertical = true;
-            
-            // Find the position that is present in all line.MirroredPositions
-            
-            LinesBeforeMirror = firstLine.LinesBeforeMirror;
-            return;
+            var commonMirrorPosition = await _lines.GetCommonMirrorPosition();
+            if (commonMirrorPosition > 0)
+            {
+                MirrorIsVertical = true;
+                LinesBeforeMirror = commonMirrorPosition;
+                return;
+            }
+        }
+        AddColumns();
+        _lines.Clear();
+        foreach (var column in _columns)
+        {
+            _mirroredPositions.Add(await column.GetMirroredPositions());
+        }
+
+        LinesBeforeMirror = _mirroredPositions.GetCommonMirrorPosition();
+    }
+
+    private void AddColumns()
+    {
+        for (var i = 0; i < _lines[0].Rocks.Count; i++)
+        {
+            _columns.Add(new List<bool>());
+            foreach (var line in _lines)
+            {
+                _columns[i].Add(line.Rocks[i]);
+            }
         }
     }
 }
