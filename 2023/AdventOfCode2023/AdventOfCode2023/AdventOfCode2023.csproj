@@ -6,7 +6,7 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <RootNamespace>AdventOfCode2023_1</RootNamespace>
-        <LangVersion>preview</LangVersion>
+        <LangVersion>12</LangVersion>
     </PropertyGroup>
 
     <ItemGroup>

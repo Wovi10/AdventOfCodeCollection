@@ -31,7 +31,7 @@ public class SpringRow
     {
         if (Variables.RunningPartOne)
         {
-            foreach (var springChar in springsFromInput) 
+            foreach (var springChar in springsFromInput)
                 _springs.Add(springChar.ToSpringState());
 
             return;
@@ -50,7 +50,7 @@ public class SpringRow
     {
         for (var i = 0; i < _springs.Count; i++)
         {
-            if (_springs[i].IsDamaged()) 
+            if (_springs[i].IsDamaged())
                 _damagedSpringsIndices.Add(i);
         }
     }
@@ -76,7 +76,7 @@ public class SpringRow
             return _possibleArrangements;
         }
 
-        if(!IsPossibleArrangement())
+        if (!IsPossibleArrangement())
             return _possibleArrangements;
 
         _possibleArrangements = 1;
@@ -93,13 +93,14 @@ public class SpringRow
 
             if (currentIndex > 0 && _springs[currentIndex - 1].IsDamaged())
                 return false;
-            
-            if(_springs.Count > currentIndex + requiredLength && _springs[currentIndex + requiredLength].IsDamaged())
+
+            if (_springs.Count > currentIndex + requiredLength && _springs[currentIndex + requiredLength].IsDamaged())
                 return false;
 
             var followingSprings = _springs.Skip(currentIndex).Take(requiredLength).ToList();
-            
-            if ((followingSprings.Count == 1 && _springs.Count > currentIndex + 1 && _springs[currentIndex + 1].IsDamaged()) ||
+
+            if ((followingSprings.Count == 1 && _springs.Count > currentIndex + 1 &&
+                 _springs[currentIndex + 1].IsDamaged()) ||
                 followingSprings.Any(spring => spring.IsOperational()))
                 return false;
 
@@ -131,14 +132,14 @@ public class SpringRow
                 if (counter + 1 == _continuousDamagedSprings.Count && i + lengthToCheck < lastDamagedSpring)
                     continue;
 
-                if (i > 0 && _springs[i-1].IsDamaged())
+                if (i > 0 && _springs[i - 1].IsDamaged())
                     continue;
 
                 if (_springs.Count > i + lengthToCheck && _springs[i + lengthToCheck].IsDamaged())
                     continue;
 
                 var followingSprings = _springs[i..(lengthToCheck + i)];
-                if ((followingSprings.Count == 1 && _springs.Count > i + 1 && _springs[i+1].IsDamaged()) ||
+                if ((followingSprings.Count == 1 && _springs.Count > i + 1 && _springs[i + 1].IsDamaged()) ||
                     followingSprings.Any(spring => spring.IsOperational()))
                     continue;
 
@@ -177,7 +178,7 @@ public class SpringRow
                     break;
 
                 if (!currentListIsEmpty && (number <= currentList[^1] + 1 ||
-                                                 number <= currentList[^1] + _continuousDamagedSprings[currentIndex - 1]))
+                                            number <= currentList[^1] + _continuousDamagedSprings[currentIndex - 1]))
                     continue;
 
                 var indexAfterLength = number + _continuousDamagedSprings[currentIndex];
@@ -190,7 +191,7 @@ public class SpringRow
             }
         }
     }
-    
+
     private async Task<bool> CombinationIsPossibleAsync(List<int> combination)
     {
         return await Task.Run(() => CombinationIsPossible(combination));
@@ -203,7 +204,7 @@ public class SpringRow
 
         for (var i = 0; i < combination.Count - 1; i++)
         {
-            if (combination[i] + _continuousDamagedSprings[i] >= combination[i + 1]) 
+            if (combination[i] + _continuousDamagedSprings[i] >= combination[i + 1])
                 return false;
         }
 
@@ -217,7 +218,8 @@ public class SpringRow
 
     private async Task<bool> ContainsAllContinuousDamagedSprings(List<int> combination)
     {
-        var tasks = _damagedSpringsIndices.Select(async damagedSpringsIndex => await DamagedSpringIndexIsUsedAsync(combination, damagedSpringsIndex));
+        var tasks = _damagedSpringsIndices.Select(async damagedSpringsIndex =>
+            await DamagedSpringIndexIsUsedAsync(combination, damagedSpringsIndex));
         var results = await Task.WhenAll(tasks);
         return results.All(result => result);
     }
@@ -232,7 +234,6 @@ public class SpringRow
         var index = 0;
         foreach (var item in combination)
         {
-            
             if (item == damagedSpringIndex)
                 return true;
 
