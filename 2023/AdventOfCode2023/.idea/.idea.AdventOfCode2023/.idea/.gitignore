@@ -692,4 +692,5 @@ fabric.properties
 ### VisualStudio Patch ###
 # Additional files built by Visual Studio
 
-# End of https://www.toptal.com/developers/gitignore/api/jetbrains+all,visualstudio,csharp,dotnetcore
+# End of https://www.toptal.com/developers/gitignore/api/jetbrains+all,visualstudio,csharp,dotnetcore# GitHub Copilot persisted chat sessions
+/copilot/chatSessions

@@ -5,29 +5,30 @@ namespace AdventOfCode2023_1;
 
 public abstract class DayBase
 {
-    protected static List<string> Input = [];
+    protected static List<string> Input = new();
 
-    public void Run(string day, string title, PartsToRun partToRun = Constants.PartToRun)
+    public async Task Run(string day, string title)
     {
+        WriteStopwatchStartText();
         var watch = new Stopwatch();
         watch.Start();
-        
+
         Input = SharedMethods.GetInput(day);
         SharedMethods.WriteBeginText(day, title);
         Variables.RunningPartOne = true;
-        switch (partToRun)
+        switch (Constants.PartToRun)
         {
             case PartsToRun.Part1:
-                PartOne();
+                await PartOne();
                 break;
             case PartsToRun.Part2:
                 Variables.RunningPartOne = false;
-                PartTwo();
+                await PartTwo();
                 break;
             case PartsToRun.Both:
-                PartOne();
+                await PartOne();
                 Variables.RunningPartOne = false;
-                PartTwo();
+                await PartTwo();
                 break;
             default:
                 throw new ArgumentOutOfRangeException();
@@ -38,13 +39,19 @@ public abstract class DayBase
         Console.WriteLine();
     }
 
+    private static void WriteStopwatchStartText()
+    {
+        if (Constants.IsDebug)
+            Console.WriteLine($"Started at {DateTime.Now:HH:mm:ss}");
+    }
+
     private static void WriteStopwatchText(long watchElapsedMilliseconds)
     {
-        if (Constants.IsDebug) 
+        if (Constants.IsDebug)
             Console.WriteLine($"Elapsed time: {watchElapsedMilliseconds} ms");
     }
 
-    protected abstract void PartOne();
+    protected abstract Task PartOne();
 
-    protected abstract void PartTwo();
+    protected abstract Task PartTwo();
 }

@@ -3,10 +3,16 @@
 public static class SharedMethods
 {
     public static void WriteBeginText(string day, string title)
-        => Console.WriteLine($"Starting day {day} challenge: {title}");
+    {
+        ClearCurrentConsoleLine();
+        Console.WriteLine($"Starting day {day} challenge: {title}");
+    }
 
     public static void AnswerPart(object result)
-        => Console.WriteLine($"{Constants.LineReturn}Answer of part {GetRunningPart()} is: \n{result}");
+    {
+        ClearCurrentConsoleLine();
+        Console.WriteLine($"{Constants.LineReturn}Answer of part {GetRunningPart()} is: \n{result}");
+    }
 
     private static string GetRunningPart()
         => Variables.RunningPartOne ? "1" : "2";
@@ -21,9 +27,33 @@ public static class SharedMethods
 
     public static void WritePercentage(long current, long max)
     {
-        var progress = (double)current / max;
-        var percentage = (int)(progress * 100);
+        var progress = (double) current / max;
+        var percentage = (int) (progress * 100);
         WritePercentage(percentage);
+    }
+
+    public static void WritePermille(long current, long max)
+    {
+        var progress = (double) current / max;
+        var promille = (int) (progress * 1000);
+        WritePermille(promille);
+    }
+
+    private static long? _previousPermille;
+
+    private static void WritePermille(int permille)
+    {
+        if (_previousPermille == permille)
+            return;
+
+        _previousPermille = permille;
+
+        var promilleDec = permille / 100;
+
+        var spaces = new string(Convert.ToChar(Constants.Space), 100 - promilleDec);
+        var promilleString = new string(Convert.ToChar(Constants.HashTag), promilleDec);
+
+        Console.Write($"{Constants.LineReturn}[{promilleString}{spaces}] {permille:D3}‰");
     }
 
     private static long? _previousPercentage;
@@ -40,6 +70,7 @@ public static class SharedMethods
         var spaces = new string(Convert.ToChar(Constants.Space), 10 - percentageDec);
         var percentageString = new string(Convert.ToChar(Constants.HashTag), percentageDec);
 
+        ClearCurrentConsoleLine();
         Console.Write($"{Constants.LineReturn}[{percentageString}{spaces}] {percentage:D2}%");
     }
 
@@ -53,4 +84,7 @@ public static class SharedMethods
         const string mock = Constants.IsMock ? "Mock" : Constants.EmptyString;
         return $"{Constants.RootInputPath}/Day{day}/{mock}Day{day}.in";
     }
+
+    public static void ClearCurrentConsoleLine() 
+        => Console.Write("\r" + new string(' ', Console.WindowWidth) + "\r");
 }

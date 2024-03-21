@@ -5,16 +5,18 @@ namespace AdventOfCode2023_1;
 
 public class Day09 : DayBase
 {
-    protected override void PartOne()
+    protected override Task PartOne()
     {
         var result = PredictValue();
         SharedMethods.AnswerPart(result);
+        return Task.CompletedTask;
     }
 
-    protected override void PartTwo()
+    protected override Task PartTwo()
     {
         var result = PredictValue();
         SharedMethods.AnswerPart(result);
+        return Task.CompletedTask;
     }
 
     private static long PredictValue()

@@ -7,16 +7,18 @@ public class Day06 : DayBase
 {
     private readonly List<Race> _races = new();
 
-    protected override void PartOne()
+    protected override Task PartOne()
     {
         var result = GetTotalWaysToWin();
         SharedMethods.AnswerPart(result);
+        return Task.CompletedTask;
     }
 
-    protected override void PartTwo()
+    protected override Task PartTwo()
     {
         var result = GetTotalWaysToWin();
         SharedMethods.AnswerPart(result);
+        return Task.CompletedTask;
     }
 
     private int GetTotalWaysToWin()
