@@ -28,19 +28,17 @@ public class Day13 : DayBase
         });
 
         var tasks = patterns.Select(pattern => pattern.GetPatternNotesAsync());
-        if (Constants.IsDebug)
-        {
-            await Task.WhenAll(tasks.Select(async task =>
-            {
-                await task.ConfigureAwait(false);
-                Interlocked.Increment(ref completedTasks);
-                ((IProgress<long>) progress).Report(completedTasks);
-            })).ConfigureAwait(false);
-        }
-        else
-            await Task.WhenAll(tasks).ConfigureAwait(false);
+        var results = Constants.IsDebug 
+                ? await Task.WhenAll(tasks.Select(async task =>
+                {
+                    var result = await task.ConfigureAwait(false);
+                    Interlocked.Increment(ref completedTasks);
+                    ((IProgress<long>) progress).Report(completedTasks);
+                    return result;
+                }))
+                : await Task.WhenAll(tasks);
 
-        return patterns.GetPatternNotesSum();
+        return results.GetPatternNotesSum();
     }
 
     private static List<Pattern> GetPatterns()

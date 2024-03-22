@@ -4,30 +4,16 @@ namespace AdventOfCode2023_1.Models.Day13;
 
 public static class PatternExtensions
 {
-    public static long GetPatternNotesSum(this List<Pattern> patterns)
+    public static long GetPatternNotesSum(this ReturnObject[] patterns)
     {
-        var counter = 0;
-        var sumVerticalNotes = 0;
-        var sumHorizontalNotes = 0;
-
-        foreach (var pattern in patterns)
-        {
-            if (pattern.MirrorIsVertical)
-                sumVerticalNotes += pattern.LinesBeforeMirror;
-            else
-                sumHorizontalNotes += pattern.LinesBeforeMirror;
-        }
+        var sumVerticalNotes = patterns.Sum(pattern => pattern.IsVertical ? pattern.Notes : 0);
+        var sumHorizontalNotes = patterns.Sum(pattern => pattern.IsVertical ? 0 : pattern.Notes);
 
         return sumVerticalNotes + (100 * sumHorizontalNotes);
     }
 
-    public static bool? IsBeforeMiddle(this int position, int half)
-    {
-        // NULL means it's in the middle
-        // TRUE means it's before the middle
-        // FALSE means it's after the middle
-        return MathUtils.IsLessThan(position, half);
-    }
+    private static bool? IsBeforeMiddle(this int position, int half) 
+        => MathUtils.IsLessThan(position, half);
 
     public static async Task<int> GetCommonMirrorPosition(this List<Line> lines)
     {
@@ -54,7 +40,7 @@ public static class PatternExtensions
     public static async Task<List<int>> GetMirroredPositions(this List<bool> line)
     {
         List<int> mirroredPositions = new();
-        for (var i = 1; i < line.Count-1; i++)
+        for (var i = 0; i < line.Count; i++)
         {
             if (await CanBeMirrored(i, line))
                 mirroredPositions.Add(i);

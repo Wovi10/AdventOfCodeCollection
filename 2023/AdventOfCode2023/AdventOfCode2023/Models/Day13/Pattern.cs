@@ -18,7 +18,7 @@ public class Pattern
     public int LinesBeforeMirror = 0;
     public bool MirrorIsVertical = false;
 
-    public async Task GetPatternNotesAsync()
+    public async Task<ReturnObject> GetPatternNotesAsync()
     {
         var firstLine = _lines.First();
         var firstMirroredPositions = await firstLine.GetMirroredPositions();
@@ -37,7 +37,7 @@ public class Pattern
             {
                 MirrorIsVertical = true;
                 LinesBeforeMirror = commonMirrorPosition;
-                return;
+                return new ReturnObject(LinesBeforeMirror, MirrorIsVertical);
             }
         }
         AddColumns();
@@ -48,6 +48,8 @@ public class Pattern
         }
 
         LinesBeforeMirror = _mirroredPositions.GetCommonMirrorPosition();
+        
+        return new ReturnObject(LinesBeforeMirror, MirrorIsVertical);
     }
 
     private void AddColumns()
@@ -61,4 +63,16 @@ public class Pattern
             }
         }
     }
+}
+
+public class ReturnObject
+{
+    public ReturnObject(int notes, bool isVertical)
+    {
+        Notes = notes;
+        IsVertical = isVertical;
+    }
+
+    public int Notes { get; set; }
+    public bool IsVertical { get; set; }
 }
