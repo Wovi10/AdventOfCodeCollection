@@ -83,8 +83,10 @@ public class Day04 : DayBase
                     continue;
 
                 var counter = scratchCard.CardId + 1;
+
                 if (counter > initialCount)
                     continue;
+
                 foreach (var scratchCardToAdjust in scratchCard.MatchingNumbers.Select(_ =>
                              scratchCards.FirstOrDefault(card => card.CardId == counter)))
                 {
