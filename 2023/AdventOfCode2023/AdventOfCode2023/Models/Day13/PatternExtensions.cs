@@ -1,4 +1,5 @@
-﻿using UtilsCSharp;
+﻿using AdventOfCode2023_1.Shared;
+using UtilsCSharp;
 
 namespace AdventOfCode2023_1.Models.Day13;
 
@@ -11,11 +12,26 @@ public static class PatternExtensions
 
         return sumVerticalNotes + (100 * sumHorizontalNotes);
     }
-
+    
     private static bool? IsBeforeMiddle(this int position, double placesFromEnd) 
         => MathUtils.IsLessThan(position, placesFromEnd);
 
-    public static async Task<List<int>> GetCommonMirrorPositions(this List<Line> lines)
+    public static async Task<int> GetCommonMirrorPosition(this List<Line> lines, ReturnObject? previousNotes = null)
+    {
+        var commonMirrorPositions = await lines.GetCommonMirrorPositions();
+
+        if (commonMirrorPositions.Count == 0)
+            return 0;
+
+        if (!Variables.RunningPartOne && previousNotes is {IsVertical: true}) 
+            commonMirrorPositions = commonMirrorPositions.Where(position => position != previousNotes.Notes).ToList();
+
+        var commonMirrorPosition = commonMirrorPositions.Count > 0 ? commonMirrorPositions.Max() : 0;
+
+        return commonMirrorPosition <= 0 ? 0 : commonMirrorPosition;
+    }
+
+    private static async Task<List<int>> GetCommonMirrorPositions(this List<Line> lines)
     {
         var mirroredPositions = new List<List<int>>();
 
