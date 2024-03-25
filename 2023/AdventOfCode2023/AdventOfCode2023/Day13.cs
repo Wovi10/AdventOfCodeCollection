@@ -11,9 +11,10 @@ public class Day13 : DayBase
         SharedMethods.PrintAnswer(result);
     }
 
-    protected override Task PartTwo()
+    protected override async Task PartTwo()
     {
-        throw new NotImplementedException();
+        var result = await GetPatternNotesSum().ConfigureAwait(false);
+        SharedMethods.PrintAnswer(result);
     }
 
     private async Task<long> GetPatternNotesSum()

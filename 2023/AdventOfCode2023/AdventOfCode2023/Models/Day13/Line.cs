@@ -1,4 +1,6 @@
-﻿namespace AdventOfCode2023_1.Models.Day13;
+﻿using AdventOfCode2023_1.Shared;
+
+namespace AdventOfCode2023_1.Models.Day13;
 
 public class Line
 {
@@ -17,7 +19,7 @@ public class Line
 
     public async Task<List<int>> GetMirroredPositions()
     {
-        if (_wasTested)
+        if (Variables.RunningPartOne && _wasTested)
             return MirroredPositions;
 
         _wasTested = true;
