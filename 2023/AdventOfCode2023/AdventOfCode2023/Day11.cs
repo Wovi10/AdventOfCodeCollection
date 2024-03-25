@@ -10,14 +10,14 @@ public class Day11 : DayBase
     protected override Task PartOne()
     {
         var result = GetSumOfShortestPaths();
-        SharedMethods.AnswerPart(result);
+        SharedMethods.PrintAnswer(result);
         return Task.CompletedTask;
     }
 
     protected override Task PartTwo()
     {
         var result = GetSumOfShortestPaths();
-        SharedMethods.AnswerPart(result);
+        SharedMethods.PrintAnswer(result);
         return Task.CompletedTask;
     }
 

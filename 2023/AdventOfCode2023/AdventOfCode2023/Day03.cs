@@ -8,14 +8,14 @@ public class Day03 : DayBase
     protected override Task PartOne()
     {
         var result = GetSumPartNumbers();
-        SharedMethods.AnswerPart(result);
+        SharedMethods.PrintAnswer(result);
         return Task.CompletedTask;
     }
 
     protected override Task PartTwo()
     {
         var result = GetSumGearRatios();
-        SharedMethods.AnswerPart(result);
+        SharedMethods.PrintAnswer(result);
         return Task.CompletedTask;
     }
 

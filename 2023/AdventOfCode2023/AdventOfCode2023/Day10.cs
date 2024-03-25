@@ -8,14 +8,14 @@ public class Day10 : DayBase
     protected override Task PartOne()
     {
         var result = CalculateFurthestDistanceFromStart();
-        SharedMethods.AnswerPart(result);
+        SharedMethods.PrintAnswer(result);
         return Task.CompletedTask;
     }
 
     protected override Task PartTwo()
     {
         var result = CalculateEnclosedTiles();
-        SharedMethods.AnswerPart(result);
+        SharedMethods.PrintAnswer(result);
         return Task.CompletedTask;
     }
 

@@ -5,17 +5,17 @@ namespace AdventOfCode2023_1;
 
 public class Day01 : DayBase
 {
-    protected override Task PartOne()
+    protected override  Task PartOne()
     {
         var result = GetCalibrationSum();
-        SharedMethods.AnswerPart(result);
+        SharedMethods.PrintAnswer(result);
         return Task.CompletedTask;
     }
 
     protected override Task PartTwo()
     {
         var result = GetCalibrationSum(@"\d|one|two|three|four|five|six|seven|eight|nine");
-        SharedMethods.AnswerPart(result);
+        SharedMethods.PrintAnswer(result);
         return Task.CompletedTask;
     }
 

@@ -8,14 +8,14 @@ public class Day02 : DayBase
     protected override Task PartOne()
     {
         var result = GetListPossibleGames().Sum();
-        SharedMethods.AnswerPart(result);
+        SharedMethods.PrintAnswer(result);
         return Task.CompletedTask;
     }
 
     protected override Task PartTwo()
     {
         var result = GetListPartTwoGames().Sum();
-        SharedMethods.AnswerPart(result);
+        SharedMethods.PrintAnswer(result);
         return Task.CompletedTask;
     }
 

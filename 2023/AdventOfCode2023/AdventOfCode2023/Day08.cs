@@ -13,14 +13,14 @@ public class Day08 : DayBase
     protected override Task PartOne()
     {
         var result = CalculateSteps();
-        SharedMethods.AnswerPart(result);
+        SharedMethods.PrintAnswer(result);
         return Task.CompletedTask;
     }
 
     protected override Task PartTwo()
     {
         var result = CalculateSteps();
-        SharedMethods.AnswerPart(result);
+        SharedMethods.PrintAnswer(result);
         return Task.CompletedTask;
     }
 
