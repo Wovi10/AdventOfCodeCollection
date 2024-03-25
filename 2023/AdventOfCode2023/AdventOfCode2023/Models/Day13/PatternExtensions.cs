@@ -4,10 +4,10 @@ namespace AdventOfCode2023_1.Models.Day13;
 
 public static class PatternExtensions
 {
-    public static long GetPatternNotesSum(this ReturnObject[] patterns)
+    public static long GetPatternNotesSum(this ReturnObject?[] patterns)
     {
-        var sumVerticalNotes = patterns.Sum(pattern => pattern.IsVertical ? pattern.Notes : 0);
-        var sumHorizontalNotes = patterns.Sum(pattern => pattern.IsVertical ? 0 : pattern.Notes);
+        var sumVerticalNotes = patterns.Sum(pattern => pattern?.IsVertical ?? false ? pattern.Notes : 0);
+        var sumHorizontalNotes = patterns.Sum(pattern => pattern?.IsVertical ?? true ? 0 : pattern.Notes);
 
         return sumVerticalNotes + (100 * sumHorizontalNotes);
     }

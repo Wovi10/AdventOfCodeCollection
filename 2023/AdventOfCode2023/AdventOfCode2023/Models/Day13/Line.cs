@@ -12,6 +12,12 @@ public class Line
         }
     }
 
+    public Line(List<bool> rocks)
+    {
+        foreach (var rock in rocks) 
+            Rocks.Add(rock);
+    }
+
     public readonly List<bool> Rocks = new();
     public int LinesBeforeMirror { get; set; }
     private List<int> MirroredPositions = new();

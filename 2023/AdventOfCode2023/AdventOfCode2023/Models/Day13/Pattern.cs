@@ -20,77 +20,72 @@ public class Pattern
     public int LinesBeforeMirror = 0;
     public bool MirrorIsVertical = false;
 
-    public async Task<ReturnObject> GetPatternNotesAsync()
+    public async Task<ReturnObject?> GetPatternNotesAsync()
     {
         if (Variables.RunningPartOne)
-            return await RunPartOne();
-        
+            return await RunPartOne(_lines);
+
         return await RunPartTwo();
     }
 
-    private async Task<ReturnObject> RunPartTwo()
+    private async Task<ReturnObject?> RunPartTwo()
     {
+        ReturnObject? result = null;
+        var lineCounter = 0;
+
         foreach (var line in _lines)
         {
-            var counter = 0;
+            var columnCounter = 0;
             foreach (var lineRock in line.Rocks)
             {
-                line.Rocks[counter] = !lineRock;
-                var verticalNotes = await GetVerticalNotes();
-                if (verticalNotes != null)
-                    return verticalNotes;
-                line.Rocks[counter] = lineRock;
-                counter++;
+                var copyOfLines = _lines.Select(l => new Line(l.Rocks)).ToList();
+                copyOfLines[lineCounter].Rocks[columnCounter] = !lineRock;
+                var columns = AddColumns(copyOfLines);
+                result = await GetHorizontalNotes(columns);
+
+                if (result != null)
+                    return result;
+
+                result = await GetVerticalNotes(copyOfLines);
+
+                if (result != null)
+                    return result;
+
+                columnCounter++;
             }
+            lineCounter++;
         }
 
-        AddColumns();
-        _lines.Clear();
-        
-        foreach (var column in _columns)
-        {
-            var counter = 0;
-            foreach (var columnRock in column)
-            {
-                column[counter] = !columnRock;
-                var horizontalNotes = await GetHorizontalNotes();
-                if (horizontalNotes != null)
-                    return horizontalNotes;
-                column[counter] = columnRock;
-                counter++;
-            }
-        }
-
-        return new ReturnObject(0, false);
+        return result;
     }
 
-    private async Task<ReturnObject> RunPartOne()
+    private async Task<ReturnObject?> RunPartOne(List<Line> lines)
     {
-        var verticalNotes = await GetVerticalNotes();
-        if (verticalNotes != null)
-            return verticalNotes;
+        var columns = AddColumns(lines);
+        var horizontalNotes = await GetHorizontalNotes(columns);
+        if (horizontalNotes != null)
+            return horizontalNotes;
 
-        AddColumns();
-        _lines.Clear();
-        return await GetHorizontalNotes();
+        var verticalNotes = await GetVerticalNotes(lines);
+        return verticalNotes;
     }
 
-    private async Task<ReturnObject?> GetVerticalNotes()
+    private async Task<ReturnObject?> GetVerticalNotes(List<Line> lines)
     {
-        var firstLine = _lines.First();
+        var firstLine = lines.First();
         var firstMirroredPositions = await firstLine.GetMirroredPositions();
 
         if (firstMirroredPositions.Count <= 0) 
             return null;
 
-        foreach (var line in _lines.Skip(1))
+        foreach (var line in lines.Skip(1))
         {
             var mirroredPositions = await line.GetMirroredPositions();
             if (mirroredPositions.Count <= 0) 
                 break;
         }
 
-        var commonMirrorPosition = await _lines.GetCommonMirrorPosition();
+        var commonMirrorPosition = await lines.GetCommonMirrorPosition();
         if (commonMirrorPosition <= 0) 
             return null;
 
@@ -100,9 +95,9 @@ public class Pattern
         return new ReturnObject(LinesBeforeMirror, MirrorIsVertical);
     }
 
-    private async Task<ReturnObject?> GetHorizontalNotes()
+    private async Task<ReturnObject?> GetHorizontalNotes(List<List<bool>> columns)
     {
-        foreach (var column in _columns)
+        foreach (var column in columns)
         {
             _mirroredPositions.Add(await column.GetMirroredPositions());
         }
@@ -116,16 +111,19 @@ public class Pattern
 
     }
 
-    private void AddColumns()
+    private List<List<bool>> AddColumns(List<Line> lines)
     {
-        for (var i = 0; i < _lines[0].Rocks.Count; i++)
+        var columns = new List<List<bool>>();
+        for (var i = 0; i < lines[0].Rocks.Count; i++)
         {
-            _columns.Add(new List<bool>());
-            foreach (var line in _lines)
+            columns.Add(new List<bool>());
+            foreach (var line in lines)
             {
-                _columns[i].Add(line.Rocks[i]);
+                columns[i].Add(line.Rocks[i]);
             }
         }
+
+        return columns;
     }
 }
 
