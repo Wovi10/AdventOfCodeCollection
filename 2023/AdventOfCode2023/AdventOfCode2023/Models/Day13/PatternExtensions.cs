@@ -4,10 +4,10 @@ namespace AdventOfCode2023_1.Models.Day13;
 
 public static class PatternExtensions
 {
-    public static long GetPatternNotesSum(this ReturnObject[] patterns)
+    public static long GetPatternNotesSum(this ReturnObject?[] patterns)
     {
-        var sumVerticalNotes = patterns.Sum(pattern => pattern.IsVertical ? pattern.Notes : 0);
-        var sumHorizontalNotes = patterns.Sum(pattern => pattern.IsVertical ? 0 : pattern.Notes);
+        var sumVerticalNotes = patterns.Sum(pattern => pattern?.IsVertical ?? false ? pattern.Notes : 0);
+        var sumHorizontalNotes = patterns.Sum(pattern => pattern?.IsVertical ?? true ? 0 : pattern.Notes);
 
         return sumVerticalNotes + (100 * sumHorizontalNotes);
     }
@@ -15,32 +15,32 @@ public static class PatternExtensions
     private static bool? IsBeforeMiddle(this int position, double placesFromEnd) 
         => MathUtils.IsLessThan(position, placesFromEnd);
 
-    public static async Task<int> GetCommonMirrorPosition(this List<Line> lines)
+    public static async Task<List<int>> GetCommonMirrorPositions(this List<Line> lines)
     {
         var mirroredPositions = new List<List<int>>();
 
-        foreach (var line in lines) 
+        foreach (var line in lines)
             mirroredPositions.Add(await line.GetMirroredPositions());
 
-        return mirroredPositions.GetCommonMirrorPosition();
+        return mirroredPositions.GetCommonMirrorPositions();
     }
 
-    public static int GetCommonMirrorPosition(this List<List<int>> lines)
+    public static List<int> GetCommonMirrorPositions(this List<List<int>> lines)
     {
         if (lines.Count == 0 || lines.Any(line => line.Count == 0))
-            return 0;
+            return new List<int>();
 
         var commonPositions = lines[0];
         commonPositions = lines.Skip(1)
             .Aggregate(commonPositions, (current, line) => current.Intersect(line).ToList());
 
-        return commonPositions.Count > 0 ? commonPositions.Max() : 0;
+        return commonPositions;
     }
 
     public static async Task<List<int>> GetMirroredPositions(this List<bool> line)
     {
         List<int> mirroredPositions = new();
-        for (var i = 0; i < line.Count; i++)
+        for (var i = 1; i < line.Count; i++)
         {
             if (await CanBeMirrored(i, line))
                 mirroredPositions.Add(i);
