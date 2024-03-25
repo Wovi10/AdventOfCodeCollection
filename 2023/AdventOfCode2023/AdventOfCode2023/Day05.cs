@@ -38,11 +38,10 @@ public class Day05 : DayBase
         _humidToLoc.Clear();
     }
 
-    protected override Task PartTwo()
+    protected override async Task PartTwo()
     {
-        var result = GetLowestLocationNumberPart2();
+        var result = await GetLowestLocationNumberPart2();
         SharedMethods.PrintAnswer(result);
-        return Task.CompletedTask;
     }
 
     #region Part1
@@ -91,26 +90,46 @@ public class Day05 : DayBase
 
     #region Part2
 
-    private long GetLowestLocationNumberPart2()
+    private async Task<long> GetLowestLocationNumberPart2()
     {
         ProcessFilesPart2();
 
         var pairCounter = 0;
-        foreach (var startEndPair in _seedsToTestPart2)
+        
+        await Task.Run(() =>
         {
-            Console.WriteLine($"{Constants.LineReturn}Starting pair {++pairCounter} of {_seedsToTestPart2.Count}");
-            for (var seed = startEndPair.Start; seed < startEndPair.End; seed++)
+            Parallel.ForEach(_seedsToTestPart2, startEndPair =>
             {
-                var location = SeedToLocation(seed);
-                _lowestLocation = GetLowest(location, _lowestLocation);
-
-                if (Constants.IsDebug)
+                Console.WriteLine($"{Constants.LineReturn}Starting pair {Interlocked.Increment(ref pairCounter)} of {_seedsToTestPart2.Count}");
+                for (var seed = startEndPair.Start; seed < startEndPair.End; seed++)
                 {
-                    var currentIndex = seed - startEndPair.Start;
-                    SharedMethods.PrintPercentage(currentIndex, startEndPair.Range);
+                    var location = SeedToLocation(seed);
+                    Interlocked.Exchange(ref _lowestLocation, GetLowest(location, _lowestLocation));
+
+                    if (Constants.IsDebug)
+                    {
+                        var currentIndex = seed - startEndPair.Start;
+                        SharedMethods.PrintPercentage(currentIndex, startEndPair.Range);
+                    }
                 }
-            }
-        }
+            });
+        });
+        
+        // foreach (var startEndPair in _seedsToTestPart2)
+        // {
+        //     Console.WriteLine($"{Constants.LineReturn}Starting pair {++pairCounter} of {_seedsToTestPart2.Count}");
+        //     for (var seed = startEndPair.Start; seed < startEndPair.End; seed++)
+        //     {
+        //         var location = SeedToLocation(seed);
+        //         _lowestLocation = GetLowest(location, _lowestLocation);
+        //
+        //         if (Constants.IsDebug)
+        //         {
+        //             var currentIndex = seed - startEndPair.Start;
+        //             SharedMethods.PrintPercentage(currentIndex, startEndPair.Range);
+        //         }
+        //     }
+        // }
 
         return _lowestLocation;
     }
