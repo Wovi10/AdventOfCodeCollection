@@ -15,20 +15,21 @@ public class Pattern
 
     private readonly int Index;
     private readonly List<Line> _lines = new();
-    private readonly List<List<bool>> _columns = new();
     private readonly List<List<int>> _mirroredPositions = new();
     public int LinesBeforeMirror = 0;
     public bool MirrorIsVertical = false;
 
     public async Task<ReturnObject?> GetPatternNotesAsync()
     {
+        var solutionPartOne = await RunPartOne(_lines);
         if (Variables.RunningPartOne)
-            return await RunPartOne(_lines);
+            return solutionPartOne;
+        
 
-        return await RunPartTwo();
+        return await RunPartTwo(solutionPartOne);
     }
 
-    private async Task<ReturnObject?> RunPartTwo()
+    private async Task<ReturnObject?> RunPartTwo(ReturnObject? solutionPartOne)
     {
         ReturnObject? result = null;
         var lineCounter = 0;
@@ -38,17 +39,18 @@ public class Pattern
             var columnCounter = 0;
             foreach (var lineRock in line.Rocks)
             {
+                _mirroredPositions.Clear();
                 var copyOfLines = _lines.Select(l => new Line(l.Rocks)).ToList();
                 copyOfLines[lineCounter].Rocks[columnCounter] = !lineRock;
                 var columns = AddColumns(copyOfLines);
-                result = await GetHorizontalNotes(columns);
+                result = await GetHorizontalNotes(columns, solutionPartOne?.Notes ?? 0);
 
-                if (result != null)
+                if (result != null && (solutionPartOne?.Notes != result.Notes || solutionPartOne?.IsVertical != result.IsVertical))
                     return result;
 
-                result = await GetVerticalNotes(copyOfLines);
+                result = await GetVerticalNotes(copyOfLines, solutionPartOne);
 
-                if (result != null)
+                if (result != null && (solutionPartOne?.Notes != result.Notes || solutionPartOne?.IsVertical != result.IsVertical))
                     return result;
 
                 columnCounter++;
@@ -70,22 +72,27 @@ public class Pattern
         return verticalNotes;
     }
 
-    private async Task<ReturnObject?> GetVerticalNotes(List<Line> lines)
+    private async Task<ReturnObject?> GetVerticalNotes(List<Line> lines, ReturnObject? previousNotes = null)
     {
-        var firstLine = lines.First();
-        var firstMirroredPositions = await firstLine.GetMirroredPositions();
-
-        if (firstMirroredPositions.Count <= 0) 
-            return null;
-
-        foreach (var line in lines.Skip(1))
+        foreach (var line in lines)
         {
             var mirroredPositions = await line.GetMirroredPositions();
             if (mirroredPositions.Count <= 0) 
                 break;
         }
 
-        var commonMirrorPosition = await lines.GetCommonMirrorPosition();
+        var commonMirrorPositions = await lines.GetCommonMirrorPositions();
+
+        if (commonMirrorPositions.Count == 0)
+            return null;
+
+        if (!Variables.RunningPartOne && previousNotes is {IsVertical: true})
+        {
+            commonMirrorPositions = commonMirrorPositions.Where(position => position != previousNotes.Notes).ToList();
+        }
+
+        var commonMirrorPosition = commonMirrorPositions.Count > 0 ? commonMirrorPositions.Max() : 0;
+
         if (commonMirrorPosition <= 0) 
             return null;
 
@@ -95,14 +102,24 @@ public class Pattern
         return new ReturnObject(LinesBeforeMirror, MirrorIsVertical);
     }
 
-    private async Task<ReturnObject?> GetHorizontalNotes(List<List<bool>> columns)
+    private async Task<ReturnObject?> GetHorizontalNotes(List<List<bool>> columns, int previousValue = 0)
     {
         foreach (var column in columns)
         {
             _mirroredPositions.Add(await column.GetMirroredPositions());
         }
 
-        LinesBeforeMirror = _mirroredPositions.GetCommonMirrorPosition();
+        var options = _mirroredPositions.GetCommonMirrorPositions();
+        
+        if (options.Count == 0)
+            return null;
+        
+        options = Variables.RunningPartOne
+            ? options
+            : options.Where(position => position != previousValue).ToList();
+
+        LinesBeforeMirror = options.Count > 0 ? options.Max() : 0;
+        MirrorIsVertical = false;
 
         if (LinesBeforeMirror > 0)
             return new ReturnObject(LinesBeforeMirror, MirrorIsVertical);
@@ -127,14 +144,8 @@ public class Pattern
     }
 }
 
-public class ReturnObject
+public class ReturnObject(int notes, bool isVertical)
 {
-    public ReturnObject(int notes, bool isVertical)
-    {
-        Notes = notes;
-        IsVertical = isVertical;
-    }
-
-    public int Notes { get; set; }
-    public bool IsVertical { get; set; }
+    public int Notes { get; set; } = notes;
+    public bool IsVertical { get; set; } = isVertical;
 }
