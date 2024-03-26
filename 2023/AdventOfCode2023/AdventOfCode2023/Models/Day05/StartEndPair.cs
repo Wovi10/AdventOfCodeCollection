@@ -52,7 +52,7 @@ public class StartEndPair
                 continue;
             }
 
-            if (currentPair.End < nextPair.End) 
+            if (currentPair.End < nextPair.End)
                 currentPair = new StartEndPair(currentPair.Start, nextPair.End);
 
             result.Add(currentPair);
@@ -62,18 +62,23 @@ public class StartEndPair
         return result;
     }
 
-    public async Task<long> TestPair(List<SeedMapping> seedToSoil, List<SeedMapping> soilToFert, List<SeedMapping> fertToWater, List<SeedMapping> waterToLight, List<SeedMapping> lightToTemp, List<SeedMapping> tempToHumid, List<SeedMapping> humidToLoc)
+    public async Task<long> TestPair(List<SeedMapping> seedToSoil, List<SeedMapping> soilToFert,
+        List<SeedMapping> fertToWater, List<SeedMapping> waterToLight, List<SeedMapping> lightToTemp,
+        List<SeedMapping> tempToHumid, List<SeedMapping> humidToLoc)
     {
         for (var seed = Start; seed < End; seed++)
         {
-            var location = await Task.Run(() =>SeedToLocation(seed, seedToSoil, soilToFert, fertToWater, waterToLight, lightToTemp, tempToHumid, humidToLoc));
+            var location = await Task.Run(() => SeedToLocation(seed, seedToSoil, soilToFert, fertToWater, waterToLight,
+                lightToTemp, tempToHumid, humidToLoc));
             LowestLocation = MathUtils.GetLowest(location, LowestLocation);
         }
 
         return LowestLocation;
     }
 
-    private long SeedToLocation(long seed, List<SeedMapping> seedToSoil, List<SeedMapping> soilToFert, List<SeedMapping> fertToWater, List<SeedMapping> waterToLight, List<SeedMapping> lightToTemp, List<SeedMapping> tempToHumid, List<SeedMapping> humidToLoc)
+    private static long SeedToLocation(long seed, List<SeedMapping> seedToSoil, List<SeedMapping> soilToFert,
+        List<SeedMapping> fertToWater, List<SeedMapping> waterToLight, List<SeedMapping> lightToTemp,
+        List<SeedMapping> tempToHumid, List<SeedMapping> humidToLoc)
     {
         var result = TestLocation(seed, seedToSoil);
         result = TestLocation(result, soilToFert);
@@ -89,8 +94,7 @@ public class StartEndPair
     private static long TestLocation(long seed, List<SeedMapping> mappings)
     {
         foreach (var seedMapping in mappings
-                     .Where(seedMapping => seedMapping.SourceStart <= seed)
-                     .Where(seedMapping => seedMapping.SourceEnd >= seed))
+                     .Where(seedMapping => seedMapping.SourceStart <= seed && seedMapping.SourceEnd >= seed))
         {
             return seedMapping.MapValue(seed);
         }

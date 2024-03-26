@@ -94,7 +94,6 @@ public class Day05 : DayBase
     {
         ProcessFilesPart2();
 
-        var pairCounter = 0;
         var totalTasks = _seedsToTestPart2.Count;
         var completedTasks = 0;
 
@@ -104,7 +103,8 @@ public class Day05 : DayBase
             Console.Write($"Finished {current} parts of {totalTasks}");
         });
 
-        var tasks = _seedsToTestPart2.Select(pair => pair.TestPair(_seedToSoil,_soilToFert, _fertToWater, _waterToLight, _lightToTemp, _tempToHumid, _humidToLoc));
+        var tasks = _seedsToTestPart2.Select(pair => pair.TestPair(_seedToSoil, _soilToFert, _fertToWater,
+            _waterToLight, _lightToTemp, _tempToHumid, _humidToLoc));
         var results = Constants.IsDebug
             ? await Task.WhenAll(tasks.Select(async task =>
             {
@@ -187,8 +187,8 @@ public class Day05 : DayBase
     private static long TestLocation(long seed, List<SeedMapping> mappings)
     {
         foreach (var seedMapping in mappings
-                                        .Where(seedMapping => seedMapping.SourceStart <= seed)
-                                        .Where(seedMapping => seedMapping.SourceEnd >= seed))
+                     .Where(seedMapping => seedMapping.SourceStart <= seed)
+                     .Where(seedMapping => seedMapping.SourceEnd >= seed))
         {
             return seedMapping.MapValue(seed);
         }
