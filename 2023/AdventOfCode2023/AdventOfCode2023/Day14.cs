@@ -5,23 +5,26 @@ namespace AdventOfCode2023_1;
 
 public class Day14:DayBase
 {
-    protected override Task PartOne()
+    protected override async Task PartOne()
     {
-        var result = CalculateTotalLoad();
+        var result = await CalculateTotalLoad();
         SharedMethods.PrintAnswer(result);
-        return Task.CompletedTask;
     }
 
-    protected override Task PartTwo()
+    protected override async Task PartTwo()
     {
-        throw new NotImplementedException();
+        var result = await CalculateTotalLoad();
+        SharedMethods.PrintAnswer(result);
     }
 
-    private long CalculateTotalLoad()
+    private async Task<long> CalculateTotalLoad()
     {
         var dish = new Dish(Input);
 
-        dish.TiltNorth();
+        if (Variables.RunningPartOne)
+            await dish.TiltNorth();
+        else
+            await dish.RunCycles(1000000000);
         dish.CalculateTotalLoad();
 
         return dish.TotalLoad;

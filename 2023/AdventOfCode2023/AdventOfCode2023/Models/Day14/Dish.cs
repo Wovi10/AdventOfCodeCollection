@@ -5,36 +5,32 @@ public class Dish
     public Dish(List<string> input)
     {
         Rows = input.Select(l => l.Trim()).Select(line => new DishRow(line)).ToList();
+        Columns = new List<DishRow>();
+        for (var i = 0; i < Rows[0].Rocks.Count; i++)
+        {
+            var columnRocks = Rows.Select(row => row.Rocks[i]).ToList();
+            Columns.Add(new DishRow(columnRocks));
+        }
     }
 
     private List<DishRow> Rows { get; set; }
-    public long TotalLoad { get; set; }
+    private List<DishRow> Columns { get; set; }
+    public long TotalLoad { get; private set; }
 
-    public void TiltNorth()
+    public async Task RunCycles(int numCycles)
     {
-        var hasChanged = false;
-
-        do
+        for (var i = 0; i < numCycles; i++)
         {
-            hasChanged = false;
-            var counter = 1;
-            foreach (var dishRow in Rows.Skip(1))
-            {
-                var previousRow = Rows[counter - 1];
-                var blockedIndices = previousRow.GetBlockedIndices();
-                var roundRocks = dishRow.GetRoundRocksIndices().Where(index => !blockedIndices.Contains(index)).ToList();
-                var emptySpaces = previousRow.GetNoneRocksIndices();
-            
-                foreach (var roundRockIndex in roundRocks.Where(roundRockIndex => emptySpaces.Contains(roundRockIndex)))
-                {
-                    previousRow.Rocks[roundRockIndex] = RockType.Round;
-                    dishRow.Rocks[roundRockIndex] = RockType.None;
-                    hasChanged = true;
-                }
+            await TiltNorth();
+            await TiltWest();
+            await TiltSouth();
+            await TiltEast();
+        }
+    }
 
-                counter++;
-            }
-        } while (hasChanged);
+    public async Task TiltNorth()
+    {
+        await Tilt(Direction.North);
     }
 
     public void CalculateTotalLoad()
@@ -44,6 +40,73 @@ public class Dish
         {
             TotalLoad += numRoundRocks * rowCounter;
             rowCounter--;
+        }
+    }
+
+    public async Task TiltSouth()
+    {
+        await Tilt(Direction.South);
+    }
+
+    private async Task TiltWest()
+    {
+        await Tilt(Direction.West);
+    }
+    
+    private async Task TiltEast()
+    {
+        await Tilt(Direction.East);
+    }
+
+    private async Task Tilt(Direction direction)
+    {
+        var tasks = direction switch
+        {
+            Direction.North => Columns.Select(column => column.TiltToStartAsync()),
+            Direction.South => Columns.Select(column => column.TiltToEndAsync()),
+            Direction.East => Rows.Select(row => row.TiltToEndAsync()),
+            Direction.West => Rows.Select(row => row.TiltToStartAsync()),
+            _ => throw new ArgumentOutOfRangeException(nameof(direction), direction, null)
+        };
+
+        await Task.WhenAll(tasks);
+
+        switch (direction)
+        {
+            case Direction.North:
+            case Direction.South:
+                AlignRows();
+                break;
+            case Direction.East:
+            case Direction.West:
+                AlignColumns();
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(direction), direction, null);
+        }
+    }
+
+    private void AlignRows()
+    {
+        for (var columnCounter = 0; columnCounter < Columns.Count; columnCounter++)
+        {
+            var column = Columns[columnCounter];
+            for (var rowCounter = 0; rowCounter < Rows.Count; rowCounter++)
+            {
+                Rows[rowCounter].Rocks[columnCounter] = column.Rocks[rowCounter];
+            }
+        }
+    }
+
+    private void AlignColumns()
+    {
+        for (var rowCounter = 0; rowCounter < Rows.Count; rowCounter++)
+        {
+            var row = Rows[rowCounter];
+            for (var columnCounter = 0; columnCounter < Columns.Count; columnCounter++)
+            {
+                Columns[columnCounter].Rocks[rowCounter] = row.Rocks[columnCounter];
+            }
         }
     }
 }
