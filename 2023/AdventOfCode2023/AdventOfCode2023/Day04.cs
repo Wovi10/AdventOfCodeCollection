@@ -5,62 +5,67 @@ namespace AdventOfCode2023_1;
 
 public class Day04 : DayBase
 {
-    protected override Task PartOne()
+    protected override async Task PartOne()
     {
-        var result = GetSumScratchCardPoints();
+        var result = await GetSumScratchCardPoints();
         SharedMethods.PrintAnswer(result);
-        return Task.CompletedTask;
     }
 
-    protected override Task PartTwo()
+    protected override async Task PartTwo()
     {
-        var result = GetTotalNumberCards();
+        var result = await GetTotalNumberCards();
         SharedMethods.PrintAnswer(result);
-        return Task.CompletedTask;
     }
 
     #region Part 1
 
-    private static int GetSumScratchCardPoints()
+    private static async Task<int> GetSumScratchCardPoints()
     {
-        return GetScratchCardPoints().Sum();
+        var scratchCardPoints = await GetScratchCardPoints();
+        return scratchCardPoints.Sum();
     }
 
-    private static List<int> GetScratchCardPoints()
+    private static async Task<List<int>> GetScratchCardPoints()
     {
-        var scratchCards = GetScratchCards(true);
+        var scratchCards = await GetScratchCards(true);
         return scratchCards.Select(card => card.Points).ToList();
     }
 
-    private static List<ScratchCard> GetScratchCards(bool needPoints = false)
+    private static Task<List<ScratchCard>> GetScratchCards(bool needPoints = false)
     {
         var scratchCards = new List<ScratchCard>();
         foreach (var line in Input)
         {
             var gameLine = line.Split(Constants.Colon).ToList();
             var gameId = gameLine.First().Split(Constants.Space).Last();
+            var scratchCard = new ScratchCard(gameId);
+
             var gameNumbers = gameLine.Last();
-            var winningNumbers = gameNumbers.Split(Constants.Pipe).ToList().First().Trim();
-            var cardNumbers = gameNumbers.Split(Constants.Pipe).ToList().Last().Trim();
-            var scratchCard = new ScratchCard(gameId, winningNumbers, cardNumbers);
+            var taskWinningNumbers = scratchCard.SetWinningNumbers(gameNumbers.Split(Constants.Pipe).ToList().First().Trim());
+            var taskCardNumbers = scratchCard.SetCardNumbers(gameNumbers.Split(Constants.Pipe).ToList().Last().Trim());
+
+            Task.WhenAll(taskWinningNumbers, taskCardNumbers).Wait();
+
+            scratchCard.SetMatchingNumbers();
+
             scratchCards.Add(scratchCard);
         }
 
-        if (!needPoints) return scratchCards;
+        if (!needPoints) return Task.FromResult(scratchCards);
 
         foreach (var scratchCard in scratchCards)
             scratchCard.CalculatePoints();
 
-        return scratchCards;
+        return Task.FromResult(scratchCards);
     }
 
     #endregion
 
     #region Part 2
 
-    private static int GetTotalNumberCards()
+    private static async Task<int> GetTotalNumberCards()
     {
-        var scratchCards = GetScratchCards();
+        var scratchCards = await GetScratchCards();
         var numScratchCards = CountDuplicateScratchCards(scratchCards);
         return numScratchCards;
     }
@@ -78,8 +83,10 @@ public class Day04 : DayBase
                     continue;
 
                 var counter = scratchCard.CardId + 1;
+
                 if (counter > initialCount)
                     continue;
+
                 foreach (var scratchCardToAdjust in scratchCard.MatchingNumbers.Select(_ =>
                              scratchCards.FirstOrDefault(card => card.CardId == counter)))
                 {

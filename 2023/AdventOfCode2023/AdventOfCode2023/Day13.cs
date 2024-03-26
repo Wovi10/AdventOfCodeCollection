@@ -17,7 +17,7 @@ public class Day13 : DayBase
         SharedMethods.PrintAnswer(result);
     }
 
-    private async Task<long> GetPatternNotesSum()
+    private static async Task<long> GetPatternNotesSum()
     {
         var patterns = GetPatterns();
         var totalTasks = patterns.Count;
@@ -47,13 +47,11 @@ public class Day13 : DayBase
         List<string> lines = new();
         List<Pattern> patterns = new();
 
-        var index = -1;
         foreach (var line in Input)
         {
-            index++;
             if (string.IsNullOrWhiteSpace(line))
             {
-                patterns.Add(new Pattern(lines, index));
+                patterns.Add(new Pattern(lines));
                 lines.Clear();
                 continue;
             }
@@ -61,7 +59,7 @@ public class Day13 : DayBase
             lines.Add(line);
         }
 
-        patterns.Add(new Pattern(lines, index));
+        patterns.Add(new Pattern(lines));
 
         return patterns;
     }
