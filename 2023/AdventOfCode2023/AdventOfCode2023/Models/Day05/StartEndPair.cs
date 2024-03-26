@@ -1,4 +1,6 @@
-﻿namespace AdventOfCode2023_1.Models.Day05;
+﻿using UtilsCSharp;
+
+namespace AdventOfCode2023_1.Models.Day05;
 
 public class StartEndPair
 {
@@ -12,6 +14,7 @@ public class StartEndPair
     public readonly long Start;
     public readonly long Range;
     public readonly long End;
+    public long LowestLocation = long.MaxValue;
 
     public static List<StartEndPair> GetPairs(List<long> seedsToTest)
     {
@@ -57,5 +60,41 @@ public class StartEndPair
         }
 
         return result;
+    }
+
+    public async Task<long> TestPair(List<SeedMapping> seedToSoil, List<SeedMapping> soilToFert, List<SeedMapping> fertToWater, List<SeedMapping> waterToLight, List<SeedMapping> lightToTemp, List<SeedMapping> tempToHumid, List<SeedMapping> humidToLoc)
+    {
+        for (var seed = Start; seed < End; seed++)
+        {
+            var location = await Task.Run(() =>SeedToLocation(seed, seedToSoil, soilToFert, fertToWater, waterToLight, lightToTemp, tempToHumid, humidToLoc));
+            LowestLocation = MathUtils.GetLowest(location, LowestLocation);
+        }
+
+        return LowestLocation;
+    }
+
+    private long SeedToLocation(long seed, List<SeedMapping> seedToSoil, List<SeedMapping> soilToFert, List<SeedMapping> fertToWater, List<SeedMapping> waterToLight, List<SeedMapping> lightToTemp, List<SeedMapping> tempToHumid, List<SeedMapping> humidToLoc)
+    {
+        var result = TestLocation(seed, seedToSoil);
+        result = TestLocation(result, soilToFert);
+        result = TestLocation(result, fertToWater);
+        result = TestLocation(result, waterToLight);
+        result = TestLocation(result, lightToTemp);
+        result = TestLocation(result, tempToHumid);
+        result = TestLocation(result, humidToLoc);
+
+        return result;
+    }
+
+    private static long TestLocation(long seed, List<SeedMapping> mappings)
+    {
+        foreach (var seedMapping in mappings
+                     .Where(seedMapping => seedMapping.SourceStart <= seed)
+                     .Where(seedMapping => seedMapping.SourceEnd >= seed))
+        {
+            return seedMapping.MapValue(seed);
+        }
+
+        return seed;
     }
 }

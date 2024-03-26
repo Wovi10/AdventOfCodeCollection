@@ -95,43 +95,27 @@ public class Day05 : DayBase
         ProcessFilesPart2();
 
         var pairCounter = 0;
-        
-        await Task.Run(() =>
+        var totalTasks = _seedsToTestPart2.Count;
+        var completedTasks = 0;
+
+        var progress = new Progress<long>(current =>
         {
-            Parallel.ForEach(_seedsToTestPart2, startEndPair =>
-            {
-                Console.WriteLine($"{Constants.LineReturn}Starting pair {Interlocked.Increment(ref pairCounter)} of {_seedsToTestPart2.Count}");
-                for (var seed = startEndPair.Start; seed < startEndPair.End; seed++)
-                {
-                    var location = SeedToLocation(seed);
-                    Interlocked.Exchange(ref _lowestLocation, GetLowest(location, _lowestLocation));
-
-                    if (Constants.IsDebug)
-                    {
-                        var currentIndex = seed - startEndPair.Start;
-                        SharedMethods.PrintPercentage(currentIndex, startEndPair.Range);
-                    }
-                }
-            });
+            SharedMethods.ClearCurrentConsoleLine();
+            Console.Write($"Finished {current} parts of {totalTasks}");
         });
-        
-        // foreach (var startEndPair in _seedsToTestPart2)
-        // {
-        //     Console.WriteLine($"{Constants.LineReturn}Starting pair {++pairCounter} of {_seedsToTestPart2.Count}");
-        //     for (var seed = startEndPair.Start; seed < startEndPair.End; seed++)
-        //     {
-        //         var location = SeedToLocation(seed);
-        //         _lowestLocation = GetLowest(location, _lowestLocation);
-        //
-        //         if (Constants.IsDebug)
-        //         {
-        //             var currentIndex = seed - startEndPair.Start;
-        //             SharedMethods.PrintPercentage(currentIndex, startEndPair.Range);
-        //         }
-        //     }
-        // }
 
-        return _lowestLocation;
+        var tasks = _seedsToTestPart2.Select(pair => pair.TestPair(_seedToSoil,_soilToFert, _fertToWater, _waterToLight, _lightToTemp, _tempToHumid, _humidToLoc));
+        var results = Constants.IsDebug
+            ? await Task.WhenAll(tasks.Select(async task =>
+            {
+                var result = await task.ConfigureAwait(false);
+                Interlocked.Increment(ref completedTasks);
+                ((IProgress<long>) progress).Report(completedTasks);
+                return result;
+            })).ConfigureAwait(false)
+            : await Task.WhenAll(tasks).ConfigureAwait(false);
+
+        return results.Min();
     }
 
     private void ProcessFilesPart2()
