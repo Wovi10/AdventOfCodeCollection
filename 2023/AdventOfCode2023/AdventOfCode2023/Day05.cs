@@ -59,17 +59,18 @@ public class Day05 : DayBase
         var isFirstLine = true;
         foreach (var line in Input)
         {
+            var trimmedLine = line.Trim();
             if (isFirstLine)
             {
-                var seedsLineAsLong = line[7..].Split(Constants.Space).Select(long.Parse).ToList();
+                var seedsLineAsLong = trimmedLine[7..].Split(Constants.Space).Select(long.Parse).ToList();
                 _seedsToTest.AddRange(seedsLineAsLong);
                 isFirstLine = false;
             }
 
-            currentList = GetMappingList(line) ?? currentList;
+            currentList = GetMappingList(trimmedLine) ?? currentList;
 
             if (currentList != null)
-                AddSeedMapping(currentList, line);
+                AddSeedMapping(currentList, trimmedLine);
         }
     }
 
