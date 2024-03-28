@@ -1,4 +1,7 @@
-﻿namespace AdventOfCode2023_1.Models.Day14;
+﻿using System.Data.Common;
+using AdventOfCode2023_1.Shared;
+
+namespace AdventOfCode2023_1.Models.Day14;
 
 public class Dish
 {
@@ -17,51 +20,28 @@ public class Dish
     private List<DishRow> Columns { get; }
     public long TotalLoad { get; private set; }
 
-    public async Task RunCycles(int numCycles)
-    {
-        for (var i = 0; i < numCycles; i++) 
-            await Cycle();
-    }
-
-    private async Task Cycle()
-    {
-        await TiltNorth();
-        await TiltWest();
-        await TiltSouth();
-        await TiltEast();
-    }
-
-    public async Task TiltNorth()
-    {
-        await Tilt(Direction.North);
-    }
-
     public void CalculateTotalLoad()
     {
         var rowCounter = Rows.Count;
-        foreach (var numRoundRocks in Rows.Select(dishRow => dishRow.GetRoundRocksIndices().Count))
+        foreach (var numRoundRocks in Rows.Select(dishRow => dishRow.GetIndicesOfRockType(RockType.Round).Count))
         {
             TotalLoad += numRoundRocks * rowCounter;
             rowCounter--;
         }
     }
-
-    private async Task TiltSouth()
-    {
-        await Tilt(Direction.South);
-    }
-
-    private async Task TiltWest()
-    {
-        await Tilt(Direction.West);
-    }
     
-    private async Task TiltEast()
+    public void TiltNorth() 
+        => Tilt(Direction.North);
+
+    public void Cycle()
     {
-        await Tilt(Direction.East);
+        Tilt(Direction.North);
+        Tilt(Direction.West);
+        Tilt(Direction.South);
+        Tilt(Direction.East);
     }
 
-    private async Task Tilt(Direction direction)
+    private async void Tilt(Direction direction)
     {
         var tasks = direction switch
         {
@@ -89,27 +69,55 @@ public class Dish
         }
     }
 
-    private void AlignRows()
+    private async void AlignRows()
     {
-        for (var columnCounter = 0; columnCounter < Columns.Count; columnCounter++)
-        {
-            var column = Columns[columnCounter];
-            for (var rowCounter = 0; rowCounter < Rows.Count; rowCounter++)
-            {
-                Rows[rowCounter].Rocks[columnCounter] = column.Rocks[rowCounter];
-            }
-        }
+        await Task.WhenAll(
+            AlignColumnsRockTypeAsync(RockType.Round, row => row.GetIndicesOfRockType(RockType.Round)),
+            AlignColumnsRockTypeAsync(RockType.Square, row => row.GetIndicesOfRockType(RockType.Square)),
+            AlignColumnsRockTypeAsync(RockType.None, row => row.GetIndicesOfRockType(RockType.None))
+        );
     }
 
-    private void AlignColumns()
+    private async Task AlignColumnsRockTypeAsync(RockType rockType, Func<DishRow, IEnumerable<int>> getIndicesFunc)
     {
-        for (var rowCounter = 0; rowCounter < Rows.Count; rowCounter++)
+        var tasks = Columns.Select(async row =>
         {
-            var row = Rows[rowCounter];
-            for (var columnCounter = 0; columnCounter < Columns.Count; columnCounter++)
+            var rowIndex = Columns.IndexOf(row);
+            var indices = getIndicesFunc(row);
+            foreach (var index in indices)
             {
-                Columns[columnCounter].Rocks[rowCounter] = row.Rocks[columnCounter];
+                Rows[index].Rocks[rowIndex] = rockType;
             }
-        }
+
+            await Task.CompletedTask;
+        });
+        
+        await Task.WhenAll(tasks);
+    }
+
+    private async void AlignColumns()
+    {
+        await Task.WhenAll(
+            AlignRowsRockTypeAsync(RockType.Round, row => row.GetIndicesOfRockType(RockType.Round)),
+            AlignRowsRockTypeAsync(RockType.Square, row => row.GetIndicesOfRockType(RockType.Square)),
+            AlignRowsRockTypeAsync(RockType.None, row => row.GetIndicesOfRockType(RockType.None))
+        );
+    }
+
+    private async Task AlignRowsRockTypeAsync(RockType rockType, Func<DishRow, IEnumerable<int>> getIndicesFunc)
+    {
+        var tasks = Rows.Select(async row =>
+        {
+            var rowIndex = Rows.IndexOf(row);
+            var indices = getIndicesFunc(row);
+            foreach (var index in indices)
+            {
+                Columns[index].Rocks[rowIndex] = rockType;
+            }
+
+            await Task.CompletedTask;
+        });
+        
+        await Task.WhenAll(tasks);
     }
 }

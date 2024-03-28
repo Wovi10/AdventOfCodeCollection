@@ -17,8 +17,8 @@ public class DishRow
         Rocks = rocks;
     }
 
-    public List<int> GetRoundRocksIndices()
-        => Rocks.Select((r, i) => r == RockType.Round ? i : -1).Where(i => i != -1).ToList();
+    public List<int> GetIndicesOfRockType(RockType rockType)
+        => Rocks.Select((r, i) => r == rockType ? i : -1).Where(i => i != -1).ToList();
 
     public Task TiltToEndAsync()
     {

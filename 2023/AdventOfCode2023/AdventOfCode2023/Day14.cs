@@ -1,30 +1,55 @@
-﻿using AdventOfCode2023_1.Models.Day14;
+﻿using System.Diagnostics;
+using AdventOfCode2023_1.Models.Day14;
 using AdventOfCode2023_1.Shared;
 
 namespace AdventOfCode2023_1;
 
 public class Day14:DayBase
 {
-    protected override async Task PartOne()
+    protected override Task PartOne()
     {
-        var result = await CalculateTotalLoad();
+        var result = CalculateTotalLoad();
         SharedMethods.PrintAnswer(result);
+        return Task.CompletedTask;
     }
 
-    protected override async Task PartTwo()
+    protected override Task PartTwo()
     {
-        var result = await CalculateTotalLoad();
+        var result = CalculateTotalLoad();
         SharedMethods.PrintAnswer(result);
+        return Task.CompletedTask;
     }
 
-    private static async Task<long> CalculateTotalLoad()
+    private static long CalculateTotalLoad()
     {
         var dish = new Dish(Input);
 
         if (Variables.RunningPartOne)
-            await dish.TiltNorth();
+            dish.TiltNorth();
         else
-            await dish.RunCycles(1000000000);
+        {
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
+            const int numCycles = 1000000000;
+            for (var i = 0; i < numCycles; i++)
+            {
+                dish.Cycle();
+                if (!Constants.IsDebug) 
+                    continue;
+                SharedMethods.ClearCurrentConsoleLine();
+                SharedMethods.PrintProgress(i, numCycles);
+
+                if (i == 1000)
+                {
+                    stopwatch.Stop();
+                    Console.WriteLine();
+                    Console.WriteLine($"Finished in {stopwatch.ElapsedMilliseconds / 1000} seconds");
+                    Console.WriteLine($"Expected time: {stopwatch.ElapsedMilliseconds / 1000 * numCycles / 1000 / 60 / 60 / 24} days");
+                    Console.WriteLine();
+                }
+            }
+        }
+
         dish.CalculateTotalLoad();
 
         return dish.TotalLoad;
