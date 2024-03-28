@@ -22,6 +22,7 @@ public class Dish
 
     public void CalculateTotalLoad()
     {
+        TotalLoad = 0;
         var rowCounter = Rows.Count;
         foreach (var numRoundRocks in Rows.Select(dishRow => dishRow.GetIndicesOfRockType(RockType.Round).Count))
         {
@@ -29,16 +30,19 @@ public class Dish
             rowCounter--;
         }
     }
-    
+
     public void TiltNorth() 
         => Tilt(Direction.North);
 
-    public void Cycle()
+    public long Cycle()
     {
         Tilt(Direction.North);
         Tilt(Direction.West);
         Tilt(Direction.South);
         Tilt(Direction.East);
+        
+        CalculateTotalLoad();
+        return TotalLoad;
     }
 
     private async void Tilt(Direction direction)

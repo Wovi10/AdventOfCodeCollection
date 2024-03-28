@@ -1,10 +1,11 @@
 ﻿using System.Diagnostics;
 using AdventOfCode2023_1.Models.Day14;
 using AdventOfCode2023_1.Shared;
+using UtilsCSharp;
 
 namespace AdventOfCode2023_1;
 
-public class Day14:DayBase
+public class Day14 : DayBase
 {
     protected override Task PartOne()
     {
@@ -31,22 +32,42 @@ public class Day14:DayBase
             var stopwatch = new Stopwatch();
             stopwatch.Start();
             const int numCycles = 1000000000;
+            var foundLoop = false;
+            var listOfLoads = new List<long>();
             for (var i = 0; i < numCycles; i++)
             {
-                dish.Cycle();
-                if (!Constants.IsDebug) 
-                    continue;
-                SharedMethods.ClearCurrentConsoleLine();
-                SharedMethods.PrintProgress(i, numCycles);
+                var totalLoad = dish.Cycle();
+                listOfLoads.Add(totalLoad);
 
-                if (i == 1000)
+                if (Constants.IsDebug)
                 {
-                    stopwatch.Stop();
-                    Console.WriteLine();
-                    Console.WriteLine($"Finished in {stopwatch.ElapsedMilliseconds / 1000} seconds");
-                    Console.WriteLine($"Expected time: {stopwatch.ElapsedMilliseconds / 1000 * numCycles / 1000 / 60 / 60 / 24} days");
-                    Console.WriteLine();
+                    SharedMethods.ClearCurrentConsoleLine();
+                    SharedMethods.PrintProgress(i, numCycles);
+
+                    if (i == 1000)
+                    {
+                        stopwatch.Stop();
+                        var elapsed = stopwatch.ElapsedMilliseconds;
+                        Console.WriteLine();
+                        Console.WriteLine($"Finished in {MathUtils.MillSecToSec(elapsed)} seconds");
+                        Console.WriteLine($"Expected time: {MathUtils.MillSecToWeek(elapsed * numCycles / i)} weeks");
+                        Console.WriteLine();
+                    }
                 }
+
+                if (foundLoop)
+                    continue;
+
+                var loopLength = Algorithms.GetLoopLength(listOfLoads);
+                if (loopLength == 0)
+                    continue;
+
+                // listOfLoads.Clear();
+                foundLoop = true;
+                var loopsToSkip = numCycles / loopLength;
+                i = loopsToSkip * loopLength - 1;
+
+                Console.WriteLine($"Loop found at {i} with length {loopLength}, skipping to {loopsToSkip} loops.");
             }
         }
 
