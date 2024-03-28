@@ -17,7 +17,7 @@ public class Day14:DayBase
         SharedMethods.PrintAnswer(result);
     }
 
-    private async Task<long> CalculateTotalLoad()
+    private static async Task<long> CalculateTotalLoad()
     {
         var dish = new Dish(Input);
 

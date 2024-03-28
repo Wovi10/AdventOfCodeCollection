@@ -13,19 +13,22 @@ public class Dish
         }
     }
 
-    private List<DishRow> Rows { get; set; }
-    private List<DishRow> Columns { get; set; }
+    private List<DishRow> Rows { get; }
+    private List<DishRow> Columns { get; }
     public long TotalLoad { get; private set; }
 
     public async Task RunCycles(int numCycles)
     {
-        for (var i = 0; i < numCycles; i++)
-        {
-            await TiltNorth();
-            await TiltWest();
-            await TiltSouth();
-            await TiltEast();
-        }
+        for (var i = 0; i < numCycles; i++) 
+            await Cycle();
+    }
+
+    private async Task Cycle()
+    {
+        await TiltNorth();
+        await TiltWest();
+        await TiltSouth();
+        await TiltEast();
     }
 
     public async Task TiltNorth()
@@ -43,7 +46,7 @@ public class Dish
         }
     }
 
-    public async Task TiltSouth()
+    private async Task TiltSouth()
     {
         await Tilt(Direction.South);
     }

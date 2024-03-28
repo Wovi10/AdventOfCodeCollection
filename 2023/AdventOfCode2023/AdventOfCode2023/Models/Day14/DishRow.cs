@@ -22,49 +22,40 @@ public class DishRow
 
     public Task TiltToEndAsync()
     {
-        bool hasChanged;
-        do
+        var hasChanged = true;
+        while (hasChanged)
         {
             hasChanged = false;
-            var counter = Rocks.Count - 2;
-            while (counter >= 0)
+            for (var i = Rocks.Count - 2; i >= 0; i--)
             {
-                if (Rocks[counter] == RockType.Round && Rocks[counter + 1] == RockType.None)
-                {
-                    Rocks[counter] = RockType.None;
-                    Rocks[counter + 1] = RockType.Round;
-                    hasChanged = true;
-                }
+                if (Rocks[i] != RockType.Round || Rocks[i + 1] != RockType.None) 
+                    continue;
 
-                counter--;
+                Rocks[i] = RockType.None;
+                Rocks[i + 1] = RockType.Round;
+                hasChanged = true;
             }
-        } while (hasChanged);
-        
+        }
+
         return Task.CompletedTask;
     }
 
     public Task TiltToStartAsync()
     {
-        bool hasChanged;
-        do
+        var hasChanged = true;
+        while (hasChanged)
         {
             hasChanged = false;
-            var counter = 1;
-            foreach (var rockType in Rocks.Skip(1))
+            for (var i = 1; i < Rocks.Count; i++)
             {
-                if (Rocks[counter-1] != RockType.None || rockType != RockType.Round)
-                {
-                    counter++;
+                if (Rocks[i - 1] != RockType.None || Rocks[i] != RockType.Round)
                     continue;
-                }
 
-                Rocks[counter - 1] = rockType;
-                Rocks[counter] = RockType.None;
-                counter++;
-                
+                Rocks[i - 1] = RockType.Round;
+                Rocks[i] = RockType.None;
                 hasChanged = true;
             }
-        } while (hasChanged);
+        }
 
         return Task.CompletedTask;
     }
