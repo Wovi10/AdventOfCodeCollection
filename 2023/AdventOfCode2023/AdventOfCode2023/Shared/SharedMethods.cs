@@ -39,6 +39,11 @@ public static class SharedMethods
         PrintPermille(promille);
     }
 
+    public static void PrintProgress(long current, long max)
+    {
+        Console.Write($"Finished {current} parts of {max}");
+    }
+
     private static long? _previousPermille;
 
     private static void PrintPermille(int permille)
