@@ -59,15 +59,18 @@ public class Day14 : DayBase
                     continue;
 
                 var loopLength = Algorithms.GetLoopLength(listOfLoads);
+
                 if (loopLength == 0)
                     continue;
 
-                // listOfLoads.Clear();
                 foundLoop = true;
-                var loopsToSkip = numCycles / loopLength;
-                i = loopsToSkip * loopLength - 1;
 
-                Console.WriteLine($"Loop found at {i} with length {loopLength}, skipping to {loopsToSkip} loops.");
+                var numLoopInCycles = numCycles / loopLength;
+                var leftOverOfList = listOfLoads.Count - (loopLength * 3);
+                var loopLenghtInLeftover = leftOverOfList / loopLength;
+                var leftOverAfterLoopLengths = leftOverOfList - (loopLength * loopLenghtInLeftover);
+
+                i = loopLength * numLoopInCycles + leftOverAfterLoopLengths - 1;
             }
         }
 
