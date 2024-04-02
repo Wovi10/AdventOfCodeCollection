@@ -3,8 +3,8 @@
 public enum TileType
 {
     EmptySpace,
-    BottomLeftToBottomRightMirror,
-    BottomRightToBottomLeftMirror,
+    BottomLeftToTopRightMirror,
+    TopLeftToBottomRightMirror,
     VerticalSplitter,
     HorizontalSplitter
 }

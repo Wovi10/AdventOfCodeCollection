@@ -7,99 +7,164 @@ public static class Day16Extensions
         return cell switch
         {
             '.' => TileType.EmptySpace,
-            '\\' => TileType.BottomLeftToBottomRightMirror,
-            '/' => TileType.BottomRightToBottomLeftMirror,
+            '\\' => TileType.TopLeftToBottomRightMirror,
+            '/' => TileType.BottomLeftToTopRightMirror,
             '|' => TileType.VerticalSplitter,
             '-' => TileType.HorizontalSplitter,
             _ => throw new ArgumentOutOfRangeException(nameof(cell), cell, null)
         };
     }
 
-    public static List<Beam> GetNewBeams(this Beam beam, Tile tile)
+    public static List<Direction> GetNewDirections(this Direction direction, TileType tileType)
     {
-        return beam.Direction switch
+        if (tileType == TileType.EmptySpace)
+            return new List<Direction> {direction};
+
+        return direction switch
         {
-            Direction.Upwards => beam.GetNewDirectionForUpwards(tile),
-            Direction.Right => beam.GetNewDirectionForRight(tile),
-            Direction.Downwards => beam.GetNewDirectionForDownwards(tile),
-            Direction.Left => beam.GetNewDirectionForLeft(tile),
-            _ => throw new ArgumentOutOfRangeException(nameof(beam.Direction), beam.Direction, null)
+            Direction.Upwards => direction.GetNewDirectionForVertical(tileType),
+            Direction.Right => direction.GetNewDirectionForHorizontal(tileType),
+            Direction.Downwards => direction.GetNewDirectionForVertical(tileType),
+            Direction.Left => direction.GetNewDirectionForHorizontal(tileType),
+            _ => throw new ArgumentOutOfRangeException(nameof(direction), direction, null)
         };
     }
 
-    private static List<Beam> GetNewDirectionForUpwards(this Beam beam, Tile tile)
+    private static List<Direction> GetNewDirectionForVertical(this Direction direction, TileType tileType)
     {
-        switch (tile.TileType)
-        {
-            case TileType.EmptySpace or TileType.VerticalSplitter:
-                return new List<Beam>{beam};
-            case TileType.BottomLeftToBottomRightMirror:
-                beam.Direction = Direction.Right;
-                return new List<Beam>{beam};
-            case TileType.BottomRightToBottomLeftMirror:
-                beam.Direction = Direction.Left;
-                return new List<Beam>{beam};
-        }
+        var newDirections = new List<Direction>();
 
-        var beam1 = new Beam {Direction = Direction.Left};
-        var beam2 = new Beam {Direction = Direction.Right};
-        return new List<Beam>{beam1, beam2};
+        switch (tileType)
+        {
+            case TileType.VerticalSplitter:
+                newDirections.Add(direction);
+                return newDirections;
+            case TileType.HorizontalSplitter:
+                newDirections.Add(Direction.Right);
+                newDirections.Add(Direction.Left);
+                return newDirections;
+            default:
+                return direction switch
+                {
+                    Direction.Upwards => direction.GetNewDirectionForUpwards(tileType),
+                    Direction.Downwards => direction.GetNewDirectionForDownwards(tileType),
+                    _ => throw new ArgumentOutOfRangeException(nameof(direction), direction, null)
+                };
+        }
     }
     
-    private static List<Beam> GetNewDirectionForRight(this Beam beam, Tile tile)
+    private static List<Direction> GetNewDirectionForHorizontal(this Direction direction, TileType tileType)
     {
-        switch (tile.TileType)
+        var newDirections = new List<Direction>();
+
+        switch (tileType)
         {
-            case TileType.EmptySpace or TileType.HorizontalSplitter:
-                return new List<Beam>{beam};
-            case TileType.BottomLeftToBottomRightMirror:
-                beam.Direction = Direction.Downwards;
-                return new List<Beam>{beam};
-            case TileType.BottomRightToBottomLeftMirror:
-                beam.Direction = Direction.Upwards;
-                return new List<Beam>{beam};
+            case TileType.HorizontalSplitter:
+                newDirections.Add(direction);
+                return newDirections;
+            case TileType.VerticalSplitter:
+                newDirections.Add(Direction.Upwards);
+                newDirections.Add(Direction.Downwards);
+                return newDirections;
+            default:
+                return direction switch
+                {
+                    Direction.Right => direction.GetNewDirectionForRight(tileType),
+                    Direction.Left => direction.GetNewDirectionForLeft(tileType),
+                    _ => throw new ArgumentOutOfRangeException(nameof(direction), direction, null)
+                };
+        }
+    }
+
+    private static List<Direction> GetNewDirectionForUpwards(this Direction direction, TileType tileType)
+    {
+        var newDirections = new List<Direction>();
+        switch (tileType)
+        {
+            case TileType.BottomLeftToTopRightMirror:
+                newDirections.Add(Direction.Right);
+                break;
+            case TileType.TopLeftToBottomRightMirror:
+                newDirections.Add(Direction.Left);
+                break;
+            case TileType.HorizontalSplitter:
+                newDirections.Add(Direction.Right);
+                newDirections.Add(Direction.Left);
+                break;
+            default:
+                newDirections.Add(direction);
+                break;
         }
 
-        var beam1 = new Beam {Direction = Direction.Upwards};
-        var beam2 = new Beam {Direction = Direction.Downwards};
-        return new List<Beam>{beam1, beam2};
+        return newDirections;
+    }
+
+    private static List<Direction> GetNewDirectionForRight(this Direction direction, TileType tileType)
+    {
+        var newDirections = new List<Direction>();
+        switch (tileType)
+        {
+            case TileType.BottomLeftToTopRightMirror:
+                newDirections.Add(Direction.Upwards);
+                break;
+            case TileType.TopLeftToBottomRightMirror:
+                newDirections.Add(Direction.Downwards);
+                break;
+            case TileType.VerticalSplitter:
+                newDirections.Add(Direction.Upwards);
+                newDirections.Add(Direction.Downwards);
+                break;
+            default:
+                newDirections.Add(direction);
+                break;
+        }
+
+        return newDirections;
     }
     
-    private static List<Beam> GetNewDirectionForDownwards(this Beam beam, Tile tile)
+    private static List<Direction> GetNewDirectionForDownwards(this Direction direction, TileType tileType)
     {
-        switch (tile.TileType)
+        var newDirections = new List<Direction>();
+        switch (tileType)
         {
-            case TileType.EmptySpace or TileType.VerticalSplitter:
-                return new List<Beam>{beam};
-            case TileType.BottomLeftToBottomRightMirror:
-                beam.Direction = Direction.Left;
-                return new List<Beam>{beam};
-            case TileType.BottomRightToBottomLeftMirror:
-                beam.Direction = Direction.Right;
-                return new List<Beam>{beam};
+            case TileType.BottomLeftToTopRightMirror:
+                newDirections.Add(Direction.Left);
+                break;
+            case TileType.TopLeftToBottomRightMirror:
+                newDirections.Add(Direction.Right);
+                break;
+            case TileType.HorizontalSplitter:
+                newDirections.Add(Direction.Right);
+                newDirections.Add(Direction.Left);
+                break;
+            default:
+                newDirections.Add(direction);
+                break;
         }
 
-        var beam1 = new Beam {Direction = Direction.Right};
-        var beam2 = new Beam {Direction = Direction.Left};
-        return new List<Beam>{beam1, beam2};
+        return newDirections;
     }
-    
-    private static List<Beam> GetNewDirectionForLeft(this Beam beam, Tile tile)
+
+    private static List<Direction> GetNewDirectionForLeft(this Direction direction, TileType tileType)
     {
-        switch (tile.TileType)
+        var newDirections = new List<Direction>();
+        switch (tileType)
         {
-            case TileType.EmptySpace or TileType.HorizontalSplitter:
-                return new List<Beam>{beam};
-            case TileType.BottomLeftToBottomRightMirror:
-                beam.Direction = Direction.Upwards;
-                return new List<Beam>{beam};
-            case TileType.BottomRightToBottomLeftMirror:
-                beam.Direction = Direction.Downwards;
-                return new List<Beam>{beam};
+            case TileType.BottomLeftToTopRightMirror:
+                newDirections.Add(Direction.Downwards);
+                break;
+            case TileType.TopLeftToBottomRightMirror:
+                newDirections.Add(Direction.Upwards);
+                break;
+            case TileType.VerticalSplitter:
+                newDirections.Add(Direction.Upwards);
+                newDirections.Add(Direction.Downwards);
+                break;
+            default:
+                newDirections.Add(direction);
+                break;
         }
 
-        var beam1 = new Beam {Direction = Direction.Downwards};
-        var beam2 = new Beam {Direction = Direction.Upwards};
-        return new List<Beam>{beam1, beam2};
+        return newDirections;
     }
 }
