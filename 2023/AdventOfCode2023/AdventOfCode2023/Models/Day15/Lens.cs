@@ -14,7 +14,7 @@ public class Lens
 
     public int? FocalLength { get; set; }
     public string Label { get; }
-    public Operation Operation { get; }
+    public bool Operation { get; }
     public int Hash { get; private set; }
 
     public async void SetHash()

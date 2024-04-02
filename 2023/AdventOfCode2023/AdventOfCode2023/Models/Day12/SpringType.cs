@@ -20,17 +20,6 @@ public static class SpringStateExtensions
         };
     }
 
-    public static char ToChar(this SpringType state)
-    {
-        return state switch
-        {
-            SpringType.Operational => '.',
-            SpringType.Damaged => '#',
-            SpringType.Unknown => '?',
-            _ => throw new ArgumentOutOfRangeException(nameof(state), state, null)
-        };
-    }
-
     public static bool IsOperational(this SpringType state)
         => state == SpringType.Operational;
 

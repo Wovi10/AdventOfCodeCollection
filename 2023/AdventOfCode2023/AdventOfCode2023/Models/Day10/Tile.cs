@@ -1,4 +1,6 @@
-﻿namespace AdventOfCode2023_1.Models.Day10;
+﻿using AdventOfCode2023_1.Models.Day10.Enums;
+
+namespace AdventOfCode2023_1.Models.Day10;
 
 public class Tile
 {
@@ -9,6 +11,7 @@ public class Tile
         {
             IsStartingPosition = true;
         }
+
         var isTopLineAndNorth = mazeLineCounter == 0 &&
                                 TileType is TileType.NorthEast or TileType.NorthSouth or TileType.NorthWest;
         var isLeftLineAndWest = tileCounter == 0 &&
@@ -17,16 +20,16 @@ public class Tile
                                    TileType is TileType.SouthEast or TileType.SouthWest or TileType.NorthSouth;
         var isRightLineAndEast = tileCounter == mazeWidth - 1 &&
                                  TileType is TileType.EastWest or TileType.SouthEast or TileType.NorthEast;
-        
+
         var pointsOut = isTopLineAndNorth || isLeftLineAndWest || isBottomLineAndSouth || isRightLineAndEast;
-        if (pointsOut) 
+        if (pointsOut)
             TileType = TileType.Ground;
 
         if (TileType == TileType.Ground)
             return;
 
         Coordinates = new Coordinates(tileCounter, mazeLineCounter);
-        
+
         SetAdjacentTiles(mazeLineCounter, tileCounter, mazeWidth, mazeLength);
     }
 
@@ -71,7 +74,7 @@ public class Tile
     public Coordinates? EastTile;
     public Coordinates? SouthTile;
     public Coordinates? WestTile;
-    public bool IsStartingPosition;
+    public readonly bool IsStartingPosition;
     public readonly List<Coordinates> AdjacentTiles = new();
 
     public readonly Coordinates Coordinates;
@@ -98,13 +101,13 @@ public static class TileExtensions
 
         tile.AddAdjacentTile(northTile.Coordinates);
 
-        if (northTile.TileType != TileType.StartingPosition) 
+        if (northTile.TileType != TileType.StartingPosition)
             return;
         northTile.AddAdjacentTile(tile.Coordinates);
         northTile.SouthTile = tile.Coordinates;
     }
-    
-    public static void AddEastTile(this Tile tile, Dictionary<Coordinates,Tile> tileDictionary)
+
+    public static void AddEastTile(this Tile tile, Dictionary<Coordinates, Tile> tileDictionary)
     {
         var eastTileCoords = tile.EastTile;
         if (eastTileCoords == null)
@@ -115,12 +118,12 @@ public static class TileExtensions
 
         tile.AddAdjacentTile(eastTile.Coordinates);
 
-        if (eastTile.TileType != TileType.StartingPosition) 
+        if (eastTile.TileType != TileType.StartingPosition)
             return;
         eastTile.AddAdjacentTile(tile.Coordinates);
         eastTile.WestTile = tile.Coordinates;
     }
-    
+
     public static void AddSouthTile(this Tile tile, Dictionary<Coordinates, Tile> tileDictionary)
     {
         var southTileCoords = tile.SouthTile;
@@ -132,12 +135,12 @@ public static class TileExtensions
 
         tile.AddAdjacentTile(southTile.Coordinates);
 
-        if (southTile.TileType != TileType.StartingPosition) 
+        if (southTile.TileType != TileType.StartingPosition)
             return;
         southTile.AddAdjacentTile(tile.Coordinates);
         southTile.NorthTile = tile.Coordinates;
     }
-    
+
     public static void AddWestTile(this Tile tile, Dictionary<Coordinates, Tile> tileDictionary)
     {
         var westTileCoords = tile.WestTile;
@@ -149,7 +152,7 @@ public static class TileExtensions
 
         tile.AddAdjacentTile(westTile.Coordinates);
 
-        if (westTile.TileType != TileType.StartingPosition) 
+        if (westTile.TileType != TileType.StartingPosition)
             return;
         westTile.AddAdjacentTile(tile.Coordinates);
         westTile.EastTile = tile.Coordinates;

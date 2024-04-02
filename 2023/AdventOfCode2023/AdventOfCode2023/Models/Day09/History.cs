@@ -12,12 +12,12 @@ public class History(List<long> sequence)
     {
         var nextStepSequence = new List<long>();
 
-        for (var i = 0; i < _sequence.Count - 1; i++) 
+        for (var i = 0; i < _sequence.Count - 1; i++)
             nextStepSequence.Add(_sequence[i + 1] - _sequence[i]);
 
         _nextStep = new History(nextStepSequence);
 
-        if (_nextStep._sequence.Any(x => x != 0)) 
+        if (_nextStep._sequence.Any(x => x != 0))
             _nextStep.CalculateNextSequence();
     }
 
@@ -27,9 +27,9 @@ public class History(List<long> sequence)
 
         if (Variables.RunningPartOne)
         {
-            var itemToAdd = _nextStep == null 
-                                    ? 0 
-                                    : _sequence.Last() + _nextStep._sequence.Last();
+            var itemToAdd = _nextStep == null
+                ? 0
+                : _sequence.Last() + _nextStep._sequence.Last();
 
             _sequence.Add(itemToAdd);
             AddedValue = _sequence.Last();
@@ -38,9 +38,9 @@ public class History(List<long> sequence)
 
         RightShiftSequence();
 
-        _sequence[0] = _nextStep == null 
-                        ? 0 
-                        : _sequence[1] - _nextStep._sequence.First();
+        _sequence[0] = _nextStep == null
+            ? 0
+            : _sequence[1] - _nextStep._sequence.First();
 
         AddedValue = _sequence.First();
     }

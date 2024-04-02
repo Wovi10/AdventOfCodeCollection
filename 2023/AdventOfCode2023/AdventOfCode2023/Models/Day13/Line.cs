@@ -14,22 +14,21 @@ public class Line
 
     public Line(List<bool> rocks)
     {
-        foreach (var rock in rocks) 
+        foreach (var rock in rocks)
             Rocks.Add(rock);
     }
 
     public readonly List<bool> Rocks = new();
-    public int LinesBeforeMirror { get; set; }
-    private List<int> MirroredPositions = new();
-    private bool _wasTested = false;
+    private List<int> _mirroredPositions = new();
+    private bool _wasTested;
 
     public async Task<List<int>> GetMirroredPositions()
     {
         if (Variables.RunningPartOne && _wasTested)
-            return MirroredPositions;
+            return _mirroredPositions;
 
         _wasTested = true;
-        MirroredPositions = await Rocks.GetMirroredPositions();
-        return MirroredPositions;
+        _mirroredPositions = await Rocks.GetMirroredPositions();
+        return _mirroredPositions;
     }
 }

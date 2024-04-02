@@ -1,4 +1,5 @@
-﻿using UtilsCSharp;
+﻿using AdventOfCode2023_1.Models.Day10.Enums;
+using UtilsCSharp;
 
 namespace AdventOfCode2023_1.Models.Day10;
 
@@ -276,5 +277,5 @@ public class Maze
     }
 
     private static bool ShouldStop(int index, int endPoint)
-        =>endPoint == 0 ? index >= endPoint : index < endPoint;
+        => endPoint == 0 ? index >= endPoint : index < endPoint;
 }

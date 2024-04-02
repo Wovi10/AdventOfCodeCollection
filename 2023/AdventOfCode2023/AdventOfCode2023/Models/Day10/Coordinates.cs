@@ -1,15 +1,9 @@
 ﻿namespace AdventOfCode2023_1.Models.Day10;
 
-public class Coordinates
+public class Coordinates(int xCoordinate, int yCoordinate)
 {
-    public Coordinates(int xCoordinate, int yCoordinate)
-    {
-        _xCoordinate = xCoordinate;
-        _yCoordinate = yCoordinate;
-    }
-
-    private readonly int _xCoordinate;
-    private readonly int _yCoordinate;
+    private readonly int _xCoordinate = xCoordinate;
+    private readonly int _yCoordinate = yCoordinate;
 
     public int GetYCoordinate()
         => _yCoordinate;

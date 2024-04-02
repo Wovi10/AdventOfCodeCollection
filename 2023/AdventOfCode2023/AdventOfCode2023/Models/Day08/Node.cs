@@ -2,18 +2,11 @@
 
 namespace AdventOfCode2023_1.Models.Day08;
 
-public class Node
+public class Node(string name, string leftNodeName, string rightNodeName)
 {
-    public Node(string name, string leftNodeName, string rightNodeName)
-    {
-        Name = name;
-        LeftNodeName = leftNodeName;
-        RightNodeName = rightNodeName;
-    }
-
-    public readonly string Name;
-    public readonly string LeftNodeName;
-    public readonly string RightNodeName;
+    public readonly string Name = name;
+    public readonly string LeftNodeName = leftNodeName;
+    public readonly string RightNodeName = rightNodeName;
 
     public bool IsStart()
         => (Variables.RunningPartOne && Name == "AAA") ||

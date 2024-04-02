@@ -1,18 +1,8 @@
-﻿namespace AdventOfCode2023_1.Models.Day10;
+﻿using AdventOfCode2023_1.Models.Day10.Enums;
 
-public enum TileType
-{
-    NorthSouth,
-    EastWest,
-    NorthEast,
-    NorthWest,
-    SouthWest,
-    SouthEast,
-    Ground,
-    StartingPosition
-}
+namespace AdventOfCode2023_1.Models.Day10;
 
-public static class TileTypeExtensions
+public static class Day10Extensions
 {
     public static TileType ToTileType(this char tileInput)
     {

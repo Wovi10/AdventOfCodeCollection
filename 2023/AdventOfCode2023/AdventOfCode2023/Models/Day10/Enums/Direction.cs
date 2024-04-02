@@ -1,4 +1,4 @@
-﻿namespace AdventOfCode2023_1.Models.Day14;
+﻿namespace AdventOfCode2023_1.Models.Day10.Enums;
 
 public enum Direction
 {

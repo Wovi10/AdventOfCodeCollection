@@ -1,16 +1,9 @@
 ﻿namespace AdventOfCode2023_1.Models.Day11;
 
-public class Galaxy
+public class Galaxy(int xCoordinate, int yCoordinate)
 {
-    public Galaxy(int xCoordinate, int yCoordinate)
-    {
-        XCoordinate = xCoordinate;
-        XAfterEnlargement = xCoordinate;
-        YCoordinate = yCoordinate;
-        YAfterEnlargement = yCoordinate;
-    }
-    public int XCoordinate { get; set; }
-    public int XAfterEnlargement { get; set; }
-    public int YCoordinate { get; set; }
-    public int YAfterEnlargement { get; set; }
+    public int XCoordinate { get; set; } = xCoordinate;
+    public int XAfterEnlargement { get; set; } = xCoordinate;
+    public int YCoordinate { get; set; } = yCoordinate;
+    public int YAfterEnlargement { get; set; } = yCoordinate;
 }

@@ -24,7 +24,7 @@ public class Game
     {
         var inputConfig = new Dictionary<char, int>()
         {
-            { 'r', 12 }, { 'g', 13 }, { 'b', 14 }
+            {'r', 12}, {'g', 13}, {'b', 14}
         };
         foreach (var (key, value) in Colours)
         {
@@ -58,7 +58,7 @@ public class Game
                 if (!Colours.TryGetValue(key, out var value))
                     Colours.Add(key, colourInt);
                 else if (value < colourInt)
-                        Colours[key] = colourInt;
+                    Colours[key] = colourInt;
             }
         }
 

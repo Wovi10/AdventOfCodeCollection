@@ -1,4 +1,6 @@
-﻿namespace AdventOfCode2023_1.Models.Day16;
+﻿using AdventOfCode2023_1.Models.Day16.Enums;
+
+namespace AdventOfCode2023_1.Models.Day16;
 
 public static class Day16Extensions
 {
@@ -43,6 +45,9 @@ public static class Day16Extensions
                 newDirections.Add(Direction.Right);
                 newDirections.Add(Direction.Left);
                 return newDirections;
+            case TileType.EmptySpace:
+            case TileType.BottomLeftToTopRightMirror:
+            case TileType.TopLeftToBottomRightMirror:
             default:
                 return direction switch
                 {
@@ -66,6 +71,9 @@ public static class Day16Extensions
                 newDirections.Add(Direction.Upwards);
                 newDirections.Add(Direction.Downwards);
                 return newDirections;
+            case TileType.EmptySpace:
+            case TileType.BottomLeftToTopRightMirror:
+            case TileType.TopLeftToBottomRightMirror:
             default:
                 return direction switch
                 {
@@ -91,6 +99,8 @@ public static class Day16Extensions
                 newDirections.Add(Direction.Right);
                 newDirections.Add(Direction.Left);
                 break;
+            case TileType.EmptySpace:
+            case TileType.VerticalSplitter:
             default:
                 newDirections.Add(direction);
                 break;
@@ -114,6 +124,8 @@ public static class Day16Extensions
                 newDirections.Add(Direction.Upwards);
                 newDirections.Add(Direction.Downwards);
                 break;
+            case TileType.EmptySpace:
+            case TileType.HorizontalSplitter:
             default:
                 newDirections.Add(direction);
                 break;
@@ -137,6 +149,8 @@ public static class Day16Extensions
                 newDirections.Add(Direction.Right);
                 newDirections.Add(Direction.Left);
                 break;
+            case TileType.EmptySpace:
+            case TileType.VerticalSplitter:
             default:
                 newDirections.Add(direction);
                 break;
@@ -160,6 +174,8 @@ public static class Day16Extensions
                 newDirections.Add(Direction.Upwards);
                 newDirections.Add(Direction.Downwards);
                 break;
+            case TileType.EmptySpace:
+            case TileType.HorizontalSplitter:
             default:
                 newDirections.Add(direction);
                 break;

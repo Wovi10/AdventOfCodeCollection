@@ -1,27 +1,11 @@
-﻿using UtilsCSharp;
+﻿using AdventOfCode2023_1.Models.Day07.Enums;
+using UtilsCSharp;
 
 namespace AdventOfCode2023_1.Models.Day07;
 
-public enum Card
+public static class Day07Extensions
 {
-    Two,
-    Three,
-    Four,
-    Five,
-    Six,
-    Seven,
-    Eight,
-    Nine,
-    T,
-    J,
-    Q,
-    K,
-    A
-}
-
-public static class CardExtensions
-{
-    public static Card Parse(char card)
+    public static Card ToCard(this char card)
     {
         return card switch
         {

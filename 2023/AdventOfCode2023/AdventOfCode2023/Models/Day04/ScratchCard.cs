@@ -34,12 +34,12 @@ public class ScratchCard(string cardId)
     {
         if (MatchingNumbers is {Count: 0})
             Points = 0;
-        Points = (int)Math.Pow(2, MatchingNumbers.Count - 1);
+        Points = (int) Math.Pow(2, MatchingNumbers.Count - 1);
     }
 
-    public async Task SetWinningNumbers(string trim) 
+    public async Task SetWinningNumbers(string trim)
         => WinningNumbers = await ConvertToList(trim);
 
-    public async Task SetCardNumbers(string trim) 
+    public async Task SetCardNumbers(string trim)
         => CardNumbers = await ConvertToList(trim);
 }
