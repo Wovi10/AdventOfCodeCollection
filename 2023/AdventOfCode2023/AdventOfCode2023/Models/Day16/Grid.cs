@@ -4,30 +4,30 @@ public class Grid
 {
     public Grid(List<string> input)
     {
-        Width = input[0].Trim().Length;
+        Width = input[0].Length;
         Height = input.Count;
         Rows = new List<List<Tile>>();
-        foreach (var row in input)
+        foreach (var newRow in input.Select(row => row.Select(tile => new Tile(tile)).ToList()))
         {
-            var newRow = row.Trim().Select(tile => new Tile(tile)).ToList();
             Rows.Add(newRow);
         }
     }
 
-    public int Width { get; set; }
-    public int Height { get; set; }
-    public List<List<Tile>> Rows { get; set; }
+    private int Width { get; }
+    private int Height { get; }
+    public List<List<Tile>> Rows { get; }
+    public int EnergisedTilesCount { get; private set; }
 
-    public void ChangeDirection(Direction inputDirection = Direction.Right, int x = 0, int y = 0)
+    public Task ChangeDirection(Direction inputDirection = Direction.Right, int x = 0, int y = 0)
     {
         if (x < 0 || x >= Width || y < 0 || y >= Height)
-            return;
+            return Task.CompletedTask;
 
         var cell = Rows[y][x];
         cell.SetEnergised();
 
         if (cell.ShouldStop(inputDirection))
-            return;
+            return Task.CompletedTask;
 
         cell.AddDirection(inputDirection);
 
@@ -43,6 +43,8 @@ public class Grid
 
             ChangeDirection(direction, newX, newY);
         }
+        
+        return Task.CompletedTask;
     }
 
     private static int GetNewY(Direction direction, int y)
@@ -50,10 +52,8 @@ public class Grid
         return direction switch
         {
             Direction.Upwards => y - 1,
-            Direction.Right => y,
             Direction.Downwards => y + 1,
-            Direction.Left => y,
-            _ => throw new ArgumentOutOfRangeException(nameof(direction), direction, null)
+            _ => y
         };
     }
 
@@ -61,11 +61,20 @@ public class Grid
     {
         return direction switch
         {
-            Direction.Upwards => inputX,
             Direction.Right => inputX + 1,
-            Direction.Downwards => inputX,
             Direction.Left => inputX - 1,
-            _ => throw new ArgumentOutOfRangeException(nameof(direction), direction, null)
+            _ => inputX
         };
     }
+
+    public void ResetGrid()
+    {
+        foreach (var cell in Rows.SelectMany(row => row))
+        {
+            cell.ResetTile();
+        }
+    }
+
+    public void SetEnergisedTilesCount() 
+        => EnergisedTilesCount = Rows.SelectMany(row => row).Count(tile => tile.IsEnergised);
 }
