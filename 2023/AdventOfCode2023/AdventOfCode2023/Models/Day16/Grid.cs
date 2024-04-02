@@ -1,4 +1,6 @@
-﻿namespace AdventOfCode2023_1.Models.Day16;
+﻿using AdventOfCode2023_1.Models.Day16.Enums;
+
+namespace AdventOfCode2023_1.Models.Day16;
 
 public class Grid
 {
@@ -15,7 +17,7 @@ public class Grid
 
     private int Width { get; }
     private int Height { get; }
-    public List<List<Tile>> Rows { get; }
+    private List<List<Tile>> Rows { get; }
     public int EnergisedTilesCount { get; private set; }
 
     public Task ChangeDirection(Direction inputDirection = Direction.Right, int x = 0, int y = 0)

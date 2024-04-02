@@ -1,5 +1,4 @@
-﻿using System.Data.Common;
-using AdventOfCode2023_1.Shared;
+﻿using AdventOfCode2023_1.Models.Day14.Enums;
 
 namespace AdventOfCode2023_1.Models.Day14;
 
@@ -24,14 +23,14 @@ public class Dish
     {
         TotalLoad = 0;
         var rowCounter = Rows.Count;
-        foreach (var numRoundRocks in Rows.Select(dishRow => dishRow.GetIndicesOfRockType(RockType.Round).Count))
+        foreach (var numRoundRocks in Rows.Select(dishRow => dishRow.GetIndicesOfRockType(true).Count))
         {
             TotalLoad += numRoundRocks * rowCounter;
             rowCounter--;
         }
     }
 
-    public void TiltNorth() 
+    public void TiltNorth()
         => Tilt(Direction.North);
 
     public long Cycle()
@@ -40,7 +39,7 @@ public class Dish
         Tilt(Direction.West);
         Tilt(Direction.South);
         Tilt(Direction.East);
-        
+
         CalculateTotalLoad();
         return TotalLoad;
     }
@@ -76,13 +75,13 @@ public class Dish
     private async void AlignRows()
     {
         await Task.WhenAll(
-            AlignColumnsRockTypeAsync(RockType.Round, row => row.GetIndicesOfRockType(RockType.Round)),
-            AlignColumnsRockTypeAsync(RockType.Square, row => row.GetIndicesOfRockType(RockType.Square)),
-            AlignColumnsRockTypeAsync(RockType.None, row => row.GetIndicesOfRockType(RockType.None))
+            AlignColumnsRockTypeAsync(true, row => row.GetIndicesOfRockType(true)),
+            AlignColumnsRockTypeAsync(false, row => row.GetIndicesOfRockType(false)),
+            AlignColumnsRockTypeAsync(null, row => row.GetIndicesOfRockType(null))
         );
     }
 
-    private async Task AlignColumnsRockTypeAsync(RockType rockType, Func<DishRow, IEnumerable<int>> getIndicesFunc)
+    private async Task AlignColumnsRockTypeAsync(bool? rockType, Func<DishRow, IEnumerable<int>> getIndicesFunc)
     {
         var tasks = Columns.Select(async row =>
         {
@@ -95,20 +94,20 @@ public class Dish
 
             await Task.CompletedTask;
         });
-        
+
         await Task.WhenAll(tasks);
     }
 
     private async void AlignColumns()
     {
         await Task.WhenAll(
-            AlignRowsRockTypeAsync(RockType.Round, row => row.GetIndicesOfRockType(RockType.Round)),
-            AlignRowsRockTypeAsync(RockType.Square, row => row.GetIndicesOfRockType(RockType.Square)),
-            AlignRowsRockTypeAsync(RockType.None, row => row.GetIndicesOfRockType(RockType.None))
+            AlignRowsRockTypeAsync(true, row => row.GetIndicesOfRockType(true)),
+            AlignRowsRockTypeAsync(false, row => row.GetIndicesOfRockType(false)),
+            AlignRowsRockTypeAsync(null, row => row.GetIndicesOfRockType(null))
         );
     }
 
-    private async Task AlignRowsRockTypeAsync(RockType rockType, Func<DishRow, IEnumerable<int>> getIndicesFunc)
+    private async Task AlignRowsRockTypeAsync(bool? rockType, Func<DishRow, IEnumerable<int>> getIndicesFunc)
     {
         var tasks = Rows.Select(async row =>
         {
@@ -121,7 +120,7 @@ public class Dish
 
             await Task.CompletedTask;
         });
-        
+
         await Task.WhenAll(tasks);
     }
 }

@@ -1,4 +1,6 @@
-﻿namespace AdventOfCode2023_1.Models.Day16;
+﻿using AdventOfCode2023_1.Models.Day16.Enums;
+
+namespace AdventOfCode2023_1.Models.Day16;
 
 public class Tile(char tileType)
 {

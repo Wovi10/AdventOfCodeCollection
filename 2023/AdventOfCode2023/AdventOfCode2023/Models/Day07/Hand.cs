@@ -1,4 +1,5 @@
-﻿using AdventOfCode2023_1.Shared;
+﻿using AdventOfCode2023_1.Models.Day07.Enums;
+using AdventOfCode2023_1.Shared;
 
 namespace AdventOfCode2023_1.Models.Day07;
 
@@ -123,7 +124,7 @@ public class Hand(int bid) : IComparable<Hand>
     {
         if (Variables.RunningPartOne)
         {
-            _cards.Add(CardExtensions.Parse(card));
+            _cards.Add(card.ToCard());
             return;
         }
 

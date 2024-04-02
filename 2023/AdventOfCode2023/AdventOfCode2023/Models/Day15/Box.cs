@@ -6,17 +6,13 @@ public class Box
 
     public void DoOperation(Lens lens)
     {
-        switch (lens.Operation)
+        if (lens.Operation)
         {
-            case Operation.Add:
-                TryAdd(lens);
-                break;
-            case Operation.Remove:
-                TryRemove(lens);
-                break;
-            default:
-                throw new ArgumentOutOfRangeException();
+            TryAdd(lens);
+            return;
         }
+
+        TryRemove(lens);
     }
 
     private void TryAdd(Lens newLens)

@@ -2,13 +2,13 @@
 
 public static class Day14Extensions
 {
-    public static RockType ToRockType(this char rockChar)
+    public static bool? ToRockType(this char rockChar)
     {
         return rockChar switch
         {
-            '.' => RockType.None,
-            'O' => RockType.Round,
-            '#' => RockType.Square,
+            '.' => null,
+            'O' => true,
+            '#' => false,
             _ => throw new ArgumentOutOfRangeException()
         };
     }

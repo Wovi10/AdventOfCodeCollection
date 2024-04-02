@@ -2,7 +2,7 @@
 
 public class DishRow
 {
-    public List<RockType> Rocks { get; } = new();
+    public List<bool?> Rocks { get; } = new();
 
     public DishRow(string line)
     {
@@ -12,12 +12,12 @@ public class DishRow
         }
     }
 
-    public DishRow(List<RockType> rocks)
+    public DishRow(List<bool?> rocks)
     {
         Rocks = rocks;
     }
 
-    public List<int> GetIndicesOfRockType(RockType rockType)
+    public List<int> GetIndicesOfRockType(bool? rockType)
         => Rocks.Select((r, i) => r == rockType ? i : -1).Where(i => i != -1).ToList();
 
     public Task TiltToEndAsync()
@@ -28,11 +28,11 @@ public class DishRow
             hasChanged = false;
             for (var i = Rocks.Count - 2; i >= 0; i--)
             {
-                if (Rocks[i] != RockType.Round || Rocks[i + 1] != RockType.None) 
+                if (Rocks[i] != true || Rocks[i + 1] != null)
                     continue;
 
-                Rocks[i] = RockType.None;
-                Rocks[i + 1] = RockType.Round;
+                Rocks[i] = null;
+                Rocks[i + 1] = true;
                 hasChanged = true;
             }
         }
@@ -48,11 +48,11 @@ public class DishRow
             hasChanged = false;
             for (var i = 1; i < Rocks.Count; i++)
             {
-                if (Rocks[i - 1] != RockType.None || Rocks[i] != RockType.Round)
+                if (Rocks[i - 1] != null || Rocks[i] != true)
                     continue;
 
-                Rocks[i - 1] = RockType.Round;
-                Rocks[i] = RockType.None;
+                Rocks[i - 1] = true;
+                Rocks[i] = null;
                 hasChanged = true;
             }
         }

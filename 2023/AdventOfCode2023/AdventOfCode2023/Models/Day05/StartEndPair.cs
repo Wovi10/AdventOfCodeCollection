@@ -1,6 +1,4 @@
-﻿using UtilsCSharp;
-
-namespace AdventOfCode2023_1.Models.Day05;
+﻿namespace AdventOfCode2023_1.Models.Day05;
 
 public class StartEndPair
 {
@@ -34,7 +32,7 @@ public class StartEndPair
             return startEndPairs;
 
         var result = new List<StartEndPair>();
-        startEndPairs.Sort((a,b) => a._start.CompareTo(b._start));
+        startEndPairs.Sort((a, b) => a._start.CompareTo(b._start));
 
         var currentPair = startEndPairs[0];
         for (var i = 1; i < startEndPairs.Count; i++)

@@ -1,4 +1,5 @@
 ﻿using AdventOfCode2023_1.Models.Day16;
+using AdventOfCode2023_1.Models.Day16.Enums;
 using AdventOfCode2023_1.Shared;
 
 namespace AdventOfCode2023_1;
@@ -17,15 +18,15 @@ public class Day16 : DayBase
         SharedMethods.PrintAnswer(result);
     }
 
-    private async Task<int> GetMostEfficientEnergisedTiles()
+    private static async Task<int> GetMostEfficientEnergisedTiles()
     {
         var width = Input[0].Length;
         var height = Input.Count;
-        
+
         var tasks = new List<Task<int>>();
-        for (var i = 0; i < width; i++) 
+        for (var i = 0; i < width; i++)
             tasks.Add(CountEnergisedTiles(Direction.Downwards, i, 0));
-        for (var i = 0; i < height; i++) 
+        for (var i = 0; i < height; i++)
             tasks.Add(CountEnergisedTiles(Direction.Right, 0, i));
 
         var result = await Task.WhenAll(tasks);
@@ -38,7 +39,7 @@ public class Day16 : DayBase
         await grid.ChangeDirection(direction, x, y);
         grid.SetEnergisedTilesCount();
         grid.ResetGrid();
-        
+
         return grid.EnergisedTilesCount;
     }
 }

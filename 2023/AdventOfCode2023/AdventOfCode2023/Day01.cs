@@ -5,7 +5,7 @@ namespace AdventOfCode2023_1;
 
 public class Day01 : DayBase
 {
-    protected override  Task PartOne()
+    protected override Task PartOne()
     {
         var result = GetCalibrationSum();
         SharedMethods.PrintAnswer(result);
@@ -28,8 +28,8 @@ public class Day01 : DayBase
     private static List<int> GetCalibrationList(string regex = @"\d")
     {
         return Input
-            .Select(inputLine => new { inputLine, firstNumber = Regex.Match(inputLine, regex) })
-            .Select(t => new { t, lastNumber = Regex.Match(t.inputLine, regex, RegexOptions.RightToLeft) })
+            .Select(inputLine => new {inputLine, firstNumber = Regex.Match(inputLine, regex)})
+            .Select(t => new {t, lastNumber = Regex.Match(t.inputLine, regex, RegexOptions.RightToLeft)})
             .Select(t => ParseMatch(t.t.firstNumber.Value) * 10 + ParseMatch(t.lastNumber.Value))
             .ToList();
     }

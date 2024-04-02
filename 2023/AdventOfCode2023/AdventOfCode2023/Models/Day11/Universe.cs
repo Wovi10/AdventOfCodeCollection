@@ -28,6 +28,7 @@ public class Universe
                     galaxies.Add(new Galaxy(characterCounter, lineCounter));
                 characterCounter++;
             }
+
             lineCounter++;
         }
 
@@ -44,13 +45,13 @@ public class Universe
                 galaxyPairs.Add(new GalaxyPair(_galaxies[i], _galaxies[j]));
             }
         }
-        
+
         return galaxyPairs;
     }
 
     public void Enlarge(int enlargementFactor = 1)
     {
-        if (enlargementFactor != 1) 
+        if (enlargementFactor != 1)
             enlargementFactor--;
 
         var emptyColumns = GetEmptyColumns();
@@ -84,7 +85,7 @@ public class Universe
     private List<int> GetEmptyColumns()
     {
         var emptyColumns = new List<int>();
-        for (var i = 0; i < _lineLength-1; i++)
+        for (var i = 0; i < _lineLength - 1; i++)
         {
             if (_galaxies.Any(galaxy => galaxy.XCoordinate == i))
                 continue;

@@ -19,12 +19,12 @@ public static class Day15Extensions
         return Task.FromResult(currentValue);
     }
 
-    public static Operation ToOperation(this char operation)
+    public static bool ToOperation(this char operation)
     {
         return operation switch
         {
-            '=' => Operation.Add,
-            '-' => Operation.Remove,
+            '=' => true,
+            '-' => false,
             _ => throw new ArgumentOutOfRangeException(nameof(operation), operation, null)
         };
     }

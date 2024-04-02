@@ -12,8 +12,8 @@ public static class PatternExtensions
 
         return sumVerticalNotes + (100 * sumHorizontalNotes);
     }
-    
-    private static bool? IsBeforeMiddle(this int position, double placesFromEnd) 
+
+    private static bool? IsBeforeMiddle(this int position, double placesFromEnd)
         => MathUtils.IsLessThan(position, placesFromEnd);
 
     public static async Task<int> GetCommonMirrorPosition(this List<Line> lines, ReturnObject? previousNotes = null)
@@ -23,7 +23,7 @@ public static class PatternExtensions
         if (commonMirrorPositions.Count == 0)
             return 0;
 
-        if (!Variables.RunningPartOne && previousNotes is {IsVertical: true}) 
+        if (!Variables.RunningPartOne && previousNotes is {IsVertical: true})
             commonMirrorPositions = commonMirrorPositions.Where(position => position != previousNotes.Notes).ToList();
 
         var commonMirrorPosition = commonMirrorPositions.Count > 0 ? commonMirrorPositions.Max() : 0;
