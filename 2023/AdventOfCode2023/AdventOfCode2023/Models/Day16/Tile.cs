@@ -14,4 +14,10 @@ public class Tile(char tileType)
 
     public void AddDirection(Direction direction) 
         => _directionsUsed.Add(direction);
+
+    public void ResetTile()
+    {
+        IsEnergised = false;
+        _directionsUsed.Clear();
+    }
 }

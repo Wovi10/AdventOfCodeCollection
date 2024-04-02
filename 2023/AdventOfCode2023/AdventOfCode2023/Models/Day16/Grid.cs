@@ -16,17 +16,18 @@ public class Grid
     private int Width { get; }
     private int Height { get; }
     public List<List<Tile>> Rows { get; }
+    public int EnergisedTilesCount { get; private set; }
 
-    public void ChangeDirection(Direction inputDirection = Direction.Right, int x = 0, int y = 0)
+    public Task ChangeDirection(Direction inputDirection = Direction.Right, int x = 0, int y = 0)
     {
         if (x < 0 || x >= Width || y < 0 || y >= Height)
-            return;
+            return Task.CompletedTask;
 
         var cell = Rows[y][x];
         cell.SetEnergised();
 
         if (cell.ShouldStop(inputDirection))
-            return;
+            return Task.CompletedTask;
 
         cell.AddDirection(inputDirection);
 
@@ -42,6 +43,8 @@ public class Grid
 
             ChangeDirection(direction, newX, newY);
         }
+        
+        return Task.CompletedTask;
     }
 
     private static int GetNewY(Direction direction, int y)
@@ -63,4 +66,15 @@ public class Grid
             _ => inputX
         };
     }
+
+    public void ResetGrid()
+    {
+        foreach (var cell in Rows.SelectMany(row => row))
+        {
+            cell.ResetTile();
+        }
+    }
+
+    public void SetEnergisedTilesCount() 
+        => EnergisedTilesCount = Rows.SelectMany(row => row).Count(tile => tile.IsEnergised);
 }

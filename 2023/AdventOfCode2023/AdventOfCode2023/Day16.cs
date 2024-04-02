@@ -5,23 +5,40 @@ namespace AdventOfCode2023_1;
 
 public class Day16 : DayBase
 {
-    protected override Task PartOne()
+    protected override async Task PartOne()
     {
-        var result = CountEnergisedTiles();
+        var result = await CountEnergisedTiles();
         SharedMethods.PrintAnswer(result);
-        return Task.CompletedTask;
     }
 
-    protected override Task PartTwo()
+    protected override async Task PartTwo()
     {
-        throw new NotImplementedException();
+        var result = await GetMostEfficientEnergisedTiles();
+        SharedMethods.PrintAnswer(result);
     }
 
-    private static int CountEnergisedTiles()
+    private async Task<int> GetMostEfficientEnergisedTiles()
+    {
+        var width = Input[0].Length;
+        var height = Input.Count;
+        
+        var tasks = new List<Task<int>>();
+        for (var i = 0; i < width; i++) 
+            tasks.Add(CountEnergisedTiles(Direction.Downwards, i, 0));
+        for (var i = 0; i < height; i++) 
+            tasks.Add(CountEnergisedTiles(Direction.Right, 0, i));
+
+        var result = await Task.WhenAll(tasks);
+        return result.Max();
+    }
+
+    private static async Task<int> CountEnergisedTiles(Direction direction = Direction.Right, int x = 0, int y = 0)
     {
         var grid = new Grid(Input);
-        grid.ChangeDirection();
-
-        return grid.Rows.SelectMany(row => row).Count(tile => tile.IsEnergised);
+        await grid.ChangeDirection(direction, x, y);
+        grid.SetEnergisedTilesCount();
+        grid.ResetGrid();
+        
+        return grid.EnergisedTilesCount;
     }
 }
