@@ -18,4 +18,8 @@
     <ItemGroup>
       <PackageReference Include="Wovi10.UtilsCSharp" Version="1.3.4" />
     </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Models\Day16\" />
+    </ItemGroup>
 </Project>
