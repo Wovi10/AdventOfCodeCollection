@@ -1,17 +1,22 @@
-﻿namespace AdventOfCode2023_1.Models.Day15;
+﻿using System.Text;
+
+namespace AdventOfCode2023_1.Models.Day15;
 
 public static class StepDeHashExtensions
 {
-    public static async Task<int> DeHash(this string step)
+    public static Task<int> DeHash(this string step)
     {
-        var tasks = step.Select(DeHash).ToList();
-        var results = await Task.WhenAll(tasks).ConfigureAwait(false);
+        var stepAsBytes = Encoding.ASCII.GetBytes(step);
+        
+        var currentValue = 0;
+        foreach (var character in stepAsBytes)
+        {
+            currentValue += character;
+            currentValue *= 17;
 
-        return results.Sum();
-    }
-    
-    private static async Task<int> DeHash(this char character)
-    {
-        return await Task.FromResult(character);
+            currentValue = currentValue % 256;
+        }
+        
+        return Task.FromResult(currentValue);
     }
 }

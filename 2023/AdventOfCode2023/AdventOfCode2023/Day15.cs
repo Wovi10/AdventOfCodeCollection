@@ -19,26 +19,9 @@ public class Day15 : DayBase
     private async Task<long> GetSumHashes()
     {
         var steps = GetStepsFromInput();
-        
-        // Create a list of tasks to run in parallel and wait for them all to finish
-        var totalTasks = steps.Count;
-        var completedTasks = 0;
-        var progress = new Progress<long>(current =>
-        {
-            SharedMethods.ClearCurrentConsoleLine();
-            Console.Write($"Finished {current} parts of {totalTasks}");
-        });
 
         var tasks = steps.Select(StepDeHashExtensions.DeHash).ToList();
-        var results = Constants.IsDebug
-            ? await Task.WhenAll(tasks.Select(async task =>
-            {
-                var result = await task.ConfigureAwait(false);
-                Interlocked.Increment(ref completedTasks);
-                ((IProgress<long>) progress).Report(completedTasks);
-                return result;
-            })).ConfigureAwait(false)
-            : await Task.WhenAll(tasks).ConfigureAwait(false);
+        var results = await Task.WhenAll(tasks).ConfigureAwait(false);
 
         return results.Sum();
     }
