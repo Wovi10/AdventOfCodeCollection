@@ -2,7 +2,7 @@
 
 namespace AdventOfCode2023_1.Models.Day15;
 
-public static class StepHashExtensions
+public static class Day15Extensions
 {
     public static Task<int> Hash(this string step)
     {
