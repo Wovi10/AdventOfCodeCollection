@@ -4,19 +4,18 @@ public class Grid
 {
     public Grid(List<string> input)
     {
-        Width = input[0].Trim().Length;
+        Width = input[0].Length;
         Height = input.Count;
         Rows = new List<List<Tile>>();
-        foreach (var row in input)
+        foreach (var newRow in input.Select(row => row.Select(tile => new Tile(tile)).ToList()))
         {
-            var newRow = row.Trim().Select(tile => new Tile(tile)).ToList();
             Rows.Add(newRow);
         }
     }
 
-    public int Width { get; set; }
-    public int Height { get; set; }
-    public List<List<Tile>> Rows { get; set; }
+    private int Width { get; }
+    private int Height { get; }
+    public List<List<Tile>> Rows { get; }
 
     public void ChangeDirection(Direction inputDirection = Direction.Right, int x = 0, int y = 0)
     {
@@ -50,10 +49,8 @@ public class Grid
         return direction switch
         {
             Direction.Upwards => y - 1,
-            Direction.Right => y,
             Direction.Downwards => y + 1,
-            Direction.Left => y,
-            _ => throw new ArgumentOutOfRangeException(nameof(direction), direction, null)
+            _ => y
         };
     }
 
@@ -61,11 +58,9 @@ public class Grid
     {
         return direction switch
         {
-            Direction.Upwards => inputX,
             Direction.Right => inputX + 1,
-            Direction.Downwards => inputX,
             Direction.Left => inputX - 1,
-            _ => throw new ArgumentOutOfRangeException(nameof(direction), direction, null)
+            _ => inputX
         };
     }
 }

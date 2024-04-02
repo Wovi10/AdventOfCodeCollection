@@ -22,7 +22,8 @@ public static class SharedMethods
         var filePath = GetFilePath(day);
         var fullPath = Directory.GetCurrentDirectory() + filePath;
         var inputFile = File.ReadAllText(fullPath);
-        return SplitInputFile(inputFile);
+        var splitInput = SplitInputFile(inputFile);
+        return splitInput.Select(line => line.Trim()).ToList();
     }
 
     public static void PrintPercentage(long current, long max)
