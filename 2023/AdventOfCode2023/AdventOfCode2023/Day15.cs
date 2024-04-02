@@ -16,7 +16,7 @@ public class Day15 : DayBase
         throw new NotImplementedException();
     }
 
-    private async Task<long> GetSumHashes()
+    private static async Task<long> GetSumHashes()
     {
         var steps = GetStepsFromInput();
 
