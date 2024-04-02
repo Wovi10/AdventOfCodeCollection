@@ -29,7 +29,7 @@ public class Day15 : DayBase
 
     private static async Task<int[]> GetHashes(List<string> steps)
     {
-        var tasks = steps.Select(StepHashExtensions.Hash).ToList();
+        var tasks = steps.Select(Day15Extensions.Hash).ToList();
         return await Task.WhenAll(tasks).ConfigureAwait(false);
     }
 
