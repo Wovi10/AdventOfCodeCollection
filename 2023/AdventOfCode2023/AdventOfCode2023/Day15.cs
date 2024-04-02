@@ -42,7 +42,7 @@ public class Day15 : DayBase
     private static long GetFocusingPower()
     {
         var boxes = new Box[256];
-        for (var i = 0; i < 256; i++) 
+        for (var i = 0; i < 256; i++)
             boxes[i] = new Box();
 
         var steps = GetStepsFromInput();
@@ -55,7 +55,7 @@ public class Day15 : DayBase
             var boxToUse = boxes[lens.Hash];
             boxToUse.DoOperation(lens);
         }
-        
+
         return boxes.Select((t, i) => t.GetFocusingPower(i + 1)).Sum();
     }
 }
