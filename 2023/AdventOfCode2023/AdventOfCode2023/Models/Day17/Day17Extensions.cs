@@ -44,37 +44,38 @@ public static class Day17Extensions
     }
 
 
-    public static List<Direction> GetNewDirections(this Direction direction, int timesDirectionUsed)
+    public static List<Direction> GetNewDirections(this Direction direction, List<Direction> lastThree)
     {
         var newDirections = new List<Direction>();
-        if (timesDirectionUsed > 3)
-            return newDirections;
-        
+
         switch (direction)
         {
             case Direction.Up:
+                newDirections.Add(Direction.Up);
                 newDirections.Add(Direction.Right);
-                newDirections.Add(Direction.Down);
                 newDirections.Add(Direction.Left);
                 break;
             case Direction.Right:
                 newDirections.Add(Direction.Up);
+                newDirections.Add(Direction.Right);
                 newDirections.Add(Direction.Down);
-                newDirections.Add(Direction.Left);
                 break;
             case Direction.Down:
-                newDirections.Add(Direction.Up);
                 newDirections.Add(Direction.Right);
+                newDirections.Add(Direction.Down);
                 newDirections.Add(Direction.Left);
                 break;
             case Direction.Left:
                 newDirections.Add(Direction.Up);
-                newDirections.Add(Direction.Right);
                 newDirections.Add(Direction.Down);
+                newDirections.Add(Direction.Left);
                 break;
             default:
                 throw new ArgumentOutOfRangeException(nameof(direction), direction, null);
         }
+
+        if (lastThree.Count == 3 && lastThree.All(d => d == direction))
+            newDirections.Remove(direction);
 
         return newDirections;
     }
