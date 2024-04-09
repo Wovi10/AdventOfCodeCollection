@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Reflection;
 using AdventOfCode2023_1.Models.Day17.Enums;
+using UtilsCSharp;
 
 namespace AdventOfCode2023_1.Models.Day17;
 
@@ -26,6 +27,7 @@ public class CityMap
     private Coordinates EndCoordinates { get; }
     private readonly Dictionary<Coordinates, int> _distances = new();
     private readonly HashSet<Coordinates> _visited = new();
+    private readonly Dictionary<Coordinates, List<Direction>> _lastThreeDirectionsToCoord = new();
 
     public int GetMinimalHeatLoss()
     {
@@ -88,117 +90,63 @@ public class CityMap
     {
         _distances[source] = Rows[source.GetYCoordinate()][source.GetXCoordinate()];
 
-        var currentDirection = Direction.None;
-        var consecutiveDirections = 0;
-
-        while (true)
+        for (var i = 0; i < Rows.Count; i++)
         {
-            var minDistanceNode = GetMinDistanceNode();
-
-            if (minDistanceNode.Equals(new Coordinates(-1, -1)))
-                break;
-
-            _visited.Add(minDistanceNode);
-
-            foreach (var neighbour in GetNeighbours(minDistanceNode, currentDirection))
+            var currentRow = Rows[i];
+            var yCoord = i;
+            for (var j = 0; j < currentRow.Count; j++)
             {
-                var newDistance = _distances[minDistanceNode] +
-                                  Rows[neighbour.GetYCoordinate()][neighbour.GetXCoordinate()];
+                var xCoord = j;
+                var currentNode = new Coordinates(xCoord, yCoord);
+                var currentDistance = _distances[currentNode];
 
-                if (newDistance < _distances[neighbour])
-                    _distances[neighbour] = newDistance;
-            }
-
-            var newDirection = GetDirectionFromPreviousNode(minDistanceNode, GetPreviousCell(minDistanceNode));
-
-            if (newDirection == currentDirection)
-            {
-                consecutiveDirections++;
-                if (consecutiveDirections >= 3)
+                if (!_lastThreeDirectionsToCoord.TryGetValue(currentNode, out List<Direction>? currentDirections))
                 {
-                    currentDirection = Direction.None;
-                    consecutiveDirections = 0;
+                    currentDirections = new List<Direction>();
+                    _lastThreeDirectionsToCoord[currentNode] = currentDirections;
+                }
+
+                var neighbours = currentNode.GetNeighbours(Height, Width, _lastThreeDirectionsToCoord[currentNode]);
+
+                foreach (var neighbour in neighbours)
+                {
+                    var heatLossForCoord = Rows[neighbour.GetYCoordinate()][neighbour.GetXCoordinate()];
+
+                    var newDirection = currentNode.GetDirectionToNeighbour(neighbour);
+
+                    var newDistance =
+                        MathUtils.GetLowest(_distances[neighbour], currentDistance + heatLossForCoord);
+
+                    if (newDistance >= _distances[neighbour])
+                        continue;
+
+                    _distances[neighbour] = newDistance;
+
+                    if (!_lastThreeDirectionsToCoord.TryGetValue(neighbour, out List<Direction>? neighbourDirections))
+                    {
+                        neighbourDirections = new List<Direction>();
+                        _lastThreeDirectionsToCoord[neighbour] = neighbourDirections;
+                    }
+
+                    foreach (var direction in currentDirections)
+                    {
+                        if (_lastThreeDirectionsToCoord[neighbour].Count == 3)
+                            continue;
+                        _lastThreeDirectionsToCoord[neighbour].Add(direction);
+                    }
+
+                    if (_lastThreeDirectionsToCoord[neighbour].Count > 3)
+                        _lastThreeDirectionsToCoord[neighbour].RemoveAt(0);
+
+                    _lastThreeDirectionsToCoord[neighbour].Add(newDirection);
                 }
             }
-            else
-            {
-                currentDirection = newDirection;
-                consecutiveDirections = 0;
-            }
         }
-    }
-
-    private Direction GetDirectionFromPreviousNode(Coordinates current, Coordinates previous)
-    {
-        // Calculate the direction from the previous node to the current node
-        var deltaY = current.GetYCoordinate() - previous.GetYCoordinate();
-        var deltaX = current.GetXCoordinate() - previous.GetXCoordinate();
-
-        return deltaY switch
-        {
-            -1 when deltaX == 0 => Direction.Up,
-            1 when deltaX == 0 => Direction.Down,
-            0 when deltaX == -1 => Direction.Left,
-            0 when deltaX == 1 => Direction.Right,
-            _ => Direction.None
-        };
-    }
-
-    private IEnumerable<Coordinates> GetNeighbours(Coordinates cell, Direction currentDirection)
-    {
-        var directions = new List<Direction>
-        {
-            Direction.Up,
-            Direction.Right,
-            Direction.Down,
-            Direction.Left
-        };
-
-        var oppositeDirection = GetOppositeDirection(currentDirection);
-        if (oppositeDirection != Direction.None)
-            directions.Remove(oppositeDirection);
-
-        foreach (var direction in directions)
-        {
-            var newCoordinates = GetNewCoordinates(direction, cell);
-
-            if (IsValidMove(newCoordinates.GetYCoordinate(), newCoordinates.GetXCoordinate()))
-                yield return newCoordinates;
-        }
-    }
-
-    private Direction GetOppositeDirection(Direction direction)
-    {
-        return direction switch
-        {
-            Direction.Up => Direction.Down,
-            Direction.Down => Direction.Up,
-            Direction.Left => Direction.Right,
-            Direction.Right => Direction.Left,
-            _ => Direction.None
-        };
     }
 
     private bool IsValidMove(int y, int x)
     {
         return y >= 0 && y < Height && x >= 0 && x < Width;
-    }
-
-    private Coordinates GetMinDistanceNode()
-    {
-        var minDistanceNode = new Coordinates(-1, -1);
-        var minDistance = int.MaxValue;
-
-        foreach (var node in _distances)
-        {
-            if (_visited.Contains(node.Key) || node.Value >= minDistance)
-                continue;
-
-            minDistance = node.Value;
-            minDistanceNode = node.Key;
-        }
-
-        return minDistanceNode;
     }
 
     private static int GetNewX(Direction direction, int xCoord)
