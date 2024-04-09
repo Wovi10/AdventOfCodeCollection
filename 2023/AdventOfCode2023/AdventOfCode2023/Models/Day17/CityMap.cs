@@ -27,7 +27,7 @@ public class CityMap
     private Coordinates EndCoordinates { get; }
     private readonly Dictionary<Coordinates, int> _distances = new();
     private readonly HashSet<Coordinates> _visited = new();
-    private readonly Dictionary<Coordinates, List<Direction>> _lastThreeDirectionsToCoord = new();
+    private readonly Dictionary<Coordinates, List<Direction>> _lastDirectionsToCoord = new();
 
     public int GetMinimalHeatLoss()
     {
@@ -100,13 +100,13 @@ public class CityMap
                 var currentNode = new Coordinates(xCoord, yCoord);
                 var currentDistance = _distances[currentNode];
 
-                if (!_lastThreeDirectionsToCoord.TryGetValue(currentNode, out List<Direction>? currentDirections))
+                if (!_lastDirectionsToCoord.TryGetValue(currentNode, out List<Direction>? currentDirections))
                 {
                     currentDirections = new List<Direction>();
-                    _lastThreeDirectionsToCoord[currentNode] = currentDirections;
+                    _lastDirectionsToCoord[currentNode] = currentDirections;
                 }
 
-                var neighbours = currentNode.GetNeighbours(Height, Width, _lastThreeDirectionsToCoord[currentNode]);
+                var neighbours = currentNode.GetNeighbours(Height, Width, _lastDirectionsToCoord[currentNode]);
 
                 foreach (var neighbour in neighbours)
                 {
@@ -122,23 +122,14 @@ public class CityMap
 
                     _distances[neighbour] = newDistance;
 
-                    if (!_lastThreeDirectionsToCoord.TryGetValue(neighbour, out List<Direction>? neighbourDirections))
-                    {
-                        neighbourDirections = new List<Direction>();
-                        _lastThreeDirectionsToCoord[neighbour] = neighbourDirections;
-                    }
+                    _lastDirectionsToCoord[neighbour] = new List<Direction>();
 
                     foreach (var direction in currentDirections)
                     {
-                        if (_lastThreeDirectionsToCoord[neighbour].Count == 3)
-                            continue;
-                        _lastThreeDirectionsToCoord[neighbour].Add(direction);
+                        _lastDirectionsToCoord[neighbour].Add(direction);
                     }
 
-                    if (_lastThreeDirectionsToCoord[neighbour].Count > 3)
-                        _lastThreeDirectionsToCoord[neighbour].RemoveAt(0);
-
-                    _lastThreeDirectionsToCoord[neighbour].Add(newDirection);
+                    _lastDirectionsToCoord[neighbour].Add(newDirection);
                 }
             }
         }

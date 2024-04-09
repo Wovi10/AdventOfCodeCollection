@@ -85,29 +85,21 @@ public static class Day17Extensions
         var xCoord = currentNode.GetXCoordinate();
         var yCoord = currentNode.GetYCoordinate();
 
-        var lastDirection = usedDirections.Count == 3 ? usedDirections.Last() : Direction.None;
-        var timesDirectionUsed = 0;
-        var previousDirection = usedDirections.Count == 3 ? usedDirections.First() : Direction.None;
-        foreach (var usedDirection in usedDirections.Skip(1))
-        {
-            if (usedDirection.Equals(previousDirection))
-                timesDirectionUsed++;
-            else
-                break;
-        }
+        var lastDirection = usedDirections.Count > 0 ? usedDirections.Last() : Direction.None;
+        var lastThreeTheSame = usedDirections.Count > 2 && usedDirections.TakeLast(3).All(d => d == lastDirection);
 
         List<Coordinates> neighbours = new();
 
-        if (yCoord > 0 && (lastDirection != Direction.Up || timesDirectionUsed < 3))
+        if (yCoord > 0 && lastDirection != Direction.Down && !(lastThreeTheSame && lastDirection == Direction.Up))
             neighbours.Add(new Coordinates(xCoord, yCoord - 1));
 
-        if (yCoord < height - 1 && (lastDirection != Direction.Down || timesDirectionUsed < 3))
+        if (yCoord < height - 1 && lastDirection != Direction.Up && !(lastThreeTheSame && lastDirection == Direction.Down))
             neighbours.Add(new Coordinates(xCoord, yCoord + 1));
 
-        if (xCoord > 0 && (lastDirection != Direction.Left || timesDirectionUsed < 3)) 
+        if (xCoord > 0 && lastDirection != Direction.Right && !(lastThreeTheSame && lastDirection == Direction.Left)) 
             neighbours.Add(new Coordinates(xCoord - 1, yCoord));
 
-        if (xCoord < width - 1 && (lastDirection != Direction.Right || timesDirectionUsed < 3)) 
+        if (xCoord < width - 1 && lastDirection != Direction.Left && !(lastThreeTheSame && lastDirection == Direction.Right)) 
             neighbours.Add(new Coordinates(xCoord + 1, yCoord));
 
         return neighbours;
