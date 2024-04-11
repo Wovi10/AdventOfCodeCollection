@@ -119,4 +119,16 @@ public static class Day17Extensions
             _ => Direction.None
         };
     }
+
+    public static Coordinates Move(this Coordinates current, Direction direction)
+    {
+        return direction switch
+        {
+            Direction.Up => new Coordinates(current.GetXCoordinate(), current.GetYCoordinate() - 1),
+            Direction.Right => new Coordinates(current.GetXCoordinate() + 1, current.GetYCoordinate()),
+            Direction.Down => new Coordinates(current.GetXCoordinate(), current.GetYCoordinate() + 1),
+            Direction.Left => new Coordinates(current.GetXCoordinate() - 1, current.GetYCoordinate()),
+            _ => current
+        };
+    }
 }
