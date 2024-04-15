@@ -43,9 +43,16 @@ public class CityMap
             }
         }
 
-        while (_coordinates.Any(coordinate => !coordinate.Visited)) 
+        var counter = 0;
+        while (_coordinates.Any(coordinate => !coordinate.Visited) && counter++ < 10) 
             Dijkstra();
 
+        var unvisitedCoordinates = _coordinates.Where(coordinate => !coordinate.Visited).ToList();
+        foreach (var coordinates in unvisitedCoordinates)
+        {
+            _coordinates.Remove(coordinates);
+        }
+        
         var path = new List<Coordinates>();
         var current = EndCoordinates;
         while (!current.Equals(_startCoordinates))
@@ -62,7 +69,10 @@ public class CityMap
 
     private void Dijkstra()
     {
-        _startCoordinates.MinimalHeatLoss = Rows[0][0];
+        _coordinates.TryGetValue(_startCoordinates, out var startCoordinates);
+
+        if (startCoordinates is {Visited: false}) 
+            startCoordinates.MinimalHeatLoss = Rows[0][0];
 
         for (var i = 0; i < Rows.Count; i++)
         {
@@ -70,7 +80,11 @@ public class CityMap
             for (var j = 0; j < Rows[i].Count; j++)
             {
                 var xCoord = j;
-                var currentNode = new Coordinates(xCoord, yCoord);
+                _coordinates.TryGetValue(new Coordinates(xCoord, yCoord), out var currentNode);
+
+                if (currentNode == null)
+                    continue;
+
                 var currentDistance = currentNode.MinimalHeatLoss;
 
                 if (!_lastDirectionsToCoord.TryGetValue(currentNode, out List<Direction>? currentDirections))
@@ -83,31 +97,37 @@ public class CityMap
 
                 foreach (var neighbour in neighbours)
                 {
-                    var heatLossForCoord = Rows[neighbour.GetYCoordinate()][neighbour.GetXCoordinate()];
+                    _coordinates.TryGetValue(neighbour, out var neighbourCoord);
+                    if (neighbourCoord == null)
+                        continue;
+                    var heatLossForCoord = Rows[neighbourCoord.GetYCoordinate()][neighbourCoord.GetXCoordinate()];
 
-                    var newDirection = currentNode.GetDirectionToNeighbour(neighbour);
+                    var newDirection = currentNode.GetDirectionToNeighbour(neighbourCoord);
 
+                    var possibleNewDistance = (currentDistance + heatLossForCoord) < 0 ? int.MaxValue : currentDistance + heatLossForCoord;
+                    
                     var newDistance =
-                        MathUtils.GetLowest(neighbour.MinimalHeatLoss, currentDistance + heatLossForCoord);
+                        MathUtils.GetLowest(neighbourCoord.MinimalHeatLoss, possibleNewDistance);
 
-                    if (newDistance >= neighbour.MinimalHeatLoss)
+                    if (newDistance >= neighbourCoord.MinimalHeatLoss)
                         continue;
 
-                    neighbour.MinimalHeatLoss = newDistance;
+                    neighbourCoord.MinimalHeatLoss = newDistance;
 
-                    _lastDirectionsToCoord[neighbour] = new List<Direction>();
+                    _lastDirectionsToCoord[neighbourCoord] = new List<Direction>();
 
                     foreach (var direction in currentDirections)
                     {
-                        _lastDirectionsToCoord[neighbour].Add(direction);
+                        _lastDirectionsToCoord[neighbourCoord].Add(direction);
                     }
 
-                    _lastDirectionsToCoord[neighbour].Add(newDirection);
+                    _lastDirectionsToCoord[neighbourCoord].Add(newDirection);
                     
-                }
+                    _coordinates.TryGetValue(currentNode, out var valueToAdjust);
 
-                if (currentNode.MinimalHeatLoss != int.MaxValue) 
-                    currentNode.Visited = true;
+                    if (valueToAdjust != null) 
+                        valueToAdjust.Visited = true;
+                }
             }
         }
     }
@@ -127,9 +147,11 @@ public class CityMap
 
         foreach (var direction in directions)
         {
-            var newCoordinates = current.Move(direction);
+            var possibleNewCoords = current.Move(direction);
 
-            if (!IsValidMove(newCoordinates) ||
+            _coordinates.TryGetValue(possibleNewCoords, out var newCoordinates);
+
+            if (newCoordinates == null || !IsValidMove(newCoordinates) ||
                 newCoordinates.MinimalHeatLoss >= minDistance)
                 continue;
 
