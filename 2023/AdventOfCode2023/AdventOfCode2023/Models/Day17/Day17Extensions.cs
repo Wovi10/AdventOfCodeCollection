@@ -168,10 +168,8 @@ public static class Day17Extensions
 
         if (!canRepeat)
             neighbours.Remove(currentNode.Move(currentDirection));
-
-        neighbours = neighbours.FilterInvalidNeighbours(currentNode, currentDirection, height, width);
         
-        return neighbours.Randomize();
+        return neighbours.FilterInvalidNeighbours(currentNode, currentDirection, height, width);
     }
 
     private static List<Coordinates> FilterInvalidNeighbours(this List<Coordinates> neighbours, Coordinates currentNode, Direction currentDirection, int height, int width)
@@ -193,11 +191,5 @@ public static class Day17Extensions
         }
         return neighbours.Where(c => c.GetXCoordinate() >= 0 && c.GetXCoordinate() < width &&
                                      c.GetYCoordinate() >= 0 && c.GetYCoordinate() < height).ToList();
-    }
-    
-    private static List<Coordinates> Randomize(this List<Coordinates> coordinates)
-    {
-        var random = new Random();
-        return coordinates.OrderBy(_ => random.Next()).ToList();
     }
 }
