@@ -141,10 +141,22 @@ public static class Day17Extensions
         coordinate.Visited = true;
     }
 
-    public static List<Coordinates> GetNeighbours(this Coordinates currentNode, Direction currentDirection,
-        int timesInDirection, int height, int width)
+    public static List<Coordinates> GetNeighbours(this Coordinates currentNode, List<Coordinates> usedCoordinates,
+        int height, int width)
     {
-        var canRepeat = timesInDirection < 3;
+        var lastFourCoordinates = usedCoordinates.TakeLast(4).ToList();
+        List<Direction> lastThreeDirections = new();
+
+        for (var i = 0; i < lastFourCoordinates.Count - 1; i++)
+        {
+            var currentCoordinate = lastFourCoordinates[i];
+            var nextCoordinate = lastFourCoordinates[i + 1];
+            var direction = currentCoordinate.GetDirectionToNeighbour(nextCoordinate);
+            lastThreeDirections.Add(direction);
+        }
+
+        var currentDirection = lastThreeDirections.LastOrDefault();
+        var canRepeat = lastThreeDirections.Count < 3 || lastThreeDirections.Any(dir => dir != currentDirection);
 
         var neighbours = new List<Coordinates>
         {
@@ -154,9 +166,16 @@ public static class Day17Extensions
             currentNode.Move(Direction.Left)
         };
 
-        if (!canRepeat) 
+        if (!canRepeat)
             neighbours.Remove(currentNode.Move(currentDirection));
 
+        neighbours = neighbours.FilterInvalidNeighbours(currentNode, currentDirection, height, width);
+        
+        return neighbours.Randomize();
+    }
+
+    private static List<Coordinates> FilterInvalidNeighbours(this List<Coordinates> neighbours, Coordinates currentNode, Direction currentDirection, int height, int width)
+    {
         switch (currentDirection)
         {
             case Direction.Up:
@@ -172,13 +191,13 @@ public static class Day17Extensions
                 neighbours.Remove(currentNode.Move(Direction.Right));
                 break;
         }
-
-        return neighbours.FilterInvalidNeighbours(height, width);
-    }
-
-    private static List<Coordinates> FilterInvalidNeighbours(this List<Coordinates> neighbours, int height, int width)
-    {
         return neighbours.Where(c => c.GetXCoordinate() >= 0 && c.GetXCoordinate() < width &&
                                      c.GetYCoordinate() >= 0 && c.GetYCoordinate() < height).ToList();
+    }
+    
+    private static List<Coordinates> Randomize(this List<Coordinates> coordinates)
+    {
+        var random = new Random();
+        return coordinates.OrderBy(_ => random.Next()).ToList();
     }
 }
