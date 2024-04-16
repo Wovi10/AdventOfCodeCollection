@@ -28,6 +28,7 @@ public class CityMap
     private readonly HashSet<Coordinates> _coordinates = new();
     private readonly HashSet<Coordinates> _visited = new();
     private readonly Dictionary<Coordinates, List<Direction>> _lastDirectionsToCoord = new();
+    private readonly Dictionary<Coordinates, List<Direction>> _bestPathToCoord = new();
 
     public int GetMinimalHeatLoss()
     {
@@ -64,7 +65,7 @@ public class CityMap
         path.Add(_startCoordinates);
         path.Reverse();
 
-        return path.Select(coord => Rows[coord.GetYCoordinate()][coord.GetXCoordinate()]).Sum();
+        return _coordinates.TryGetValue(EndCoordinates, out var endCoordinates) ? endCoordinates.MinimalHeatLoss : 0;
     }
 
     private void Dijkstra()
@@ -72,7 +73,48 @@ public class CityMap
         _coordinates.TryGetValue(_startCoordinates, out var startCoordinates);
 
         if (startCoordinates is {Visited: false}) 
-            startCoordinates.MinimalHeatLoss = Rows[0][0];
+            startCoordinates.MinimalHeatLoss = 0;
+
+        var timesInDirection = 0;
+        var currentDirection = Direction.None;
+        foreach (var currentCoordinate in _coordinates)
+        {
+            if (currentCoordinate.Equals(_startCoordinates))
+            {
+                currentCoordinate.SetCoordinate(0);
+                continue;
+            }
+
+            var currentDistance = currentCoordinate.MinimalHeatLoss;
+            var bestPathToCurrent = _bestPathToCoord.TryGetValue(currentCoordinate, out var bestPath)
+                ? bestPath
+                : new List<Direction>();
+
+            var neighbours = currentCoordinate.GetNeighbours(currentDirection, timesInDirection, Height, Width);
+            foreach (var neighbour in neighbours)
+            {
+                _coordinates.TryGetValue(neighbour, out var neighbourCoord);
+
+                if (neighbourCoord == null)
+                    continue;
+
+                var heatLossForCoord = Rows[neighbourCoord.GetYCoordinate()][neighbourCoord.GetXCoordinate()];
+                
+                var possibleNewDistance = (currentDistance + heatLossForCoord) < 0 ? int.MaxValue : currentDistance + heatLossForCoord;
+                    
+                var newDistance =
+                    MathUtils.GetLowest(neighbourCoord.MinimalHeatLoss, possibleNewDistance);
+
+                if (newDistance >= neighbourCoord.MinimalHeatLoss)
+                    continue;
+                
+                neighbourCoord.MinimalHeatLoss = newDistance;
+                var bestPathToNeighbour = new List<Direction>(bestPath);
+                bestPathToNeighbour.Add(currentDirection);
+                
+                
+            }
+        }
 
         for (var i = 0; i < Rows.Count; i++)
         {
@@ -98,8 +140,10 @@ public class CityMap
                 foreach (var neighbour in neighbours)
                 {
                     _coordinates.TryGetValue(neighbour, out var neighbourCoord);
+
                     if (neighbourCoord == null)
                         continue;
+
                     var heatLossForCoord = Rows[neighbourCoord.GetYCoordinate()][neighbourCoord.GetXCoordinate()];
 
                     var newDirection = currentNode.GetDirectionToNeighbour(neighbourCoord);
@@ -122,7 +166,7 @@ public class CityMap
                     }
 
                     _lastDirectionsToCoord[neighbourCoord].Add(newDirection);
-                    
+
                     _coordinates.TryGetValue(currentNode, out var valueToAdjust);
 
                     if (valueToAdjust != null) 
@@ -130,6 +174,9 @@ public class CityMap
                 }
             }
         }
+
+        if (_coordinates.TryGetValue(EndCoordinates, out var endCoordinates)) 
+            endCoordinates.Visited = endCoordinates.MinimalHeatLoss != int.MaxValue;
     }
 
     private Coordinates GetPreviousCell(Coordinates current)

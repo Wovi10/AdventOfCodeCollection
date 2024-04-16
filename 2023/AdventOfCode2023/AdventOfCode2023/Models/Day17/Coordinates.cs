@@ -26,4 +26,9 @@ public class Coordinates(int xCoordinate, int yCoordinate)
 
     public override int GetHashCode()
         => HashCode.Combine(_xCoordinate, _yCoordinate);
+
+    public override string ToString()
+    {
+        return $"({_xCoordinate}, {_yCoordinate})";
+    }
 }

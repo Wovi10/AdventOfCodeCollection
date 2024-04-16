@@ -80,7 +80,8 @@ public static class Day17Extensions
         return newDirections;
     }
 
-    public static List<Coordinates> GetNeighbours(this Coordinates currentNode, int height, int width, List<Direction> usedDirections)
+    public static List<Coordinates> GetNeighbours(this Coordinates currentNode, int height, int width,
+        List<Direction> usedDirections)
     {
         var xCoord = currentNode.GetXCoordinate();
         var yCoord = currentNode.GetYCoordinate();
@@ -93,13 +94,15 @@ public static class Day17Extensions
         if (yCoord > 0 && lastDirection != Direction.Down && !(lastThreeTheSame && lastDirection == Direction.Up))
             neighbours.Add(new Coordinates(xCoord, yCoord - 1));
 
-        if (yCoord < height - 1 && lastDirection != Direction.Up && !(lastThreeTheSame && lastDirection == Direction.Down))
+        if (yCoord < height - 1 && lastDirection != Direction.Up &&
+            !(lastThreeTheSame && lastDirection == Direction.Down))
             neighbours.Add(new Coordinates(xCoord, yCoord + 1));
 
-        if (xCoord > 0 && lastDirection != Direction.Right && !(lastThreeTheSame && lastDirection == Direction.Left)) 
+        if (xCoord > 0 && lastDirection != Direction.Right && !(lastThreeTheSame && lastDirection == Direction.Left))
             neighbours.Add(new Coordinates(xCoord - 1, yCoord));
 
-        if (xCoord < width - 1 && lastDirection != Direction.Left && !(lastThreeTheSame && lastDirection == Direction.Right)) 
+        if (xCoord < width - 1 && lastDirection != Direction.Left &&
+            !(lastThreeTheSame && lastDirection == Direction.Right))
             neighbours.Add(new Coordinates(xCoord + 1, yCoord));
 
         return neighbours;
@@ -130,5 +133,52 @@ public static class Day17Extensions
             Direction.Left => new Coordinates(current.GetXCoordinate() - 1, current.GetYCoordinate()),
             _ => current
         };
+    }
+
+    public static void SetCoordinate(this Coordinates coordinate, int minimalHeatLoss)
+    {
+        coordinate.MinimalHeatLoss = minimalHeatLoss;
+        coordinate.Visited = true;
+    }
+
+    public static List<Coordinates> GetNeighbours(this Coordinates currentNode, Direction currentDirection,
+        int timesInDirection, int height, int width)
+    {
+        var canRepeat = timesInDirection < 3;
+
+        var neighbours = new List<Coordinates>
+        {
+            currentNode.Move(Direction.Up),
+            currentNode.Move(Direction.Right),
+            currentNode.Move(Direction.Down),
+            currentNode.Move(Direction.Left)
+        };
+
+        if (!canRepeat) 
+            neighbours.Remove(currentNode.Move(currentDirection));
+
+        switch (currentDirection)
+        {
+            case Direction.Up:
+                neighbours.Remove(currentNode.Move(Direction.Down));
+                break;
+            case Direction.Right:
+                neighbours.Remove(currentNode.Move(Direction.Left));
+                break;
+            case Direction.Down:
+                neighbours.Remove(currentNode.Move(Direction.Up));
+                break;
+            case Direction.Left:
+                neighbours.Remove(currentNode.Move(Direction.Right));
+                break;
+        }
+
+        return neighbours.FilterInvalidNeighbours(height, width);
+    }
+
+    private static List<Coordinates> FilterInvalidNeighbours(this List<Coordinates> neighbours, int height, int width)
+    {
+        return neighbours.Where(c => c.GetXCoordinate() >= 0 && c.GetXCoordinate() < width &&
+                                     c.GetYCoordinate() >= 0 && c.GetYCoordinate() < height).ToList();
     }
 }
