@@ -1,4 +1,6 @@
-﻿namespace AdventOfCode2023_1.Models.Day17;
+﻿using AdventOfCode2023_1.Shared;
+
+namespace AdventOfCode2023_1.Models.Day17;
 
 public class CityMap
 {
@@ -27,7 +29,7 @@ public class CityMap
         (-1, 0)
     };
 
-    public int GetMinimalHeatLoss(Constraints constraints)
+    public int GetMinimalHeatLoss()
     {
         var seen = new List<Node>();
         _priorityQueue.Enqueue(new Node(), 0);
@@ -37,7 +39,7 @@ public class CityMap
             var currentNode = _priorityQueue.Dequeue();
 
             var isEndNode = currentNode.Row == Height - 1 && currentNode.Column == Width - 1;
-            var crucibleCanStop = currentNode.TimesInDirection >= constraints.MinNumberOfMovements;
+            var crucibleCanStop = Constraints.IsAboveMin(currentNode.TimesInDirection);
 
             if (isEndNode && crucibleCanStop)
                 return currentNode.HeatLoss;
@@ -47,27 +49,27 @@ public class CityMap
 
             seen.Add(currentNode);
 
-            CheckNeighbours(constraints, currentNode);
+            CheckNeighbours(currentNode);
         }
 
         return 0;
     }
 
-    private void CheckNeighbours(Constraints constraints, Node currentNode)
+    private void CheckNeighbours(Node currentNode)
     {
-        TryStraight(currentNode, constraints);
-        TryTurning(currentNode, constraints);
+        TryStraight(currentNode);
+        TryTurning(currentNode);
     }
 
-    private void TryStraight(Node currentNode, Constraints constraints)
+    private void TryStraight(Node currentNode)
     {
-        if (currentNode.IsBelowMax(constraints) && !currentNode.IsStandingStill())
+        if (Constraints.IsBelowMax(currentNode.TimesInDirection) && !currentNode.IsStandingStill())
             CheckNextNode(currentNode, currentNode.DirectionRow, currentNode.DirectionColumn, true);
     }
 
-    private void TryTurning(Node currentNode, Constraints constraints)
+    private void TryTurning(Node currentNode)
     {
-        if (!currentNode.IsAboveMin(constraints) && !currentNode.IsStandingStill())
+        if (!Constraints.IsBelowMax(currentNode.TimesInDirection) && !currentNode.IsStandingStill())
             return;
 
         foreach (var (nextDirectionRow, nextDirectionColumn) in _directions)

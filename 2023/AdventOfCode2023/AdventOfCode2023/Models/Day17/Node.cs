@@ -1,4 +1,5 @@
-﻿using UtilsCSharp;
+﻿using AdventOfCode2023_1.Shared;
+using UtilsCSharp;
 
 namespace AdventOfCode2023_1.Models.Day17;
 
@@ -31,15 +32,6 @@ public class Node
 
     public bool IsStandingStill()
         => DirectionRow == 0 && DirectionColumn == 0;
-
-    public bool IsWithinConstraints(Constraints constraints)
-        => IsAboveMin(constraints) && IsBelowMax(constraints);
-
-    public bool IsAboveMin(Constraints constraints)
-        => TimesInDirection >= constraints.MinNumberOfMovements;
-
-    public bool IsBelowMax(Constraints constraints)
-        => TimesInDirection < constraints.MaxNumberOfMovements;
 
     public override bool Equals(object? obj)
     {
