@@ -4,6 +4,8 @@ public class Coordinates(int xCoordinate, int yCoordinate)
 {
     private readonly int _xCoordinate = xCoordinate;
     private readonly int _yCoordinate = yCoordinate;
+    public int MinimalHeatLoss { get; set; }
+    public bool Visited { get; set; }
 
     public int GetYCoordinate()
         => _yCoordinate;
@@ -24,4 +26,9 @@ public class Coordinates(int xCoordinate, int yCoordinate)
 
     public override int GetHashCode()
         => HashCode.Combine(_xCoordinate, _yCoordinate);
+
+    public override string ToString()
+    {
+        return $"({_xCoordinate}, {_yCoordinate})";
+    }
 }

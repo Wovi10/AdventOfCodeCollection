@@ -1,83 +1,101 @@
-﻿using System.Reflection;
-using AdventOfCode2023_1.Models.Day17.Enums;
-
-namespace AdventOfCode2023_1.Models.Day17;
+﻿namespace AdventOfCode2023_1.Models.Day17;
 
 public class CityMap
 {
     public CityMap(List<string> rows)
     {
         Rows = new List<List<int>>();
+
         foreach (var rowBlocks in rows.Select(row => row.Select(num => int.Parse(num.ToString())).ToList()))
-        {
             Rows.Add(rowBlocks);
-        }
+
+        Rows[0][0] = 0;
         Height = Rows.Count;
         Width = Rows[0].Count;
-        UsedBlocks = new List<Coordinates>();
-        UsedBlocks.Add(_startCoordinates);
-        EndCoordinates = new Coordinates(Rows[0].Count - 1, Rows.Count - 1);
     }
 
-    public List<List<int>> Rows { get; set; }
-    public int Height { get; set; }
-    public int Width { get; set; }
-    public List<Coordinates> UsedBlocks { get; set; } = new();
-    private readonly Coordinates _startCoordinates = new Coordinates(0, 0);
-    public Coordinates EndCoordinates { get; set; }
-
-    public int GetBlockValue(Coordinates coordinates)
-        => Rows[coordinates.GetYCoordinate()][coordinates.GetXCoordinate()];
-
-    public async Task<int> GetMinimalHeatLoss(Direction inputDirection = Direction.Right, Coordinates coordinates = null, int heatLoss = 0, int directionUsed = 1)
+    private List<List<int>> Rows { get; }
+    private int Height { get; }
+    private int Width { get; }
+    private readonly PriorityQueue<Node, int> _priorityQueue = new();
+    private readonly List<(int, int)> _directions = new()
     {
-        coordinates ??= _startCoordinates;
+        (0, 1),
+        (1, 0),
+        (0, -1),
+        (-1, 0)
+    };
 
-        var xCoord = coordinates.GetXCoordinate();
-        var yCoord = coordinates.GetYCoordinate();
+    public int GetMinimalHeatLoss(Constraints constraints)
+    {
+        return HyperNeutrinoSolution(constraints);
+    }
 
-        if (xCoord < 0 || xCoord >= Width || yCoord < 0 || yCoord >= Height)
-            return heatLoss;
+    private int HyperNeutrinoSolution(Constraints constraints)
+    {
+        var seen = new List<Node>();
+        _priorityQueue.Enqueue(new Node(), 0);
 
-        var cityBlockHeatLoss = Rows[yCoord][xCoord];
-
-        UsedBlocks.Add(coordinates);
-
-        cityBlockHeatLoss.AddDirection(inputDirection);
-
-        var newDirections = inputDirection.GetNewDirections(directionUsed);
-
-        foreach (var direction in newDirections)
+        while (_priorityQueue.Count > 0)
         {
-            var newX = GetNewX(direction, xCoord);
-            var newY = GetNewY(direction, yCoord);
+            var currentNode = _priorityQueue.Dequeue();
 
-            if (newX < 0 || newX >= Width || newY < 0 || newY >= Height)
+            if (currentNode.Row == Height - 1 && currentNode.Column == Width - 1)
+                return currentNode.HeatLoss;
+
+            if (seen.Any(n => n.Equals(currentNode)))
                 continue;
 
-            heatLoss = await GetMinimalHeatLoss(direction, coordinates, Rows[yCoord][xCoord], directionUsed);
+            seen.Add(currentNode);
+
+            CheckNeighbours(constraints, currentNode);
         }
 
-        return heatLoss;
+        return 0;
     }
 
-    private static int GetNewX(Direction direction, int xCoord)
+    private void CheckNeighbours(Constraints constraints, Node currentNode)
     {
-        return direction switch
-        {
-            Direction.Up => xCoord - 1,
-            Direction.Down => xCoord + 1,
-            _ => xCoord
-        };
+        CheckNodeAhead(constraints, currentNode);
+        CheckOtherNodes(currentNode);
     }
-    
-    private static int GetNewY(Direction direction, int yCoord)
+
+    private void CheckOtherNodes(Node currentNode)
     {
-        return direction switch
+        foreach (var (nextDirectionRow, nextDirectionColumn) in _directions)
         {
-            Direction.Left => yCoord - 1,
-            Direction.Right => yCoord + 1,
-            _ => yCoord
-        };
+            var isAhead = nextDirectionRow == currentNode.DirectionRow &&
+                          nextDirectionColumn == currentNode.DirectionColumn;
+            var isBack = nextDirectionRow == -currentNode.DirectionRow &&
+                         nextDirectionColumn == -currentNode.DirectionColumn;
+
+            if (isAhead || isBack)
+                continue;
+
+            CheckNextNode(currentNode, nextDirectionRow, nextDirectionColumn, false);
+        }
+    }
+
+    private void CheckNodeAhead(Constraints constraints, Node currentNode)
+    {
+        if (currentNode.IsWithinConstraints(constraints) && !currentNode.IsStandingStill())
+            CheckNextNode(currentNode, currentNode.DirectionRow, currentNode.DirectionColumn, true);
+    }
+
+    private void CheckNextNode(Node currentNode, int directionRow, int directionColumn, bool isSameDirection)
+    {
+        var newTimesInDirection = isSameDirection ? currentNode.TimesInDirection + 1 : 1;
+
+        var nextRow = currentNode.Row + directionRow;
+        var nextColumn = currentNode.Column + directionColumn;
+        var newNode = new Node(0, nextRow, nextColumn, directionRow,
+            directionColumn, newTimesInDirection);
+
+        if (!newNode.IsValid(Height, Width))
+            return;
+
+        var heatLoss = Rows[nextRow][nextColumn] + currentNode.HeatLoss;
+        newNode.HeatLoss = heatLoss;
+        _priorityQueue.Enqueue(newNode, newNode.HeatLoss);
     }
 }
