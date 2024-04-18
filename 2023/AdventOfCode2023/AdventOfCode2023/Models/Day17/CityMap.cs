@@ -18,6 +18,7 @@ public class CityMap
     private int Height { get; }
     private int Width { get; }
     private readonly PriorityQueue<Node, int> _priorityQueue = new();
+
     private readonly List<(int, int)> _directions = new()
     {
         (0, 1),
@@ -28,11 +29,6 @@ public class CityMap
 
     public int GetMinimalHeatLoss(Constraints constraints)
     {
-        return HyperNeutrinoSolution(constraints);
-    }
-
-    private int HyperNeutrinoSolution(Constraints constraints)
-    {
         var seen = new List<Node>();
         _priorityQueue.Enqueue(new Node(), 0);
 
@@ -40,7 +36,10 @@ public class CityMap
         {
             var currentNode = _priorityQueue.Dequeue();
 
-            if (currentNode.Row == Height - 1 && currentNode.Column == Width - 1)
+            var isEndNode = currentNode.Row == Height - 1 && currentNode.Column == Width - 1;
+            var crucibleCanStop = currentNode.TimesInDirection >= constraints.MinNumberOfMovements;
+
+            if (isEndNode && crucibleCanStop)
                 return currentNode.HeatLoss;
 
             if (seen.Any(n => n.Equals(currentNode)))
@@ -56,12 +55,21 @@ public class CityMap
 
     private void CheckNeighbours(Constraints constraints, Node currentNode)
     {
-        CheckNodeAhead(constraints, currentNode);
-        CheckOtherNodes(currentNode);
+        TryStraight(currentNode, constraints);
+        TryTurning(currentNode, constraints);
     }
 
-    private void CheckOtherNodes(Node currentNode)
+    private void TryStraight(Node currentNode, Constraints constraints)
     {
+        if (currentNode.IsBelowMax(constraints) && !currentNode.IsStandingStill())
+            CheckNextNode(currentNode, currentNode.DirectionRow, currentNode.DirectionColumn, true);
+    }
+
+    private void TryTurning(Node currentNode, Constraints constraints)
+    {
+        if (!currentNode.IsAboveMin(constraints) && !currentNode.IsStandingStill())
+            return;
+
         foreach (var (nextDirectionRow, nextDirectionColumn) in _directions)
         {
             var isAhead = nextDirectionRow == currentNode.DirectionRow &&
@@ -74,12 +82,6 @@ public class CityMap
 
             CheckNextNode(currentNode, nextDirectionRow, nextDirectionColumn, false);
         }
-    }
-
-    private void CheckNodeAhead(Constraints constraints, Node currentNode)
-    {
-        if (currentNode.IsWithinConstraints(constraints) && !currentNode.IsStandingStill())
-            CheckNextNode(currentNode, currentNode.DirectionRow, currentNode.DirectionColumn, true);
     }
 
     private void CheckNextNode(Node currentNode, int directionRow, int directionColumn, bool isSameDirection)

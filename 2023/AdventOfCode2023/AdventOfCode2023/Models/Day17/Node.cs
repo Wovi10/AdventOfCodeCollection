@@ -26,18 +26,20 @@ public class Node
     public int TimesInDirection { get; set; }
 
     public bool IsValid(int height, int width)
-        => Row.IsBetween(0, height, true, false) && 
+        => Row.IsBetween(0, height, true, false) &&
            Column.IsBetween(0, width, true, false);
 
     public bool IsStandingStill()
         => DirectionRow == 0 && DirectionColumn == 0;
 
     public bool IsWithinConstraints(Constraints constraints)
-    {
-        return TimesInDirection >= constraints.MinNumberOfMovements &&
-               TimesInDirection < constraints.MaxNumberOfMovements;
-    }
+        => IsAboveMin(constraints) && IsBelowMax(constraints);
 
+    public bool IsAboveMin(Constraints constraints)
+        => TimesInDirection >= constraints.MinNumberOfMovements;
+
+    public bool IsBelowMax(Constraints constraints)
+        => TimesInDirection < constraints.MaxNumberOfMovements;
 
     public override bool Equals(object? obj)
     {
