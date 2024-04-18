@@ -7,7 +7,13 @@ public class Day17 : DayBase
 {
     protected override async Task PartOne()
     {
-        var result = GetMinimalHeatLoss();
+        var constraints = new Constraints
+        {
+            MinNumberOfMovements = 1,
+            MaxNumberOfMovements = 3
+        };
+
+        var result = GetMinimalHeatLoss(constraints);
         SharedMethods.PrintAnswer(result);
 
         await Task.CompletedTask;
@@ -18,10 +24,10 @@ public class Day17 : DayBase
         throw new NotImplementedException();
     }
 
-    private int GetMinimalHeatLoss()
+    private int GetMinimalHeatLoss(Constraints constraints)
     {
         var cityMap = new CityMap(Input);
-        var minimalHeatLoss = cityMap.GetMinimalHeatLoss();
+        var minimalHeatLoss = cityMap.GetMinimalHeatLoss(constraints);
         
         return minimalHeatLoss;
     }

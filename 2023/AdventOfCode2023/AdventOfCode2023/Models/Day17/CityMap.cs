@@ -1,123 +1,101 @@
-﻿using AdventOfCode2023_1.Models.Day17.Enums;
-using UtilsCSharp;
-
-namespace AdventOfCode2023_1.Models.Day17;
+﻿namespace AdventOfCode2023_1.Models.Day17;
 
 public class CityMap
 {
     public CityMap(List<string> rows)
     {
         Rows = new List<List<int>>();
-        foreach (var rowBlocks in rows.Select(row => row.Select(num => int.Parse(num.ToString())).ToList()))
-        {
-            Rows.Add(rowBlocks);
-        }
 
+        foreach (var rowBlocks in rows.Select(row => row.Select(num => int.Parse(num.ToString())).ToList()))
+            Rows.Add(rowBlocks);
+
+        Rows[0][0] = 0;
         Height = Rows.Count;
         Width = Rows[0].Count;
-        EndCoordinates = new Coordinates(Rows[0].Count - 1, Rows.Count - 1);
     }
 
     private List<List<int>> Rows { get; }
     private int Height { get; }
     private int Width { get; }
-    private readonly Coordinates _startCoordinates = new(0, 0);
-    private Coordinates EndCoordinates { get; }
-    private readonly HashSet<Coordinates> _coordinates = new();
-    private readonly Dictionary<Coordinates, List<Coordinates>> _bestPathToCoord = new();
-
-    public int GetMinimalHeatLoss()
+    private readonly PriorityQueue<Node, int> _priorityQueue = new();
+    private readonly List<(int, int)> _directions = new()
     {
-        for (var y = Height-1; y >= 0; y--)
-        {
-            for (var x = Width-1; x >= 0; x--)
-            {
-                var coordinates = new Coordinates(x, y)
-                {
-                    MinimalHeatLoss = int.MaxValue
-                };
-                _coordinates.Add(coordinates);
-            }
-        }
+        (0, 1),
+        (1, 0),
+        (0, -1),
+        (-1, 0)
+    };
 
-        while (_coordinates.Any(coordinate => !coordinate.Visited))
-            Dijkstra();
-
-        _bestPathToCoord.TryGetValue(_startCoordinates, out var bestPath);
-
-        if (bestPath == null)
-            return 0;
-
-        return _coordinates.TryGetValue(_startCoordinates, out var startCoordinates)
-            ? startCoordinates.MinimalHeatLoss - Rows[0][0]
-            : 0;
+    public int GetMinimalHeatLoss(Constraints constraints)
+    {
+        return HyperNeutrinoSolution(constraints);
     }
 
-    private void Dijkstra()
+    private int HyperNeutrinoSolution(Constraints constraints)
     {
-        if (!_bestPathToCoord.TryGetValue(EndCoordinates, out _))
-            _bestPathToCoord.Add(EndCoordinates, new List<Coordinates> {EndCoordinates});
+        var seen = new List<Node>();
+        _priorityQueue.Enqueue(new Node(), 0);
 
-        _coordinates.TryGetValue(EndCoordinates, out var endCoordinates);
-
-        if (endCoordinates is {Visited: false})
+        while (_priorityQueue.Count > 0)
         {
-            endCoordinates.MinimalHeatLoss = Rows[endCoordinates.GetYCoordinate()][endCoordinates.GetXCoordinate()];
-            endCoordinates.Visited = true;
-        }
+            var currentNode = _priorityQueue.Dequeue();
 
-        foreach (var currentCoordinate in _coordinates)
-        {
-            if (currentCoordinate.Equals(EndCoordinates))
-                currentCoordinate.SetCoordinate(0);
+            if (currentNode.Row == Height - 1 && currentNode.Column == Width - 1)
+                return currentNode.HeatLoss;
 
-            if (currentCoordinate.MinimalHeatLoss == int.MaxValue)
+            if (seen.Any(n => n.Equals(currentNode)))
                 continue;
 
-            var currentDistance = currentCoordinate.MinimalHeatLoss;
-            if (!_bestPathToCoord.TryGetValue(currentCoordinate, out var bestPathToCurrent))
-            {
-                _bestPathToCoord.Add(currentCoordinate, new List<Coordinates>());
-                bestPathToCurrent = _bestPathToCoord[currentCoordinate];
-            }
+            seen.Add(currentNode);
 
-            var neighbours = currentCoordinate.GetNeighbours(bestPathToCurrent, Height, Width);
-            foreach (var neighbour in neighbours)
-            {
-                _coordinates.TryGetValue(neighbour, out var neighbourCoord);
-
-                if (neighbourCoord == null)
-                    continue;
-
-                var heatLossForCoord = Rows[neighbourCoord.GetYCoordinate()][neighbourCoord.GetXCoordinate()];
-
-                var possibleNewDistance = currentDistance + heatLossForCoord < 0
-                    ? int.MaxValue
-                    : currentDistance + heatLossForCoord;
-
-                var newDistance =
-                    MathUtils.GetLowest(neighbourCoord.MinimalHeatLoss, possibleNewDistance);
-
-                if (newDistance >= neighbourCoord.MinimalHeatLoss)
-                    continue;
-
-                neighbourCoord.MinimalHeatLoss = newDistance;
-                if (_bestPathToCoord.TryGetValue(neighbourCoord, out var bestPathToNeighbour))
-                    bestPathToNeighbour.Clear();
-                else
-                {
-                    _bestPathToCoord.Add(neighbourCoord, new List<Coordinates>());
-                    bestPathToNeighbour = _bestPathToCoord[neighbourCoord];
-                }
-
-                bestPathToNeighbour.AddRange(bestPathToCurrent);
-                bestPathToNeighbour.Add(neighbourCoord);
-
-                neighbourCoord.Visited = true;
-            }
+            CheckNeighbours(constraints, currentNode);
         }
 
-        if (_coordinates.TryGetValue(_startCoordinates, out var startCoordinates))
-            startCoordinates.Visited = startCoordinates.MinimalHeatLoss != int.MaxValue;
+        return 0;
+    }
+
+    private void CheckNeighbours(Constraints constraints, Node currentNode)
+    {
+        CheckNodeAhead(constraints, currentNode);
+        CheckOtherNodes(currentNode);
+    }
+
+    private void CheckOtherNodes(Node currentNode)
+    {
+        foreach (var (nextDirectionRow, nextDirectionColumn) in _directions)
+        {
+            var isAhead = nextDirectionRow == currentNode.DirectionRow &&
+                          nextDirectionColumn == currentNode.DirectionColumn;
+            var isBack = nextDirectionRow == -currentNode.DirectionRow &&
+                         nextDirectionColumn == -currentNode.DirectionColumn;
+
+            if (isAhead || isBack)
+                continue;
+
+            CheckNextNode(currentNode, nextDirectionRow, nextDirectionColumn, false);
+        }
+    }
+
+    private void CheckNodeAhead(Constraints constraints, Node currentNode)
+    {
+        if (currentNode.IsWithinConstraints(constraints) && !currentNode.IsStandingStill())
+            CheckNextNode(currentNode, currentNode.DirectionRow, currentNode.DirectionColumn, true);
+    }
+
+    private void CheckNextNode(Node currentNode, int directionRow, int directionColumn, bool isSameDirection)
+    {
+        var newTimesInDirection = isSameDirection ? currentNode.TimesInDirection + 1 : 1;
+
+        var nextRow = currentNode.Row + directionRow;
+        var nextColumn = currentNode.Column + directionColumn;
+        var newNode = new Node(0, nextRow, nextColumn, directionRow,
+            directionColumn, newTimesInDirection);
+
+        if (!newNode.IsValid(Height, Width))
+            return;
+
+        var heatLoss = Rows[nextRow][nextColumn] + currentNode.HeatLoss;
+        newNode.HeatLoss = heatLoss;
+        _priorityQueue.Enqueue(newNode, newNode.HeatLoss);
     }
 }
