@@ -1,8 +1,10 @@
-﻿namespace AdventOfCode2023_1.Models.Day17;
+﻿using AdventOfCode2023_1.Shared;
+
+namespace AdventOfCode2023_1.Models.Day17;
 
 public class CityMap
 {
-    public CityMap(List<string> rows)
+    public CityMap(List<string> rows, Constraints constraints)
     {
         Rows = new List<List<int>>();
 
@@ -12,12 +14,15 @@ public class CityMap
         Rows[0][0] = 0;
         Height = Rows.Count;
         Width = Rows[0].Count;
+        Constraints = constraints;
     }
 
     private List<List<int>> Rows { get; }
     private int Height { get; }
     private int Width { get; }
     private readonly PriorityQueue<Node, int> _priorityQueue = new();
+    private Constraints Constraints { get; set; }
+
     private readonly List<(int, int)> _directions = new()
     {
         (0, 1),
@@ -26,12 +31,7 @@ public class CityMap
         (-1, 0)
     };
 
-    public int GetMinimalHeatLoss(Constraints constraints)
-    {
-        return HyperNeutrinoSolution(constraints);
-    }
-
-    private int HyperNeutrinoSolution(Constraints constraints)
+    public int GetMinimalHeatLoss()
     {
         var seen = new List<Node>();
         _priorityQueue.Enqueue(new Node(), 0);
@@ -40,56 +40,61 @@ public class CityMap
         {
             var currentNode = _priorityQueue.Dequeue();
 
-            if (currentNode.Row == Height - 1 && currentNode.Column == Width - 1)
+            var isEndNode = currentNode.Row == Height - 1 && currentNode.Column == Width - 1;
+            var crucibleCanStop = Constraints.IsGreaterThanOrEqualToMin(currentNode.TimesInDirection);
+
+            if (isEndNode && crucibleCanStop)
                 return currentNode.HeatLoss;
 
             if (seen.Any(n => n.Equals(currentNode)))
                 continue;
 
             seen.Add(currentNode);
-
-            CheckNeighbours(constraints, currentNode);
+            CheckNeighbours(currentNode);
         }
 
         return 0;
     }
 
-    private void CheckNeighbours(Constraints constraints, Node currentNode)
+    private void CheckNeighbours(Node currentNode)
     {
-        CheckNodeAhead(constraints, currentNode);
-        CheckOtherNodes(currentNode);
+        TryStraight(currentNode);
+        TryTurning(currentNode);
     }
 
-    private void CheckOtherNodes(Node currentNode)
+    private void TryStraight(Node currentNode)
     {
+        if (Constraints.IsSmallerThanMax(currentNode.TimesInDirection) && !currentNode.IsStandingStill())
+            CheckNextNode(currentNode, currentNode.DirectionRow, currentNode.DirectionColumn, true);
+    }
+
+    private void TryTurning(Node currentNode)
+    {
+        if (!Constraints.IsGreaterThanOrEqualToMin(currentNode.TimesInDirection) && !currentNode.IsStandingStill())
+            return;
+
         foreach (var (nextDirectionRow, nextDirectionColumn) in _directions)
         {
-            var isAhead = nextDirectionRow == currentNode.DirectionRow &&
+            var isStraight = nextDirectionRow == currentNode.DirectionRow &&
                           nextDirectionColumn == currentNode.DirectionColumn;
             var isBack = nextDirectionRow == -currentNode.DirectionRow &&
                          nextDirectionColumn == -currentNode.DirectionColumn;
 
-            if (isAhead || isBack)
+            if (isStraight || isBack)
                 continue;
 
             CheckNextNode(currentNode, nextDirectionRow, nextDirectionColumn, false);
         }
     }
 
-    private void CheckNodeAhead(Constraints constraints, Node currentNode)
-    {
-        if (currentNode.IsWithinConstraints(constraints) && !currentNode.IsStandingStill())
-            CheckNextNode(currentNode, currentNode.DirectionRow, currentNode.DirectionColumn, true);
-    }
-
-    private void CheckNextNode(Node currentNode, int directionRow, int directionColumn, bool isSameDirection)
+    private void CheckNextNode(Node currentNode, int nextDirectionRow, int nextDirectionColumn, bool isSameDirection)
     {
         var newTimesInDirection = isSameDirection ? currentNode.TimesInDirection + 1 : 1;
 
-        var nextRow = currentNode.Row + directionRow;
-        var nextColumn = currentNode.Column + directionColumn;
-        var newNode = new Node(0, nextRow, nextColumn, directionRow,
-            directionColumn, newTimesInDirection);
+        var nextRow = currentNode.Row + nextDirectionRow;
+        var nextColumn = currentNode.Column + nextDirectionColumn;
+        var newNode = new Node(0, nextRow, nextColumn, nextDirectionRow,
+            nextDirectionColumn, newTimesInDirection);
 
         if (!newNode.IsValid(Height, Width))
             return;

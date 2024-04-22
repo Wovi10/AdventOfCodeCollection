@@ -1,4 +1,5 @@
-﻿using UtilsCSharp;
+﻿using AdventOfCode2023_1.Shared;
+using UtilsCSharp;
 
 namespace AdventOfCode2023_1.Models.Day17;
 
@@ -26,18 +27,11 @@ public class Node
     public int TimesInDirection { get; set; }
 
     public bool IsValid(int height, int width)
-        => Row.IsBetween(0, height, true, false) && 
+        => Row.IsBetween(0, height, true, false) &&
            Column.IsBetween(0, width, true, false);
 
     public bool IsStandingStill()
         => DirectionRow == 0 && DirectionColumn == 0;
-
-    public bool IsWithinConstraints(Constraints constraints)
-    {
-        return TimesInDirection >= constraints.MinNumberOfMovements &&
-               TimesInDirection < constraints.MaxNumberOfMovements;
-    }
-
 
     public override bool Equals(object? obj)
     {
