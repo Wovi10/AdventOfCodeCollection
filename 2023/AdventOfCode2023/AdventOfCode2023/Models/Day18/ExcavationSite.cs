@@ -43,7 +43,6 @@ public class ExcavationSite
         Grid = CreateGrid(nodes);
         Grid.DecideEdgeTypes();
         Grid.DigHole();
-        Console.WriteLine(Grid);
     }
 
     private static int GetNewX(int currentX, (int, int) digInstructionDirection) 
