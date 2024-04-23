@@ -13,4 +13,13 @@ public static class Day18Extensions
             _ => (0, 0)
         };
     }
+
+    public static void TryAddNode(this List<Node> nodes, Node? newNode)
+    {
+        if (newNode == null)
+            return;
+
+        if (nodes.Any(x => x.X == newNode.X && x.Y == newNode.Y) == false)
+            nodes.Add(newNode);
+    }
 }

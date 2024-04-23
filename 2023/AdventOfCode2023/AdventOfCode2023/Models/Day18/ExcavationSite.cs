@@ -22,28 +22,34 @@ public class ExcavationSite
     {
         var currentX = 0;
         var currentY = 0;
+        var nodes = new List<Node> {new() {X = currentX, Y = currentY}};
         foreach (var digInstruction in DigPlan)
         {
-            var newX = GetNewX(currentX, digInstruction.Direction, digInstruction.Distance);
-            var newY = GetNewY(currentY, digInstruction.Direction, digInstruction.Distance);
+            for (int i = 0; i < digInstruction.Distance; i++)
+            {
+                var newX = GetNewX(currentX, digInstruction.Direction);
+                var newY = GetNewY(currentY, digInstruction.Direction);
+                var newNode = new Node {X = newX, Y = newY};
 
-            SetNewGridExtremes(newX, newY);
-            currentX = newX;
-            currentY = newY;
+                nodes.TryAddNode(newNode);
+
+                SetNewGridExtremes(newX, newY);
+                currentX = newX;
+                currentY = newY;
+            }
         }
 
-        var grid = CreateGrid();
-        foreach (var digInstruction in DigPlan)
-        {
-            
-        }
+        var grid = CreateGrid(nodes);
+        grid.DecideEdgeTypes();
+        grid.DigHole();
+        Console.WriteLine(grid.ToString());
     }
 
-    private static int GetNewX(int currentX, (int, int) digInstructionDirection, int digInstructionDistance) 
-        => currentX + digInstructionDirection.Item1 * digInstructionDistance;
+    private static int GetNewX(int currentX, (int, int) digInstructionDirection) 
+        => currentX + digInstructionDirection.Item1;
 
-    private static int GetNewY(int currentY, (int, int) digInstructionDirection, int digInstructionDistance) 
-        => currentY + digInstructionDirection.Item2 * digInstructionDistance;
+    private static int GetNewY(int currentY, (int, int) digInstructionDirection) 
+        => currentY + digInstructionDirection.Item2;
 
     private void SetNewGridExtremes(int newX, int newY)
     {
@@ -58,18 +64,18 @@ public class ExcavationSite
             LargestY = newY;
     }
 
-    private Grid CreateGrid()
+    private Grid CreateGrid(List<Node> inputNodes)
     {
         var nodes = new List<Node>();
+
+        foreach (var inputNode in inputNodes)
+        {
+            var newNode = new Node {X = inputNode.X + Math.Abs(SmallestX), Y = inputNode.Y + Math.Abs(SmallestY)};
+            nodes.TryAddNode(newNode);
+        }
+        
         var gridHeight = Math.Abs(SmallestY) + Math.Abs(LargestY) + 1;
         var gridWidth = Math.Abs(SmallestX) + Math.Abs(LargestX) + 1;
-        for (var i = 0; i < gridWidth; i++)
-        {
-            for (var j = 0; j < gridHeight; j++)
-            {
-                nodes.Add(new Node {X = i, Y = j});
-            }
-        }
 
         return new Grid(nodes, gridWidth, gridHeight);
     }
