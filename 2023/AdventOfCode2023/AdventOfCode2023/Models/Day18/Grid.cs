@@ -43,12 +43,10 @@ public class Grid(List<Node> nodes, int width, int height)
             }
         }
 
-        var nodesToAdd = (await Task.WhenAll((tasks))).ToList().Where(node => node != null);
+        var nodesToAdd = (await Task.WhenAll(tasks)).ToList().Where(node => node != null);
 
-        foreach (var node in nodesToAdd)
-        {
+        foreach (var node in nodesToAdd) 
             Nodes.TryAddNode(node);
-        }
     }
 
     private async Task<int> CountEdgesCrossedUpAsync(Node node) 
