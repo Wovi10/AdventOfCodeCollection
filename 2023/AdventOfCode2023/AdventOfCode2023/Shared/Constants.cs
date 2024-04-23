@@ -14,9 +14,11 @@ public static class Constants
     public const string RootInputPath = "../../../../Input";
     public const string SemiColon = ";";
     public const string Space = " ";
+    public const string YAxis = "y";
+    public const string XAxis = "x";
 
     public const bool IsDebug = true;
     public const bool IsMock = false;
 
-    public const PartsToRun PartToRun = PartsToRun.Part2;
+    public const PartsToRun PartToRun = PartsToRun.Part1;
 }

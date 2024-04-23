@@ -1,4 +1,5 @@
 ﻿using AdventOfCode2023_1.Models.Day10.Enums;
+using AdventOfCode2023_1.Shared;
 using UtilsCSharp;
 
 namespace AdventOfCode2023_1.Models.Day10;
@@ -16,8 +17,6 @@ public class Maze
     private readonly Dictionary<Coordinates, Tile> _mainLoopTileDictionary = new();
     private int _mazeWidth;
     private int _mazeLength;
-    private const string YAxis = "y";
-    private const string XAxis = "x";
 
     private void BuildTileDictionary(List<string> inputLines)
     {
@@ -175,7 +174,7 @@ public class Maze
         const int endPoint = 0;
         var constantCoordinatePart = startCoordinates.GetXCoordinate();
 
-        return CountEdgesCrossed(startPoint, endPoint, constantCoordinatePart, YAxis);
+        return CountEdgesCrossed(startPoint, endPoint, constantCoordinatePart, Constants.YAxis);
     }
 
     private int CountEdgeCrossesEast(Coordinates startCoordinates)
@@ -184,7 +183,7 @@ public class Maze
         var endPoint = _mazeWidth;
         var constantCoordinatePart = startCoordinates.GetYCoordinate();
 
-        return CountEdgesCrossed(startPoint, endPoint, constantCoordinatePart, XAxis);
+        return CountEdgesCrossed(startPoint, endPoint, constantCoordinatePart, Constants.XAxis);
     }
 
     private int CountEdgeCrossesSouth(Coordinates startCoordinates)
@@ -193,7 +192,7 @@ public class Maze
         var endPoint = _mazeLength;
         var constantCoordinatePart = startCoordinates.GetXCoordinate();
 
-        return CountEdgesCrossed(startPoint, endPoint, constantCoordinatePart, YAxis);
+        return CountEdgesCrossed(startPoint, endPoint, constantCoordinatePart, Constants.YAxis);
     }
 
     private int CountEdgeCrossesWest(Coordinates startCoordinates)
@@ -202,12 +201,12 @@ public class Maze
         const int endPoint = 0;
         var constantCoordinatePart = startCoordinates.GetYCoordinate();
 
-        return CountEdgesCrossed(startPoint, endPoint, constantCoordinatePart, XAxis);
+        return CountEdgesCrossed(startPoint, endPoint, constantCoordinatePart, Constants.XAxis);
     }
 
     private int CountEdgesCrossed(int startPoint, int endPoint, int constantCoordinatePart, string workingAxis)
     {
-        var isOnYAxis = workingAxis == YAxis;
+        var isOnYAxis = workingAxis == Constants.YAxis;
         var edgesCrossed = 0;
 
         TileType tileTypeToSkip;

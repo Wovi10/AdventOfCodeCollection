@@ -18,4 +18,5 @@ using AdventOfCode2023_1;
 // await new Day14().Run("14", "Parabolic Reflector Dish");
 // await new Day15().Run("15", "Lens Library");
 // await new Day16().Run("16", "The Floor Will Be Lava");
-await new Day17().Run("17", "Clumsy Crucible");
+// await new Day17().Run("17", "Clumsy Crucible");
+await new Day18().Run("18", "Lavaduct Lagoon");
