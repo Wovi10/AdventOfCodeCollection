@@ -1,4 +1,6 @@
-﻿namespace AdventOfCode2023_1.Models.Day18;
+﻿using AdventOfCode2023_1.Models.Day18.Enums;
+
+namespace AdventOfCode2023_1.Models.Day18;
 
 public static class Day18Extensions
 {
@@ -21,5 +23,29 @@ public static class Day18Extensions
 
         if (nodes.Any(x => x.X == newNode.X && x.Y == newNode.Y) == false)
             nodes.Add(newNode);
+    }
+
+    public static bool IsMatching(this NodeType type, NodeType otherType, bool isOnYAxis)
+    {
+        if (isOnYAxis)
+        {
+            return otherType == type switch
+            {
+                NodeType.NorthEast => NodeType.SouthEast,
+                NodeType.NorthWest => NodeType.SouthWest,
+                NodeType.SouthWest => NodeType.NorthWest,
+                NodeType.SouthEast => NodeType.NorthEast,
+                _ => NodeType.Enclosed
+            };
+        }
+
+        return otherType == type switch
+        {
+            NodeType.NorthEast => NodeType.NorthWest,
+            NodeType.NorthWest => NodeType.NorthEast,
+            NodeType.SouthWest => NodeType.SouthEast,
+            NodeType.SouthEast => NodeType.SouthWest,
+            _ => NodeType.Enclosed
+        };
     }
 }

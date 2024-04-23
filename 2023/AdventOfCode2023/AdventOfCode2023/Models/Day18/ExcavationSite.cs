@@ -1,5 +1,4 @@
-﻿using AdventOfCode2023_1.Models.Day16;
-using UtilsCSharp;
+﻿using UtilsCSharp;
 
 namespace AdventOfCode2023_1.Models.Day18;
 
@@ -10,13 +9,15 @@ public class ExcavationSite
         DigPlan = input.Select(x => new DigInstruction(x)).ToList();
     }
 
-    public List<DigInstruction> DigPlan { get; set; }
-    public long HoleSize { get; set; }
-    public int SmallestX { get; set; } = 0;
-    public int SmallestY { get; set; } = 0;
-    public int LargestX { get; set; } = 0;
-    public int LargestY { get; set; } = 0;
-    public Grid Grid { get; set; }
+    private List<DigInstruction> DigPlan { get; }
+    private int SmallestX { get; set; }
+    private int SmallestY { get; set; }
+    private int LargestX { get; set; }
+    private int LargestY { get; set; }
+    private Grid? Grid { get; set; }
+
+    public int GetHoleSize() 
+        => Grid?.Nodes.Count ?? 0;
 
     public void ExecuteDigPlan()
     {
@@ -25,7 +26,7 @@ public class ExcavationSite
         var nodes = new List<Node> {new() {X = currentX, Y = currentY}};
         foreach (var digInstruction in DigPlan)
         {
-            for (int i = 0; i < digInstruction.Distance; i++)
+            for (var i = 0; i < digInstruction.Distance; i++)
             {
                 var newX = GetNewX(currentX, digInstruction.Direction);
                 var newY = GetNewY(currentY, digInstruction.Direction);
@@ -39,10 +40,10 @@ public class ExcavationSite
             }
         }
 
-        var grid = CreateGrid(nodes);
-        grid.DecideEdgeTypes();
-        grid.DigHole();
-        Console.WriteLine(grid.ToString());
+        Grid = CreateGrid(nodes);
+        Grid.DecideEdgeTypes();
+        Grid.DigHole();
+        Console.WriteLine(Grid);
     }
 
     private static int GetNewX(int currentX, (int, int) digInstructionDirection) 
@@ -73,7 +74,7 @@ public class ExcavationSite
             var newNode = new Node {X = inputNode.X + Math.Abs(SmallestX), Y = inputNode.Y + Math.Abs(SmallestY)};
             nodes.TryAddNode(newNode);
         }
-        
+
         var gridHeight = Math.Abs(SmallestY) + Math.Abs(LargestY) + 1;
         var gridWidth = Math.Abs(SmallestX) + Math.Abs(LargestX) + 1;
 

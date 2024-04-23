@@ -18,11 +18,11 @@ public class Day18:DayBase
         throw new NotImplementedException();
     }
 
-    private long CalculateHoleSize()
+    private static long CalculateHoleSize()
     {
         var excavationSite = new ExcavationSite(Input);
         excavationSite.ExecuteDigPlan();
-
-        return 0;
+        
+        return excavationSite.GetHoleSize();
     }
 }

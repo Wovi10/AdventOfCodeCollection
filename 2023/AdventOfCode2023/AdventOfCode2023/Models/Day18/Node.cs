@@ -15,18 +15,6 @@ public class Node
             case 4:
                 Type = NodeType.Enclosed;
                 return;
-            case 3 when !neighbours.Contains(Direction.Up):
-                Type = NodeType.NoNorth;
-                return;
-            case 3 when !neighbours.Contains(Direction.Right):
-                Type = NodeType.NoEast;
-                return;
-            case 3 when !neighbours.Contains(Direction.Down):
-                Type = NodeType.NoSouth;
-                return;
-            case 3 when !neighbours.Contains(Direction.Left):
-                Type = NodeType.NoWest;
-                return;
             case 2 when neighbours.Contains(Direction.Up) && neighbours.Contains(Direction.Down):
                 Type = NodeType.NorthSouth;
                 return;

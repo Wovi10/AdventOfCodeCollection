@@ -8,9 +8,5 @@ public enum NodeType
     NorthWest,
     SouthWest,
     SouthEast,
-    NoNorth,
-    NoEast,
-    NoSouth,
-    NoWest,
     Enclosed
 }
