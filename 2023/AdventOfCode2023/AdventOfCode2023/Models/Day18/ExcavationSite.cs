@@ -19,7 +19,7 @@ public class ExcavationSite
     public int GetHoleSize() 
         => Grid?.Nodes.Count ?? 0;
 
-    public void ExecuteDigPlan()
+    public async Task ExecuteDigPlan()
     {
         var currentX = 0;
         var currentY = 0;
@@ -42,7 +42,7 @@ public class ExcavationSite
 
         Grid = CreateGrid(nodes);
         Grid.DecideEdgeTypes();
-        Grid.DigHole();
+        await Grid.DigHole();
     }
 
     private static int GetNewX(int currentX, (int, int) digInstructionDirection) 

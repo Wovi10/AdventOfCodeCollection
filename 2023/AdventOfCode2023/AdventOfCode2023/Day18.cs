@@ -5,12 +5,10 @@ namespace AdventOfCode2023_1;
 
 public class Day18:DayBase
 {
-    protected override Task PartOne()
+    protected override async Task PartOne()
     {
-        var result = CalculateHoleSize();
+        var result = await CalculateHoleSize();
         SharedMethods.PrintAnswer(result);
-        
-        return Task.CompletedTask;
     }
 
     protected override Task PartTwo()
@@ -18,10 +16,10 @@ public class Day18:DayBase
         throw new NotImplementedException();
     }
 
-    private static long CalculateHoleSize()
+    private static async Task<long> CalculateHoleSize()
     {
         var excavationSite = new ExcavationSite(Input);
-        excavationSite.ExecuteDigPlan();
+        await excavationSite.ExecuteDigPlan();
         
         return excavationSite.GetHoleSize();
     }
