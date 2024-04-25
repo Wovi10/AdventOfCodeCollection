@@ -17,14 +17,15 @@ public class ExcavationSite
     private int LargestY { get; set; }
     private Grid? Grid { get; set; }
 
-    public int GetHoleSize() 
+    public int GetHoleSize()
         => Grid?.Nodes.Count ?? 0;
 
     public async Task ExecuteDigPlan()
     {
         var currentX = 0;
         var currentY = 0;
-        var nodes = new ConcurrentBag<Node> {new() {X = currentX, Y = currentY}};
+        var nodes = new ConcurrentDictionary<(int, int), Node>();
+        nodes.TryAdd((currentX, currentY), new Node {X = currentX, Y = currentY});
         var tasks = new List<Task>();
 
         foreach (var digInstruction in DigPlan)
@@ -37,7 +38,7 @@ public class ExcavationSite
                     var newY = GetNewY(currentY, digInstruction.Direction);
                     var newNode = new Node {X = newX, Y = newY};
 
-                    nodes.Add(newNode);
+                    nodes.TryAdd((newX, newY), newNode);
 
                     currentX = newX;
                     currentY = newY;
@@ -47,13 +48,12 @@ public class ExcavationSite
 
         await Task.WhenAll(tasks);
 
-        var orderedNodes = nodes.OrderBy(x => x.X).ThenBy(x => x.Y).ToList();
-        orderedNodes = orderedNodes.Distinct().ToList();
+        var orderedNodes = nodes.Values.OrderBy(x => x.X).ThenBy(x => x.Y).Distinct().ToList();
         SetNewGridExtremes(orderedNodes);
 
         Grid = CreateGrid(orderedNodes);
         Grid.DecideEdgeTypes();
-        await Grid.DigHole();
+        Grid.DigHole();
     }
 
     private void SetNewGridExtremes(List<Node> nodes)
@@ -70,19 +70,6 @@ public class ExcavationSite
     private static int GetNewY(int currentY, (int, int) digInstructionDirection) 
         => currentY + digInstructionDirection.Item2;
 
-    private void SetNewGridExtremes(int newX, int newY)
-    {
-        if (newX.IsLessThan(SmallestX) == true)
-            SmallestX = newX;
-        else if (newX.IsGreaterThan(LargestX) == true)
-            LargestX = newX;
-
-        if (newY.IsLessThan(SmallestY) == true)
-            SmallestY = newY;
-        else if (newY.IsGreaterThan(LargestY) == true)
-            LargestY = newY;
-    }
-
     private Grid CreateGrid(List<Node> inputNodes)
     {
         var nodes = new ConcurrentBag<Node>();
@@ -94,9 +81,6 @@ public class ExcavationSite
         });
 
         var orderedNodes = nodes.OrderBy(x => x.X).ThenBy(x => x.Y).ToList();
-
-        var firstNode = orderedNodes.First();
-        var zeroNode = orderedNodes.First(x => x is {X: 0, Y: 0});
         
         var gridHeight = Math.Abs(SmallestY) + Math.Abs(LargestY) + 1;
         var gridWidth = Math.Abs(SmallestX) + Math.Abs(LargestX) + 1;

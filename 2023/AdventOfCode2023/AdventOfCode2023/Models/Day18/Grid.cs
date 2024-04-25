@@ -1,122 +1,129 @@
-﻿using System.Text;
+﻿using System.Collections.Concurrent;
 using AdventOfCode2023_1.Models.Day18.Enums;
 using UtilsCSharp;
 
 namespace AdventOfCode2023_1.Models.Day18;
 
-public class Grid(List<Node> nodes, int width, int height)
+public class Grid
 {
-    public List<Node> Nodes { get; } = nodes;
-    private int Height { get; } = height;
-    private int Width { get; } = width;
-
-    public async Task DigHole()
+    public Grid(List<Node> nodes, int width, int height)
     {
-        var nodeSet = new HashSet<(int,int)>(Nodes.Select(n => (n.X, n.Y)));
-        var edgeCrossedCalculators = new Dictionary<Direction, Func<Node, Task<int>>>
+        Nodes = nodes;
+        Height = height;
+        Width = width;
+        NodeDictionary = nodes.ToDictionary(n => (n.X, n.Y), n => n);
+    }
+
+    public List<Node> Nodes { get; }
+    private Dictionary<(int, int), Node> NodeDictionary { get; }
+    private int Height { get; }
+    private int Width { get; }
+
+    public void DigHole()
+    {
+        var edgeCrossedCalculators = new Dictionary<Direction, Func<Node, int>>
         {
-            {Direction.Up, CountEdgesCrossedUpAsync},
-            {Direction.Right, CountEdgesCrossedRightAsync},
-            {Direction.Down, CountEdgesCrossedDownAsync},
-            {Direction.Left, CountEdgesCrossedLeftAsync}
+            {Direction.Up, CountEdgesCrossedUp},
+            {Direction.Right, CountEdgesCrossedRight},
+            {Direction.Down, CountEdgesCrossedDown},
+            {Direction.Left, CountEdgesCrossedLeft}
         };
 
-        var tasks = new List<Task<Node?>>();
+        var nodesToAdd = new ConcurrentBag<Node>();
 
-        for (var y = 0; y < Height; y++)
+        Parallel.For(0, Height, y =>
         {
             for (var x = 0; x < Width; x++)
             {
-                if (nodeSet.Contains((x, y)))
+                if (NodeDictionary.ContainsKey((x, y)))
                     continue;
 
                 var newNode = new Node {X = x, Y = y};
 
-                tasks.Add(Task.Run(async () =>
-                {
-                    var closestEdge = GetClosestEdge(newNode.X, newNode.Y);
+                var closestEdge = GetClosestEdge(newNode.X, newNode.Y);
+                var edgesCrossed = edgeCrossedCalculators[closestEdge](newNode);
 
-                    var edgesCrossed = await edgeCrossedCalculators[closestEdge](newNode);
-
-                    return edgesCrossed.IsOdd() ? newNode : null;
-                }));
+                if (edgesCrossed.IsOdd())
+                    nodesToAdd.Add(newNode);
             }
-        }
+        });
 
-        var nodesToAdd = (await Task.WhenAll(tasks)).ToList().Where(node => node != null);
-
-        foreach (var node in nodesToAdd) 
+        foreach (var node in nodesToAdd)
             Nodes.TryAddNode(node);
     }
 
-    private async Task<int> CountEdgesCrossedUpAsync(Node node) 
-        => await CountEdgesCrossed(node.Y - 1, 0, node.X, true, true);
-    
-    private async Task<int> CountEdgesCrossedRightAsync(Node node) 
-        => await CountEdgesCrossed(node.X, Width, node.Y, false);    
-    
-    private async Task<int> CountEdgesCrossedDownAsync(Node node) 
-        => await CountEdgesCrossed(node.Y, Height, node.X, true);
+    private int CountEdgesCrossedUp(Node node)
+        => CountEdgesCrossed(node.Y, 0, node.X, true, true);
 
-    private async Task<int> CountEdgesCrossedLeftAsync(Node node) 
-        => await CountEdgesCrossed(node.X-1, 0, node.Y, false, true);
+    private int CountEdgesCrossedRight(Node node)
+        => CountEdgesCrossed(node.X, Width, node.Y, false);
+
+    private int CountEdgesCrossedDown(Node node)
+        => CountEdgesCrossed(node.Y + 1, Height, node.X, true);
+
+    private int CountEdgesCrossedLeft(Node node)
+        => CountEdgesCrossed(node.X, 0, node.Y, false, true);
 
     private Direction GetClosestEdge(int x, int y)
     {
         var distanceDown = Height - y;
         var distanceRight = Width - x;
-        
-        var minDistance = MathUtils.GetLowest(MathUtils.GetLowest(y, distanceDown), MathUtils.GetLowest(x, distanceRight));
-        
+
+        var minDistance =
+            MathUtils.GetLowest(MathUtils.GetLowest(y, distanceDown), MathUtils.GetLowest(x, distanceRight));
+
         if (minDistance == distanceRight)
             return Direction.Right;
 
         if (minDistance == distanceDown)
             return Direction.Down;
 
-        return x < y 
-                ? Direction.Left
-                : Direction.Up;
+        return x < y
+            ? Direction.Left
+            : Direction.Up;
     }
 
-    private Task<int> CountEdgesCrossed(int startPoint, int endPoint, int constantPart, bool isOnYAxis, bool shouldDecrement = false)
+    private readonly HashSet<NodeType> _typesToSkipForYAxis = new() {NodeType.NorthSouth, NodeType.Enclosed};
+    private readonly HashSet<NodeType> _typesToSkipForXAxis = new() {NodeType.EastWest, NodeType.Enclosed};
+
+    private readonly HashSet<NodeType> _startEdgeTypesYAxisDecrement =
+        new() {NodeType.EastWest, NodeType.NorthEast, NodeType.NorthWest};
+
+    private readonly HashSet<NodeType> _startEdgeTypesYAxisIncrement =
+        new() {NodeType.EastWest, NodeType.SouthEast, NodeType.SouthWest};
+
+    private readonly HashSet<NodeType> _startEdgeTypesXAxisDecrement =
+        new() {NodeType.NorthSouth, NodeType.NorthWest, NodeType.SouthWest};
+
+    private readonly HashSet<NodeType> _startEdgeTypesXAxisIncrement =
+        new() {NodeType.NorthSouth, NodeType.NorthEast, NodeType.SouthEast};
+
+    private int CountEdgesCrossed(int startPoint, int endPoint, int constantPart, bool isOnYAxis,
+        bool shouldDecrement = false)
     {
         var edgesCrossed = 0;
         var previousWasEdge = false;
 
-        var typesToSkip = new HashSet<NodeType>{NodeType.Enclosed};
-        var startEdgeTypes = new HashSet<NodeType>();
+        HashSet<NodeType> typesToSkip;
+        HashSet<NodeType> startEdgeTypes;
 
         if (isOnYAxis)
         {
-            typesToSkip.Add(NodeType.NorthSouth );
-
-            startEdgeTypes.Add(NodeType.EastWest);
-            startEdgeTypes.UnionWith(shouldDecrement
-                ? new[] {NodeType.NorthEast, NodeType.NorthWest}
-                : new[] {NodeType.SouthEast, NodeType.SouthWest});
+            typesToSkip = _typesToSkipForYAxis;
+            startEdgeTypes = shouldDecrement ? _startEdgeTypesYAxisDecrement : _startEdgeTypesYAxisIncrement;
         }
         else
         {
-            typesToSkip.Add(NodeType.EastWest);
-
-            startEdgeTypes.Add(NodeType.NorthSouth);
-            startEdgeTypes.UnionWith(shouldDecrement
-                ? new[] {NodeType.NorthWest, NodeType.SouthWest}
-                : new[] {NodeType.NorthEast, NodeType.SouthEast});
+            typesToSkip = _typesToSkipForXAxis;
+            startEdgeTypes = shouldDecrement ? _startEdgeTypesXAxisDecrement : _startEdgeTypesXAxisIncrement;
         }
-
-        var nodeSet = isOnYAxis
-            ? new Dictionary<(int, int), Node>(Nodes.Where(node => node.X == constantPart).Select(n => new KeyValuePair<(int, int), Node>((n.X, n.Y), n)))
-            : new Dictionary<(int, int), Node>(Nodes.Where(node => node.Y == constantPart).Select(n => new KeyValuePair<(int, int), Node>((n.X, n.Y), n)));
 
         var startOfWall = NodeType.Enclosed;
 
         for (var i = startPoint; ShouldStop(i, endPoint);)
         {
-            var currentNode = isOnYAxis
-                ? nodeSet.GetValueOrDefault((constantPart,i))
-                : nodeSet.GetValueOrDefault((i, constantPart));
+            var key = isOnYAxis ? (constantPart, i) : (i, constantPart);
+            NodeDictionary.TryGetValue(key, out var currentNode);
 
             if (shouldDecrement) i--;
             else i++;
@@ -130,9 +137,7 @@ public class Grid(List<Node> nodes, int width, int height)
             var currentNodeType = currentNode.Type;
 
             if (!previousWasEdge)
-            {
                 startOfWall = currentNodeType;
-            }
 
             if (typesToSkip.Contains(currentNodeType))
             {
@@ -146,63 +151,40 @@ public class Grid(List<Node> nodes, int width, int height)
                 continue;
             }
 
-            if (startEdgeTypes.Contains(currentNodeType) && !previousWasEdge) 
+            if (startEdgeTypes.Contains(currentNodeType) && !previousWasEdge)
                 edgesCrossed++;
 
             previousWasEdge = true;
         }
 
-        return Task.FromResult(edgesCrossed);
+        return edgesCrossed;
     }
 
     private static bool ShouldStop(int index, int endPoint)
         => endPoint == 0 ? index >= endPoint : index < endPoint;
 
-    public override string ToString()
-    {
-        var sb = new StringBuilder();
-        for (var y = 0; y < Height; y++)
-        {
-            for (var x = 0; x < Width; x++)
-            {
-                var node = Nodes.FirstOrDefault(n => n.X == x && n.Y == y);
-                sb.Append(node == null ? '.' : '#');
-            }
-
-            sb.AppendLine();
-        }
-
-        return sb.ToString();
-    }
-
     public void DecideEdgeTypes()
     {
-        foreach (var node in Nodes)
+        Parallel.ForEach(NodeDictionary.Keys, key =>
         {
-            var neighbours = GetNeighbours(node.X, node.Y);
-            node.DecideType(neighbours);
-        }
+            var neighbours = GetNeighbours(key);
+            NodeDictionary[key].DecideType(neighbours);
+        });
     }
 
-    private List<Direction> GetNeighbours(int x, int y)
+    private List<Direction> GetNeighbours((int, int) key)
     {
         var neighbours = new List<Direction>();
-        var upNeighbour = Nodes.FirstOrDefault(n => n.X == x && n.Y == y - 1);
-        var rightNeighbour = Nodes.FirstOrDefault(n => n.X == x + 1 && n.Y == y);
-        var downNeighbour = Nodes.FirstOrDefault(n => n.X == x && n.Y == y + 1);
-        var leftNeighbour = Nodes.FirstOrDefault(n => n.X == x - 1 && n.Y == y);
+        var offSets = new List<(int, int)> {(0, -1), (1, 0), (0, 1), (-1, 0)};
+        var directions = new List<Direction> {Direction.Up, Direction.Right, Direction.Down, Direction.Left};
 
-        if (upNeighbour != null)
-            neighbours.Add(Direction.Up);
-
-        if (rightNeighbour != null)
-            neighbours.Add(Direction.Right);
-
-        if (downNeighbour != null)
-            neighbours.Add(Direction.Down);
-
-        if (leftNeighbour != null)
-            neighbours.Add(Direction.Left);
+        for (var i = 0; i < offSets.Count; i++)
+        {
+            var (offSetX, offSetY) = offSets[i];
+            var neighbourPosition = (key.Item1 + offSetX, key.Item2 + offSetY);
+            if (NodeDictionary.ContainsKey(neighbourPosition))
+                neighbours.Add(directions[i]);
+        }
 
         return neighbours;
     }
