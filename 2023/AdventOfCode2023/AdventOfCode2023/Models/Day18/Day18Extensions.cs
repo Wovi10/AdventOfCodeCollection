@@ -48,4 +48,16 @@ public static class Day18Extensions
             _ => NodeType.Enclosed
         };
     }
+
+    public static (int, int) IntToDirection(this char direction)
+    {
+        return direction switch
+        {
+            '0' => (1, 0),
+            '1' => (0, 1),
+            '2' => (-1, 0),
+            '3' => (0, -1),
+            _ => (0, 0)
+        };
+    }
 }

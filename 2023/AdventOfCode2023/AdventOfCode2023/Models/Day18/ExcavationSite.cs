@@ -1,4 +1,5 @@
-﻿using UtilsCSharp;
+﻿using System.Collections.Concurrent;
+using UtilsCSharp;
 
 namespace AdventOfCode2023_1.Models.Day18;
 
@@ -19,30 +20,48 @@ public class ExcavationSite
     public int GetHoleSize() 
         => Grid?.Nodes.Count ?? 0;
 
-    public void ExecuteDigPlan()
+    public async Task ExecuteDigPlan()
     {
         var currentX = 0;
         var currentY = 0;
-        var nodes = new List<Node> {new() {X = currentX, Y = currentY}};
+        var nodes = new ConcurrentBag<Node> {new() {X = currentX, Y = currentY}};
+        var tasks = new List<Task>();
+
         foreach (var digInstruction in DigPlan)
         {
-            for (var i = 0; i < digInstruction.Distance; i++)
+            tasks.Add(Task.Run(() =>
             {
-                var newX = GetNewX(currentX, digInstruction.Direction);
-                var newY = GetNewY(currentY, digInstruction.Direction);
-                var newNode = new Node {X = newX, Y = newY};
+                for (var i = 0; i < digInstruction.Distance; i++)
+                {
+                    var newX = GetNewX(currentX, digInstruction.Direction);
+                    var newY = GetNewY(currentY, digInstruction.Direction);
+                    var newNode = new Node {X = newX, Y = newY};
 
-                nodes.TryAddNode(newNode);
+                    nodes.Add(newNode);
 
-                SetNewGridExtremes(newX, newY);
-                currentX = newX;
-                currentY = newY;
-            }
+                    currentX = newX;
+                    currentY = newY;
+                }
+            }));
         }
 
-        Grid = CreateGrid(nodes);
+        await Task.WhenAll(tasks);
+
+        var orderedNodes = nodes.OrderBy(x => x.X).ThenBy(x => x.Y).ToList();
+        orderedNodes = orderedNodes.Distinct().ToList();
+        SetNewGridExtremes(orderedNodes);
+
+        Grid = CreateGrid(orderedNodes);
         Grid.DecideEdgeTypes();
-        Grid.DigHole();
+        await Grid.DigHole();
+    }
+
+    private void SetNewGridExtremes(List<Node> nodes)
+    {
+        SmallestX = nodes.Min(x => x.X);
+        LargestX = nodes.Max(x => x.X);
+        SmallestY = nodes.Min(x => x.Y);
+        LargestY = nodes.Max(x => x.Y);
     }
 
     private static int GetNewX(int currentX, (int, int) digInstructionDirection) 
@@ -66,17 +85,22 @@ public class ExcavationSite
 
     private Grid CreateGrid(List<Node> inputNodes)
     {
-        var nodes = new List<Node>();
+        var nodes = new ConcurrentBag<Node>();
 
-        foreach (var inputNode in inputNodes)
+        Parallel.ForEach(inputNodes, inputNode =>
         {
             var newNode = new Node {X = inputNode.X + Math.Abs(SmallestX), Y = inputNode.Y + Math.Abs(SmallestY)};
-            nodes.TryAddNode(newNode);
-        }
+            nodes.Add(newNode);
+        });
 
+        var orderedNodes = nodes.OrderBy(x => x.X).ThenBy(x => x.Y).ToList();
+
+        var firstNode = orderedNodes.First();
+        var zeroNode = orderedNodes.First(x => x is {X: 0, Y: 0});
+        
         var gridHeight = Math.Abs(SmallestY) + Math.Abs(LargestY) + 1;
         var gridWidth = Math.Abs(SmallestX) + Math.Abs(LargestX) + 1;
 
-        return new Grid(nodes, gridWidth, gridHeight);
+        return new Grid(orderedNodes, gridWidth, gridHeight);
     }
 }

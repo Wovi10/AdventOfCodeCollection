@@ -10,17 +10,18 @@ public class Grid(List<Node> nodes, int width, int height)
     private int Height { get; } = height;
     private int Width { get; } = width;
 
-    public void DigHole()
+    public async Task DigHole()
     {
-        var nodesToAdd = new List<Node>();
         var nodeSet = new HashSet<(int,int)>(Nodes.Select(n => (n.X, n.Y)));
-        var edgeCrossedCalculators = new Dictionary<Direction, Func<Node, int>>
+        var edgeCrossedCalculators = new Dictionary<Direction, Func<Node, Task<int>>>
         {
-            {Direction.Up, node => CountEdgesCrossed(node.Y - 1, 0, node.X, true, true)},
-            {Direction.Right, node => CountEdgesCrossed(node.X, Width, node.Y, false)},
-            {Direction.Down, node => CountEdgesCrossed(node.Y, Height, node.X, true)},
-            {Direction.Left, node => CountEdgesCrossed(node.X-1, 0, node.Y, false, true)}
+            {Direction.Up, CountEdgesCrossedUpAsync},
+            {Direction.Right, CountEdgesCrossedRightAsync},
+            {Direction.Down, CountEdgesCrossedDownAsync},
+            {Direction.Left, CountEdgesCrossedLeftAsync}
         };
+
+        var tasks = new List<Task<Node?>>();
 
         for (var y = 0; y < Height; y++)
         {
@@ -31,17 +32,34 @@ public class Grid(List<Node> nodes, int width, int height)
 
                 var newNode = new Node {X = x, Y = y};
 
-                var closestEdge = GetClosestEdge(newNode.X, newNode.Y);
+                tasks.Add(Task.Run(async () =>
+                {
+                    var closestEdge = GetClosestEdge(newNode.X, newNode.Y);
 
-                var edgesCrossed = edgeCrossedCalculators[closestEdge](newNode);
+                    var edgesCrossed = await edgeCrossedCalculators[closestEdge](newNode);
 
-                if (edgesCrossed.IsOdd())
-                    nodesToAdd.TryAddNode(newNode);
+                    return edgesCrossed.IsOdd() ? newNode : null;
+                }));
             }
         }
 
-        nodesToAdd.ForEach(node => Nodes.TryAddNode(node));
+        var nodesToAdd = (await Task.WhenAll(tasks)).ToList().Where(node => node != null);
+
+        foreach (var node in nodesToAdd) 
+            Nodes.TryAddNode(node);
     }
+
+    private async Task<int> CountEdgesCrossedUpAsync(Node node) 
+        => await CountEdgesCrossed(node.Y - 1, 0, node.X, true, true);
+    
+    private async Task<int> CountEdgesCrossedRightAsync(Node node) 
+        => await CountEdgesCrossed(node.X, Width, node.Y, false);    
+    
+    private async Task<int> CountEdgesCrossedDownAsync(Node node) 
+        => await CountEdgesCrossed(node.Y, Height, node.X, true);
+
+    private async Task<int> CountEdgesCrossedLeftAsync(Node node) 
+        => await CountEdgesCrossed(node.X-1, 0, node.Y, false, true);
 
     private Direction GetClosestEdge(int x, int y)
     {
@@ -61,7 +79,7 @@ public class Grid(List<Node> nodes, int width, int height)
                 : Direction.Up;
     }
 
-    private int CountEdgesCrossed(int startPoint, int endPoint, int constantPart, bool isOnYAxis, bool shouldDecrement = false)
+    private Task<int> CountEdgesCrossed(int startPoint, int endPoint, int constantPart, bool isOnYAxis, bool shouldDecrement = false)
     {
         var edgesCrossed = 0;
         var previousWasEdge = false;
@@ -88,7 +106,9 @@ public class Grid(List<Node> nodes, int width, int height)
                 : new[] {NodeType.NorthEast, NodeType.SouthEast});
         }
 
-        var nodeSet = new Dictionary<(int, int), Node>(Nodes.Select(n => new KeyValuePair<(int, int), Node>((n.X, n.Y), n)));
+        var nodeSet = isOnYAxis
+            ? new Dictionary<(int, int), Node>(Nodes.Where(node => node.X == constantPart).Select(n => new KeyValuePair<(int, int), Node>((n.X, n.Y), n)))
+            : new Dictionary<(int, int), Node>(Nodes.Where(node => node.Y == constantPart).Select(n => new KeyValuePair<(int, int), Node>((n.X, n.Y), n)));
 
         var startOfWall = NodeType.Enclosed;
 
@@ -120,19 +140,19 @@ public class Grid(List<Node> nodes, int width, int height)
                 continue;
             }
 
-            if (startEdgeTypes.Contains(currentNodeType) && !previousWasEdge) 
-                edgesCrossed++;
-
             if (currentNodeType.IsMatching(startOfWall, isOnYAxis) && previousWasEdge)
             {
                 edgesCrossed--;
                 continue;
             }
 
+            if (startEdgeTypes.Contains(currentNodeType) && !previousWasEdge) 
+                edgesCrossed++;
+
             previousWasEdge = true;
         }
 
-        return edgesCrossed;
+        return Task.FromResult(edgesCrossed);
     }
 
     private static bool ShouldStop(int index, int endPoint)
