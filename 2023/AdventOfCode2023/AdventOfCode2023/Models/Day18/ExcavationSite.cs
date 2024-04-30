@@ -53,6 +53,7 @@ public class ExcavationSite
 
         Grid = CreateGrid(orderedNodes);
         Grid.DecideEdgeTypes();
+        Console.WriteLine("Starting Dighole");
         Grid.DigHole();
     }
 

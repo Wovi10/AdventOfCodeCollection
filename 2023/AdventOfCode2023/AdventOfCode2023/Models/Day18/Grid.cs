@@ -41,6 +41,10 @@ public class Grid
                 var newNode = new Node {X = x, Y = y};
 
                 var closestEdge = GetClosestEdge(newNode.X, newNode.Y);
+                if (newNode.X != 6460 && newNode.Y != 6460)
+                {
+                    continue;
+                }
                 var edgesCrossed = edgeCrossedCalculators[closestEdge](newNode);
 
                 if (edgesCrossed.IsOdd())
@@ -102,7 +106,6 @@ public class Grid
         bool shouldDecrement = false)
     {
         var edgesCrossed = 0;
-        var previousWasEdge = false;
 
         HashSet<NodeType> typesToSkip;
         HashSet<NodeType> startEdgeTypes;
@@ -118,50 +121,63 @@ public class Grid
             startEdgeTypes = shouldDecrement ? _startEdgeTypesXAxisDecrement : _startEdgeTypesXAxisIncrement;
         }
 
+        var nodesToCheck = GetNodesToCheck(startPoint, endPoint, constantPart, isOnYAxis, shouldDecrement);
+
         var startOfWall = NodeType.Enclosed;
-
-        for (var i = startPoint; ShouldStop(i, endPoint);)
+        foreach (var (key, currentNode) in nodesToCheck)
         {
-            var key = isOnYAxis ? (constantPart, i) : (i, constantPart);
-            NodeDictionary.TryGetValue(key, out var currentNode);
-
-            if (shouldDecrement) i--;
-            else i++;
-
-            if (currentNode == null)
-            {
-                previousWasEdge = false;
+            var nodeType = currentNode.Type;
+            if (typesToSkip.Contains(nodeType))
                 continue;
-            }
 
-            var currentNodeType = currentNode.Type;
-
-            if (!previousWasEdge)
-                startOfWall = currentNodeType;
-
-            if (typesToSkip.Contains(currentNodeType))
+            if (startOfWall == NodeType.Enclosed)
             {
-                previousWasEdge = true;
-                continue;
-            }
+                startOfWall = nodeType;
 
-            if (currentNodeType.IsMatching(startOfWall, isOnYAxis) && previousWasEdge)
-            {
-                edgesCrossed--;
-                continue;
-            }
-
-            if (startEdgeTypes.Contains(currentNodeType) && !previousWasEdge)
                 edgesCrossed++;
+                continue;
+            }
 
-            previousWasEdge = true;
+            if (startEdgeTypes.Contains(nodeType))
+            {
+                edgesCrossed++;
+                continue;
+            }
+
+            if (nodeType.IsMatching(startOfWall, isOnYAxis)) // Was running on top of wall
+                edgesCrossed--;
         }
 
         return edgesCrossed;
     }
 
-    private static bool ShouldStop(int index, int endPoint)
-        => endPoint == 0 ? index >= endPoint : index < endPoint;
+    private Dictionary<(int, int),Node> GetNodesToCheck(int startPoint, int endPoint, int constantPart, bool isOnYAxis, bool shouldDecrement)
+    {
+        if (isOnYAxis)
+        {
+            if (shouldDecrement)
+            {
+                return NodeDictionary.Where(kvp =>
+                        kvp.Key.Item1 == constantPart && kvp.Key.Item2 <= startPoint && kvp.Key.Item2 >= endPoint)
+                    .ToDictionary();
+            }
+
+            return NodeDictionary.Where(kvp =>
+                    kvp.Key.Item1 == constantPart && kvp.Key.Item2 >= startPoint && kvp.Key.Item2 <= endPoint)
+                .ToDictionary();
+        }
+
+        if (shouldDecrement)
+        {
+            return NodeDictionary.Where(kvp =>
+                    kvp.Key.Item2 == constantPart && kvp.Key.Item1 <= startPoint && kvp.Key.Item1 >= endPoint)
+                .ToDictionary();
+        }
+
+        return NodeDictionary.Where(kvp =>
+                kvp.Key.Item2 == constantPart && kvp.Key.Item1 >= startPoint && kvp.Key.Item1 <= endPoint)
+            .ToDictionary();
+    }
 
     public void DecideEdgeTypes()
     {
