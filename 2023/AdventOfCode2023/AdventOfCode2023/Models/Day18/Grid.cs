@@ -12,6 +12,15 @@ public class Grid
         Height = height;
         Width = width;
         NodeDictionary = nodes.ToDictionary(n => (n.X, n.Y), n => n);
+        // Select the node with the smallest x value
+        var minx = nodes.Min(n => n.X);
+        var miny = nodes.Min(n => n.Y);
+        var maxx = nodes.Max(n => n.X);
+        var maxy = nodes.Max(n => n.Y);
+        var smallestNodeX = nodes.First(n => n.X == minx);
+        var smallestNodeY = nodes.First(n => n.Y == miny);
+        var largestNodeX = nodes.First(n => n.X == maxx);
+        var largestNodeY = nodes.First(n => n.Y == maxy);
     }
 
     public List<Node> Nodes { get; }
@@ -29,44 +38,61 @@ public class Grid
             {Direction.Left, CountEdgesCrossedLeft}
         };
 
-        var nodesToAdd = new ConcurrentBag<Node>();
+        // for (var y = 1; y < Height; y++)
+        // {
+        //     var nodesToAdd = new List<Node>();
+        //     for (var x = 1; x < Width; x++)
+        //     {
+        //         if (NodeDictionary.ContainsKey((x, y)))
+        //             continue;
+        //
+        //         var newNode = new Node {X = x, Y = y};
+        //         var closestEdge = GetClosestEdge(newNode.X, newNode.Y);
+        //         var edgesCrossed = edgeCrossedCalculators[closestEdge](newNode);
+        //
+        //         if (edgesCrossed.IsOdd())
+        //             nodesToAdd.Add(newNode);
+        //     }
+        //
+        //     foreach (var node in nodesToAdd)
+        //         Nodes.Add(node);
+        //     nodesToAdd.Clear();
+        // }
 
-        Parallel.For(0, Height, y =>
+        // x and y start from 1. The edges are either already added or are not needed
+        Parallel.For(1, Height, y =>
         {
-            for (var x = 0; x < Width; x++)
+            var nodesToAdd = new List<Node>();
+            for (var x = 1; x < Width; x++)
             {
                 if (NodeDictionary.ContainsKey((x, y)))
                     continue;
 
                 var newNode = new Node {X = x, Y = y};
-
                 var closestEdge = GetClosestEdge(newNode.X, newNode.Y);
-                if (newNode.X != 6460 && newNode.Y != 6460)
-                {
-                    continue;
-                }
                 var edgesCrossed = edgeCrossedCalculators[closestEdge](newNode);
 
                 if (edgesCrossed.IsOdd())
                     nodesToAdd.Add(newNode);
             }
-        });
 
-        foreach (var node in nodesToAdd)
-            Nodes.TryAddNode(node);
+            foreach (var node in nodesToAdd)
+                Nodes.Add(node);
+            nodesToAdd.Clear();
+        });
     }
 
     private int CountEdgesCrossedUp(Node node)
-        => CountEdgesCrossed(node.Y, 0, node.X, true, true);
+        => CountEdgesCrossed(Direction.Up, node.Y, 0, node.X, true, true);
 
     private int CountEdgesCrossedRight(Node node)
-        => CountEdgesCrossed(node.X, Width, node.Y, false);
+        => CountEdgesCrossed(Direction.Right, node.X, Width, node.Y, false);
 
     private int CountEdgesCrossedDown(Node node)
-        => CountEdgesCrossed(node.Y + 1, Height, node.X, true);
+        => CountEdgesCrossed(Direction.Down, node.Y + 1, Height, node.X, true);
 
     private int CountEdgesCrossedLeft(Node node)
-        => CountEdgesCrossed(node.X, 0, node.Y, false, true);
+        => CountEdgesCrossed(Direction.Left, node.X, 0, node.Y, false, true);
 
     private Direction GetClosestEdge(int x, int y)
     {
@@ -102,7 +128,7 @@ public class Grid
     private readonly HashSet<NodeType> _startEdgeTypesXAxisIncrement =
         new() {NodeType.NorthSouth, NodeType.NorthEast, NodeType.SouthEast};
 
-    private int CountEdgesCrossed(int startPoint, int endPoint, int constantPart, bool isOnYAxis,
+    private int CountEdgesCrossed(Direction direction, int startPoint, int endPoint, int constantPart, bool isOnYAxis,
         bool shouldDecrement = false)
     {
         var edgesCrossed = 0;
@@ -121,10 +147,10 @@ public class Grid
             startEdgeTypes = shouldDecrement ? _startEdgeTypesXAxisDecrement : _startEdgeTypesXAxisIncrement;
         }
 
-        var nodesToCheck = GetNodesToCheck(startPoint, endPoint, constantPart, isOnYAxis, shouldDecrement);
+        var nodesToCheck = GetNodesToCheck(direction, startPoint, endPoint, constantPart);
 
         var startOfWall = NodeType.Enclosed;
-        foreach (var (key, currentNode) in nodesToCheck)
+        foreach (var (_, currentNode) in nodesToCheck)
         {
             var nodeType = currentNode.Type;
             if (typesToSkip.Contains(nodeType))
@@ -151,32 +177,25 @@ public class Grid
         return edgesCrossed;
     }
 
-    private Dictionary<(int, int),Node> GetNodesToCheck(int startPoint, int endPoint, int constantPart, bool isOnYAxis, bool shouldDecrement)
+    private Dictionary<(int, int), Node> GetNodesToCheck(Direction direction, int startPoint, int endPoint,
+        int constantPart)
     {
-        if (isOnYAxis)
+        return direction switch
         {
-            if (shouldDecrement)
-            {
-                return NodeDictionary.Where(kvp =>
-                        kvp.Key.Item1 == constantPart && kvp.Key.Item2 <= startPoint && kvp.Key.Item2 >= endPoint)
-                    .ToDictionary();
-            }
-
-            return NodeDictionary.Where(kvp =>
+            Direction.Up => NodeDictionary.Where(kvp =>
+                    kvp.Key.Item1 == constantPart && kvp.Key.Item2 <= startPoint && kvp.Key.Item2 >= endPoint)
+                .ToDictionary(),
+            Direction.Right => NodeDictionary.Where(kvp =>
+                    kvp.Key.Item2 == constantPart && kvp.Key.Item1 >= startPoint && kvp.Key.Item1 <= endPoint)
+                .ToDictionary(),
+            Direction.Down => NodeDictionary.Where(kvp =>
                     kvp.Key.Item1 == constantPart && kvp.Key.Item2 >= startPoint && kvp.Key.Item2 <= endPoint)
-                .ToDictionary();
-        }
-
-        if (shouldDecrement)
-        {
-            return NodeDictionary.Where(kvp =>
+                .ToDictionary(),
+            Direction.Left => NodeDictionary.Where(kvp =>
                     kvp.Key.Item2 == constantPart && kvp.Key.Item1 <= startPoint && kvp.Key.Item1 >= endPoint)
-                .ToDictionary();
-        }
-
-        return NodeDictionary.Where(kvp =>
-                kvp.Key.Item2 == constantPart && kvp.Key.Item1 >= startPoint && kvp.Key.Item1 <= endPoint)
-            .ToDictionary();
+                .ToDictionary(),
+            _ => new Dictionary<(int, int), Node>()
+        };
     }
 
     public void DecideEdgeTypes()

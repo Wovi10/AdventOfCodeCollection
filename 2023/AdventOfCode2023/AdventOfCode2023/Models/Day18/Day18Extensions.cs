@@ -16,15 +16,6 @@ public static class Day18Extensions
         };
     }
 
-    public static void TryAddNode(this List<Node> nodes, Node? newNode)
-    {
-        if (newNode == null)
-            return;
-
-        if (nodes.Any(x => x.X == newNode.X && x.Y == newNode.Y) == false)
-            nodes.Add(newNode);
-    }
-
     public static bool IsMatching(this NodeType type, NodeType otherType, bool isOnYAxis)
     {
         if (isOnYAxis)
