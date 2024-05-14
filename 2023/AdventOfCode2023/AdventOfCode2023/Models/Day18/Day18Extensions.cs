@@ -16,27 +16,27 @@ public static class Day18Extensions
         };
     }
 
-    public static bool IsMatching(this NodeType type, NodeType otherType, bool isOnYAxis)
+    public static bool IsMatching(this NodeType type, NodeType otherType, Direction direction)
     {
-        if (isOnYAxis)
+        if (direction is Direction.Up or Direction.Down)
         {
-            return otherType == type switch
+            return type switch
             {
-                NodeType.NorthEast => NodeType.SouthEast,
-                NodeType.NorthWest => NodeType.SouthWest,
-                NodeType.SouthWest => NodeType.NorthWest,
-                NodeType.SouthEast => NodeType.NorthEast,
-                _ => NodeType.Enclosed
+                NodeType.NorthEast => otherType == NodeType.SouthEast,
+                NodeType.NorthWest => otherType == NodeType.SouthWest,
+                NodeType.SouthWest => otherType == NodeType.NorthWest,
+                NodeType.SouthEast => otherType == NodeType.NorthEast,
+                _ => otherType == NodeType.Enclosed
             };
         }
 
-        return otherType == type switch
+        return type switch
         {
-            NodeType.NorthEast => NodeType.NorthWest,
-            NodeType.NorthWest => NodeType.NorthEast,
-            NodeType.SouthWest => NodeType.SouthEast,
-            NodeType.SouthEast => NodeType.SouthWest,
-            _ => NodeType.Enclosed
+            NodeType.NorthEast => otherType == NodeType.NorthWest,
+            NodeType.NorthWest => otherType == NodeType.NorthEast,
+            NodeType.SouthWest => otherType == NodeType.SouthEast,
+            NodeType.SouthEast => otherType == NodeType.SouthWest,
+            _ => otherType == NodeType.Enclosed
         };
     }
 
