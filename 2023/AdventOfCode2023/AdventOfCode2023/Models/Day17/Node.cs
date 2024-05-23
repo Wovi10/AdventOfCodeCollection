@@ -1,4 +1,5 @@
 ﻿using AdventOfCode2023_1.Shared;
+using AdventOfCode2023_1.Shared.Types;
 using UtilsCSharp;
 
 namespace AdventOfCode2023_1.Models.Day17;
@@ -17,11 +18,13 @@ public class Node
         DirectionRow = directionRow;
         DirectionColumn = directionColumn;
         TimesInDirection = timesInDirection;
+        RowColumn = new Point2D(row, column);
     }
 
     public int HeatLoss { get; set; }
-    public int Row { get; set; }
-    public int Column { get; set; }
+    public Point2D RowColumn { get; set; }
+    private int Row { get; set; }
+    private int Column { get; set; }
     public int DirectionRow { get; set; }
     public int DirectionColumn { get; set; }
     public int TimesInDirection { get; set; }

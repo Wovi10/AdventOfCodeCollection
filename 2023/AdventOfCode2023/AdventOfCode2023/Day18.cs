@@ -20,7 +20,9 @@ public class Day18:DayBase
     private static async Task<long> CalculateHoleSize()
     {
         var excavationSite = new ExcavationSite(Input);
-        await excavationSite.ExecuteDigPlan();
+        await excavationSite.CalculaeDigPlan();
+        
+        excavationSite.DigHole();
         
         return excavationSite.GetHoleSize();
     }

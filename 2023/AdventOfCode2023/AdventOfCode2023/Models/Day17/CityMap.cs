@@ -39,8 +39,9 @@ public class CityMap
         while (_priorityQueue.Count > 0)
         {
             var currentNode = _priorityQueue.Dequeue();
+            var (row, column) = currentNode.RowColumn;
 
-            var isEndNode = currentNode.Row == Height - 1 && currentNode.Column == Width - 1;
+            var isEndNode = row == Height - 1 && column == Width - 1;
             var crucibleCanStop = Constraints.IsGreaterThanOrEqualToMin(currentNode.TimesInDirection);
 
             if (isEndNode && crucibleCanStop)
@@ -91,8 +92,10 @@ public class CityMap
     {
         var newTimesInDirection = isSameDirection ? currentNode.TimesInDirection + 1 : 1;
 
-        var nextRow = currentNode.Row + nextDirectionRow;
-        var nextColumn = currentNode.Column + nextDirectionColumn;
+        var (row, column) = currentNode.RowColumn;
+        
+        var nextRow = row + nextDirectionRow;
+        var nextColumn = column + nextDirectionColumn;
         var newNode = new Node(0, nextRow, nextColumn, nextDirectionRow,
             nextDirectionColumn, newTimesInDirection);
 

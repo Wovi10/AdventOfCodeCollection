@@ -1,14 +1,14 @@
 ﻿using AdventOfCode2023_1.Models.Day18.Enums;
+using AdventOfCode2023_1.Shared.Types;
 
 namespace AdventOfCode2023_1.Models.Day18;
 
-public class Node
+public class Node(int x, int y)
 {
-    public int X { get; set; }
-    public int Y { get; set; }
-    public NodeType Type { get; set; }
+    public Point2D Coordinates { get; } = new(x, y);
+    public NodeType Type { get; private set; }
 
-    public void DecideType(List<Direction> neighbours)
+    public void DecideType(HashSet<Direction> neighbours)
     {
         switch (neighbours.Count)
         {

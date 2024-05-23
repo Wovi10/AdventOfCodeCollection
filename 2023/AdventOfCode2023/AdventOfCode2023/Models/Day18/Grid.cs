@@ -1,72 +1,85 @@
 ﻿using System.Collections.Concurrent;
+using System.Collections.Frozen;
 using AdventOfCode2023_1.Models.Day18.Enums;
+using AdventOfCode2023_1.Shared.Types;
 using UtilsCSharp;
 
 namespace AdventOfCode2023_1.Models.Day18;
 
 public class Grid
 {
-    public Grid(List<Node> nodes, int width, int height)
+    public Grid(HashSet<Node> nodes, int width, int height)
     {
-        Nodes = nodes;
         Height = height;
         Width = width;
-        NodeDictionary = nodes.ToDictionary(n => (n.X, n.Y), n => n);
+        FrozenNodeDictionary = nodes.ToDictionary(
+            n => new Point2D(n.Coordinates.X, n.Coordinates.Y),
+            n => n.Type).ToFrozenDictionary();
+        Points = FrozenNodeDictionary.Keys.ToHashSet();
     }
 
-    public List<Node> Nodes { get; }
-    private Dictionary<(int, int), Node> NodeDictionary { get; }
+    public HashSet<Point2D> Points { get; }
+    private FrozenDictionary<Point2D, NodeType> FrozenNodeDictionary { get; }
     private int Height { get; }
     private int Width { get; }
 
     public void DigHole()
     {
-        var edgeCrossedCalculators = new Dictionary<Direction, Func<Node, int>>
-        {
-            {Direction.Up, CountEdgesCrossedUp},
-            {Direction.Right, CountEdgesCrossedRight},
-            {Direction.Down, CountEdgesCrossedDown},
-            {Direction.Left, CountEdgesCrossedLeft}
-        };
-
+        var concurrentPoints = new ConcurrentBag<Point2D>(Points);
         // x and y start from 1. The edges are either already added or are not needed
         Parallel.For(1, Height, y =>
         {
-            var nodesToAdd = new List<Node>();
+            var pointsToAdd = new List<Point2D>();
             for (var x = 1; x < Width; x++)
             {
-                if (NodeDictionary.ContainsKey((x, y)))
+                var newPoint = new Point2D(x, y);
+                if (FrozenNodeDictionary.ContainsKey(newPoint))
                     continue;
 
-                var newNode = new Node {X = x, Y = y};
-                var closestEdge = GetClosestEdge(newNode.X, newNode.Y);
-                
-                var edgesCrossed = edgeCrossedCalculators[closestEdge](newNode);
+                var closestEdge = GetClosestEdge(newPoint);
+
+                var edgesCrossed = closestEdge switch
+                {
+                    Direction.Up => CountEdgesCrossed(Direction.Up, newPoint.Y, newPoint.X),
+                    Direction.Right => CountEdgesCrossed(Direction.Right, newPoint.X, newPoint.Y),
+                    Direction.Down => CountEdgesCrossed(Direction.Down, newPoint.Y + 1, newPoint.X),
+                    Direction.Left => CountEdgesCrossed(Direction.Left, newPoint.X, newPoint.Y),
+                    _ => 0
+                };
 
                 if (edgesCrossed.IsOdd())
-                    nodesToAdd.Add(newNode);
+                {
+                    pointsToAdd.Add(newPoint);
+                    var nodeRight = new Point2D(newPoint.X + 1, y);
+                    while (x < Width-2 && !FrozenNodeDictionary.ContainsKey(nodeRight))
+                    {
+                        x++;
+                        pointsToAdd.Add(nodeRight);
+                        nodeRight = new Point2D(nodeRight.X + 1, y);
+                    }
+                }else // Outside the grid
+                {
+                    var nodeRight = new Point2D(newPoint.X + 1, y);
+                    while (x < Width-2 && !FrozenNodeDictionary.ContainsKey(nodeRight))
+                    {
+                        x++;
+                        nodeRight = new Point2D(nodeRight.X + 1, y);
+                    }
+                }
             }
 
-            foreach (var node in nodesToAdd)
-                Nodes.Add(node);
-            nodesToAdd.Clear();
+            foreach (var point in pointsToAdd)
+                concurrentPoints.Add(point);
+            pointsToAdd.Clear();
         });
+
+        foreach (var point in concurrentPoints) 
+            Points.Add(point);
     }
 
-    private int CountEdgesCrossedUp(Node node)
-        => CountEdgesCrossed(Direction.Up, node.Y, node.X);
-
-    private int CountEdgesCrossedRight(Node node)
-        => CountEdgesCrossed(Direction.Right, node.X, node.Y);
-
-    private int CountEdgesCrossedDown(Node node)
-        => CountEdgesCrossed(Direction.Down, node.Y + 1, node.X);
-
-    private int CountEdgesCrossedLeft(Node node)
-        => CountEdgesCrossed(Direction.Left, node.X, node.Y);
-
-    private Direction GetClosestEdge(int x, int y)
+    private Direction GetClosestEdge(Point2D point)
     {
+        var (x, y) = point;
         var distanceDown = Height - y;
         var distanceRight = Width - x;
 
@@ -84,6 +97,16 @@ public class Grid
             : Direction.Up;
     }
 
+    private static readonly HashSet<NodeType> TypesToSkipUp = new() {NodeType.NorthSouth, NodeType.Enclosed};
+    private static readonly HashSet<NodeType> TypesToSkipRight = new() {NodeType.EastWest, NodeType.Enclosed};
+    private static readonly HashSet<NodeType> TypesToSkipDown = new() {NodeType.NorthSouth, NodeType.Enclosed};
+    private static readonly HashSet<NodeType> TypesToSkipLeft = new() {NodeType.EastWest, NodeType.Enclosed};
+
+    private static readonly HashSet<NodeType> StartEdgeTypesUp = new() {NodeType.EastWest, NodeType.NorthEast, NodeType.NorthWest};
+    private static readonly HashSet<NodeType> StartEdgeTypesRight = new() {NodeType.NorthSouth, NodeType.NorthEast, NodeType.SouthEast};
+    private static readonly HashSet<NodeType> StartEdgeTypesDown = new() {NodeType.EastWest, NodeType.SouthEast, NodeType.SouthWest};
+    private static readonly HashSet<NodeType> StartEdgeTypesLeft = new() {NodeType.NorthSouth, NodeType.NorthWest, NodeType.SouthWest};
+
     private int CountEdgesCrossed(Direction direction, int startPoint, int constantPart)
     {
         HashSet<NodeType> typesToSkip;
@@ -92,25 +115,23 @@ public class Grid
         switch (direction)
         {
             case Direction.Up:
-                typesToSkip = new HashSet<NodeType> {NodeType.NorthSouth, NodeType.Enclosed};
-                startEdgeTypes = new HashSet<NodeType> {NodeType.EastWest, NodeType.NorthEast, NodeType.NorthWest};
+                typesToSkip = TypesToSkipUp;
+                startEdgeTypes = StartEdgeTypesUp;
                 break;
             case Direction.Right:
-                typesToSkip = new HashSet<NodeType> {NodeType.EastWest, NodeType.Enclosed};
-                startEdgeTypes = new HashSet<NodeType> {NodeType.NorthSouth, NodeType.NorthEast, NodeType.SouthEast};
+                typesToSkip = TypesToSkipRight;
+                startEdgeTypes = StartEdgeTypesRight;
                 break;
             case Direction.Down:
-                typesToSkip = new HashSet<NodeType> {NodeType.NorthSouth, NodeType.Enclosed};
-                startEdgeTypes = new HashSet<NodeType> {NodeType.EastWest, NodeType.SouthEast, NodeType.SouthWest};
+                typesToSkip = TypesToSkipDown;
+                startEdgeTypes = StartEdgeTypesDown;
                 break;
             case Direction.Left:
-                typesToSkip = new HashSet<NodeType> {NodeType.EastWest, NodeType.Enclosed};
-                startEdgeTypes = new HashSet<NodeType> {NodeType.NorthSouth, NodeType.NorthWest, NodeType.SouthWest};
+                typesToSkip = TypesToSkipLeft;
+                startEdgeTypes = StartEdgeTypesLeft;
                 break;
             default:
-                typesToSkip = new HashSet<NodeType>();
-                startEdgeTypes = new HashSet<NodeType>();
-                break;
+                return 0;
         }
 
         var nodesToCheck = GetNodesToCheck(direction, startPoint, constantPart);
@@ -121,76 +142,49 @@ public class Grid
         var edgesCrossed = 0;
         var startOfWall = NodeType.Enclosed;
 
-        foreach (var (_, currentNode) in nodesToCheck)
+        foreach (var (_, type) in nodesToCheck)
         {
-            var nodeType = currentNode.Type;
-            if (typesToSkip.Contains(nodeType))
+            if (typesToSkip.Contains(type))
                 continue;
 
             if (startOfWall == NodeType.Enclosed)
             {
-                startOfWall = nodeType;
+                startOfWall = type;
 
                 edgesCrossed++;
                 continue;
             }
 
-            if (startEdgeTypes.Contains(nodeType))
+            if (startEdgeTypes.Contains(type))
             {
                 edgesCrossed++;
                 continue;
             }
 
-            if (nodeType.IsMatching(startOfWall, direction)) // Was running on top of wall
+            if (type.WasRunningOnTopOfWall(startOfWall, direction))
                 edgesCrossed--;
         }
 
         return edgesCrossed;
     }
 
-    private Dictionary<(int, int), Node> GetNodesToCheck(Direction direction, int startPoint, int constantPart)
+    public Dictionary<Point2D, NodeType> GetNodesToCheck(Direction direction, int startPoint, int constantPart)
     {
         return direction switch
         {
-            Direction.Up => NodeDictionary.Where(kvp =>
-                    kvp.Key.Item1 == constantPart && kvp.Key.Item2 <= startPoint && kvp.Key.Item2 >= 0)
+            Direction.Up => FrozenNodeDictionary.Where(kvp =>
+                    kvp.Key.X == constantPart && kvp.Key.Y <= startPoint && kvp.Key.Y >= 0)
                 .ToDictionary(kvp => kvp.Key, kvp => kvp.Value),
-            Direction.Right => NodeDictionary.Where(kvp =>
-                    kvp.Key.Item2 == constantPart && kvp.Key.Item1 >= startPoint && kvp.Key.Item1 <= Width)
+            Direction.Right => FrozenNodeDictionary.Where(kvp =>
+                    kvp.Key.Y == constantPart && kvp.Key.X >= startPoint && kvp.Key.X <= Width)
                 .ToDictionary(kvp => kvp.Key, kvp => kvp.Value),
-            Direction.Down => NodeDictionary.Where(kvp =>
-                    kvp.Key.Item1 == constantPart && kvp.Key.Item2 >= startPoint && kvp.Key.Item2 <= Height)
+            Direction.Down => FrozenNodeDictionary.Where(kvp =>
+                    kvp.Key.X == constantPart && kvp.Key.Y >= startPoint && kvp.Key.Y <= Height)
                 .ToDictionary(kvp => kvp.Key, kvp => kvp.Value),
-            Direction.Left => NodeDictionary.Where(kvp =>
-                    kvp.Key.Item2 == constantPart && kvp.Key.Item1 <= startPoint && kvp.Key.Item1 >= 0)
+            Direction.Left => FrozenNodeDictionary.Where(kvp =>
+                    kvp.Key.Y == constantPart && kvp.Key.X <= startPoint && kvp.Key.X >= 0)
                 .ToDictionary(kvp => kvp.Key, kvp => kvp.Value),
-            _ => new Dictionary<(int, int), Node>()
+            _ => new Dictionary<Point2D, NodeType>()
         };
-    }
-
-    public void DecideEdgeTypes()
-    {
-        Parallel.ForEach(NodeDictionary.Keys, key =>
-        {
-            var neighbours = GetNeighbours(key);
-            NodeDictionary[key].DecideType(neighbours);
-        });
-    }
-
-    private List<Direction> GetNeighbours((int, int) key)
-    {
-        var neighbours = new List<Direction>();
-        var offSets = new List<(int, int)> {(0, -1), (1, 0), (0, 1), (-1, 0)};
-        var directions = new List<Direction> {Direction.Up, Direction.Right, Direction.Down, Direction.Left};
-
-        for (var i = 0; i < offSets.Count; i++)
-        {
-            var (offSetX, offSetY) = offSets[i];
-            var neighbourPosition = (key.Item1 + offSetX, key.Item2 + offSetY);
-            if (NodeDictionary.ContainsKey(neighbourPosition))
-                neighbours.Add(directions[i]);
-        }
-
-        return neighbours;
     }
 }
