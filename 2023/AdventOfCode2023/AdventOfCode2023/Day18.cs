@@ -4,7 +4,7 @@ using AdventOfCode2023_1.Shared;
 
 namespace AdventOfCode2023_1;
 
-public class Day18:DayBase
+public class Day18 : DayBase
 {
     protected override async Task PartOne()
     {
@@ -22,9 +22,9 @@ public class Day18:DayBase
     {
         var excavationSite = new ExcavationSite(Input);
         await excavationSite.CalculateDigPlan();
-        
+
         excavationSite.DigHole();
-        
+
         return excavationSite.GetHoleSize();
     }
 }
