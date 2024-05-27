@@ -1,4 +1,5 @@
 ﻿using System.Collections.Concurrent;
+using System.Numerics;
 using AdventOfCode2023_1.Models.Day18.Enums;
 using AdventOfCode2023_1.Shared.Types;
 using UtilsCSharp;
@@ -19,10 +20,10 @@ public class ExcavationSite
     private int LargestY { get; set; }
     private Grid? Grid { get; set; }
 
-    public int GetHoleSize()
-        => Grid?.Points.Count ?? 0;
+    public long GetHoleSize()
+        => Grid?.NumPoints ?? 0;
 
-    public async Task CalculaeDigPlan()
+    public async Task CalculateDigPlan()
     {
         var currentX = 0;
         var currentY = 0;

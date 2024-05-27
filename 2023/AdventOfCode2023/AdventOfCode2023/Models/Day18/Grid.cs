@@ -1,6 +1,8 @@
 ﻿using System.Collections.Concurrent;
 using System.Collections.Frozen;
+using System.Numerics;
 using AdventOfCode2023_1.Models.Day18.Enums;
+using AdventOfCode2023_1.Shared;
 using AdventOfCode2023_1.Shared.Types;
 using UtilsCSharp;
 
@@ -15,21 +17,23 @@ public class Grid
         FrozenNodeDictionary = nodes.ToDictionary(
             n => new Point2D(n.Coordinates.X, n.Coordinates.Y),
             n => n.Type).ToFrozenDictionary();
-        Points = FrozenNodeDictionary.Keys.ToHashSet();
+        NumPoints = FrozenNodeDictionary.Keys.Length;
     }
 
-    public HashSet<Point2D> Points { get; }
+    public long NumPoints { get; private set; }
     private FrozenDictionary<Point2D, NodeType> FrozenNodeDictionary { get; }
     private int Height { get; }
     private int Width { get; }
 
+    private long NumbersRan { get; set; }
+    private double PercentageDone => SharedMethods.GetPercentage(NumbersRan, Height);
+
     public void DigHole()
     {
-        var concurrentPoints = new ConcurrentBag<Point2D>(Points);
         // x and y start from 1. The edges are either already added or are not needed
         Parallel.For(1, Height, y =>
         {
-            var pointsToAdd = new List<Point2D>();
+            NumbersRan++;
             for (var x = 1; x < Width; x++)
             {
                 var newPoint = new Point2D(x, y);
@@ -49,12 +53,12 @@ public class Grid
 
                 if (edgesCrossed.IsOdd())
                 {
-                    pointsToAdd.Add(newPoint);
+                    NumPoints++;
                     var nodeRight = new Point2D(newPoint.X + 1, y);
                     while (x < Width-2 && !FrozenNodeDictionary.ContainsKey(nodeRight))
                     {
                         x++;
-                        pointsToAdd.Add(nodeRight);
+                        NumPoints++;
                         nodeRight = new Point2D(nodeRight.X + 1, y);
                     }
                 }else // Outside the grid
@@ -67,14 +71,7 @@ public class Grid
                     }
                 }
             }
-
-            foreach (var point in pointsToAdd)
-                concurrentPoints.Add(point);
-            pointsToAdd.Clear();
         });
-
-        foreach (var point in concurrentPoints) 
-            Points.Add(point);
     }
 
     private Direction GetClosestEdge(Point2D point)

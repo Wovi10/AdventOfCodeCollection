@@ -1,4 +1,5 @@
-﻿using AdventOfCode2023_1.Models.Day18;
+﻿using System.Numerics;
+using AdventOfCode2023_1.Models.Day18;
 using AdventOfCode2023_1.Models.Day18.Enums;
 
 namespace AdventOfCode2023_Tests.Models.Day18;
@@ -30,8 +31,8 @@ public class Day18_Tests
     {
         var grid = new Grid(_nodesSet, 20, 20);
         grid.DigHole();
-        var actual = grid.Points;
+        var actual = grid.NumPoints;
 
-        Assert.That(actual, Has.Count.EqualTo(119));
+        Assert.That(actual, Is.EqualTo(119));
     }
 }

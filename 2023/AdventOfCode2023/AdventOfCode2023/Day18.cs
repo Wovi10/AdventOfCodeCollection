@@ -1,4 +1,5 @@
-﻿using AdventOfCode2023_1.Models.Day18;
+﻿using System.Numerics;
+using AdventOfCode2023_1.Models.Day18;
 using AdventOfCode2023_1.Shared;
 
 namespace AdventOfCode2023_1;
@@ -20,7 +21,7 @@ public class Day18:DayBase
     private static async Task<long> CalculateHoleSize()
     {
         var excavationSite = new ExcavationSite(Input);
-        await excavationSite.CalculaeDigPlan();
+        await excavationSite.CalculateDigPlan();
         
         excavationSite.DigHole();
         
