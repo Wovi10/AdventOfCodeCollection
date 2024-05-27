@@ -1,30 +1,39 @@
 ﻿using AdventOfCode2023_1.Models.Day18.Enums;
+using UtilsCSharp;
 
 namespace AdventOfCode2023_1.Models.Day18;
 
 public static class Day18Extensions
 {
-    public static bool WasRunningOnTopOfWall(this NodeType type, NodeType otherType, Direction direction)
+    public static bool WasRunningOnTopOfWall(this NodeType currentType, NodeType startOfWall, Direction direction)
     {
-        if (direction is Direction.Up or Direction.Down)
+        return direction switch
         {
-            return type switch
+            Direction.Up => startOfWall switch
             {
-                NodeType.NorthEast => otherType == NodeType.SouthEast,
-                NodeType.NorthWest => otherType == NodeType.SouthWest,
-                NodeType.SouthWest => otherType == NodeType.NorthWest,
-                NodeType.SouthEast => otherType == NodeType.NorthEast,
-                _ => otherType == NodeType.Enclosed
-            };
-        }
-
-        return type switch
-        {
-            NodeType.NorthEast => otherType == NodeType.NorthWest,
-            NodeType.NorthWest => otherType == NodeType.NorthEast,
-            NodeType.SouthWest => otherType == NodeType.SouthEast,
-            NodeType.SouthEast => otherType == NodeType.SouthWest,
-            _ => otherType == NodeType.Enclosed
+                NodeType.NorthEast => currentType == NodeType.SouthEast,
+                NodeType.NorthWest => currentType == NodeType.SouthWest,
+                _ => false
+            },
+            Direction.Right => startOfWall switch
+            {
+                NodeType.NorthEast => currentType == NodeType.NorthWest,
+                NodeType.SouthEast => currentType == NodeType.SouthWest,
+                _ => false
+            },
+            Direction.Down => startOfWall switch
+            {
+                NodeType.SouthEast => currentType == NodeType.NorthEast,
+                NodeType.SouthWest => currentType == NodeType.NorthWest,
+                _ => false
+            },
+            Direction.Left => startOfWall switch
+            {
+                NodeType.NorthWest => currentType == NodeType.NorthEast,
+                NodeType.SouthWest => currentType == NodeType.SouthEast,
+                _ => false
+            },
+            _ => false
         };
     }
 
@@ -51,4 +60,7 @@ public static class Day18Extensions
             _ => (0, 0)
         };
     }
+
+    public static bool IsInHole(this int edgesCrossed) 
+        => edgesCrossed.IsOdd();
 }

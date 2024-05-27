@@ -24,7 +24,6 @@ public class Grid
     private int Height { get; }
     private int Width { get; }
 
-
     public void DigHole()
     {
         var counter = NumPoints;
@@ -45,41 +44,28 @@ public class Grid
         var numPointsInLoop = 0;
         for (var x = 0; x < Width; x++)
         {
-            var newPoint = new Point2D(x, y);
-            if (FrozenNodeDictionary.ContainsKey(newPoint))
+            var currenPoint = new Point2D(x, y);
+            if (FrozenNodeDictionary.ContainsKey(currenPoint))
                 continue;
 
-            var closestEdge = GetClosestEdge(newPoint);
+            var closestEdge = GetClosestEdge(currenPoint);
 
             var edgesCrossed = closestEdge switch
             {
-                Direction.Up => CountEdgesCrossed(Direction.Up, newPoint.Y, newPoint.X),
-                Direction.Right => CountEdgesCrossed(Direction.Right, newPoint.X, newPoint.Y),
-                Direction.Down => CountEdgesCrossed(Direction.Down, newPoint.Y + 1, newPoint.X),
-                Direction.Left => CountEdgesCrossed(Direction.Left, newPoint.X, newPoint.Y),
+                Direction.Up => CountEdgesCrossed(Direction.Up, currenPoint.Y, currenPoint.X),
+                Direction.Right => CountEdgesCrossed(Direction.Right, currenPoint.X, currenPoint.Y),
+                Direction.Down => CountEdgesCrossed(Direction.Down, currenPoint.Y + 1, currenPoint.X),
+                Direction.Left => CountEdgesCrossed(Direction.Left, currenPoint.X, currenPoint.Y),
                 _ => 0
             };
 
-            if (edgesCrossed.IsOdd())
+            if (edgesCrossed.IsInHole())
             {
-                var nodeRight = new Point2D(newPoint.X + 1, y);
                 numPointsInLoop++;
-                while (x < Width && !FrozenNodeDictionary.ContainsKey(nodeRight))
-                {
-                    x++;
-                    numPointsInLoop++;
-                    nodeRight = new Point2D(nodeRight.X + 1, y);
-                }
+                (x, numPointsInLoop) = RunUntilWall(numPointsInLoop, currenPoint);
             }
-            else // Outside the grid
-            {
-                var nodeRight = new Point2D(newPoint.X + 1, y);
-                while (x < Width && !FrozenNodeDictionary.ContainsKey(nodeRight))
-                {
-                    x++;
-                    nodeRight = new Point2D(nodeRight.X + 1, y);
-                }
-            }
+            else
+                x = SkipUntilWall(currenPoint);
         }
 
         Interlocked.Increment(ref current);
@@ -91,6 +77,27 @@ public class Grid
         Console.Write($"Finished {current} parts of {Height}");
 
         return numPointsInLoop;
+    }
+
+    private int SkipUntilWall(Point2D currenPoint)
+    {
+        var nodeRight = new Point2D(currenPoint.X, currenPoint.Y);
+        while (nodeRight.X < Width && !FrozenNodeDictionary.ContainsKey(nodeRight)) 
+            nodeRight = new Point2D(nodeRight.X + 1, currenPoint.Y);
+
+        return nodeRight.X;
+    }
+
+    private (int x, int numPointsInLoop) RunUntilWall(int numPointsInLoop, Point2D currenPoint)
+    {
+        var nodeRight = new Point2D(currenPoint.X+1, currenPoint.Y);
+        while (nodeRight.X < Width && !FrozenNodeDictionary.ContainsKey(nodeRight))
+        {
+            numPointsInLoop++;
+            nodeRight = new Point2D(nodeRight.X + 1, nodeRight.Y);
+        }
+
+        return (nodeRight.X, numPointsInLoop);
     }
 
     private Direction GetClosestEdge(Point2D point)
@@ -113,10 +120,8 @@ public class Grid
             : Direction.Up;
     }
 
-    private static readonly HashSet<NodeType> TypesToSkipUp = new() {NodeType.NorthSouth, NodeType.Enclosed};
-    private static readonly HashSet<NodeType> TypesToSkipRight = new() {NodeType.EastWest, NodeType.Enclosed};
-    private static readonly HashSet<NodeType> TypesToSkipDown = new() {NodeType.NorthSouth, NodeType.Enclosed};
-    private static readonly HashSet<NodeType> TypesToSkipLeft = new() {NodeType.EastWest, NodeType.Enclosed};
+    private static readonly HashSet<NodeType> TypesToSkipYAxis = new() {NodeType.NorthSouth, NodeType.Enclosed};
+    private static readonly HashSet<NodeType> TypesToSkipXAxis = new() {NodeType.EastWest, NodeType.Enclosed};
 
     private static readonly HashSet<NodeType> StartEdgeTypesUp = new()
         {NodeType.EastWest, NodeType.NorthEast, NodeType.NorthWest};
@@ -138,19 +143,19 @@ public class Grid
         switch (direction)
         {
             case Direction.Up:
-                typesToSkip = TypesToSkipUp;
+                typesToSkip = TypesToSkipYAxis;
                 startEdgeTypes = StartEdgeTypesUp;
                 break;
             case Direction.Right:
-                typesToSkip = TypesToSkipRight;
+                typesToSkip = TypesToSkipXAxis;
                 startEdgeTypes = StartEdgeTypesRight;
                 break;
             case Direction.Down:
-                typesToSkip = TypesToSkipDown;
+                typesToSkip = TypesToSkipYAxis;
                 startEdgeTypes = StartEdgeTypesDown;
                 break;
             case Direction.Left:
-                typesToSkip = TypesToSkipLeft;
+                typesToSkip = TypesToSkipXAxis;
                 startEdgeTypes = StartEdgeTypesLeft;
                 break;
             default:
