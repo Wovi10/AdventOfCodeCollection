@@ -1,5 +1,4 @@
-﻿using System.Drawing;
-using AdventOfCode2023_1.Shared;
+﻿using AdventOfCode2023_1.Shared;
 
 namespace AdventOfCode2023_1.Models.Day18;
 
@@ -11,8 +10,6 @@ public class DigInstruction
         {
             Direction = inputLine[0].CharToDirection();
             Distance = int.Parse(inputLine.Substring(2, inputLine.IndexOf(' ', 2) - 2));
-            var colorHex = inputLine.Substring(inputLine.IndexOf('#') + 1, inputLine.IndexOf(')') - inputLine.IndexOf('#') - 1);
-            Color = ColorTranslator.FromHtml($"#{colorHex}");
         }
         else
         {
@@ -22,7 +19,6 @@ public class DigInstruction
         }
     }
 
-    public (int, int) Direction { get; set; }
-    public int Distance { get; set; }
-    public Color Color { get; set; }
+    public (int, int) Direction { get; }
+    public int Distance { get; }
 }

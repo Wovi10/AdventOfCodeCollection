@@ -41,4 +41,20 @@ public class Node(int x, int y)
                 return;
         }
     }
+
+    public override bool Equals(object? obj)
+    {
+        if (obj is Node node)
+            return Equals(node);
+
+        return false;
+    }
+
+    public bool Equals(Node other)
+        => Equals(other.Coordinates);
+
+    public override int GetHashCode()
+    {
+        return Coordinates.GetHashCode();
+    }
 }

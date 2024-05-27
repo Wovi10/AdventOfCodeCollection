@@ -1,8 +1,6 @@
 ﻿using System.Collections.Concurrent;
-using System.Numerics;
 using AdventOfCode2023_1.Models.Day18.Enums;
 using AdventOfCode2023_1.Shared.Types;
-using UtilsCSharp;
 
 namespace AdventOfCode2023_1.Models.Day18;
 
@@ -23,33 +21,25 @@ public class ExcavationSite
     public long GetHoleSize()
         => Grid?.NumPoints ?? 0;
 
-    public async Task CalculateDigPlan()
+    public void CalculateDigPlan()
     {
+        var nodes = new List<Node>();
         var currentX = 0;
         var currentY = 0;
-        var nodes = new ConcurrentDictionary<(int, int), Node>();
-        nodes.TryAdd((currentX, currentY), new Node(currentX, currentY));
-        var tasks = new List<Task>();
-
         foreach (var digInstruction in DigPlan)
         {
-            tasks.Add(Task.Run(() =>
+            for (var i = 0; i < digInstruction.Distance; i++)
             {
-                for (var i = 0; i < digInstruction.Distance; i++)
-                {
-                    var newX = GetNewX(currentX, digInstruction.Direction);
-                    var newY = GetNewY(currentY, digInstruction.Direction);
-                    var newNode = new Node(newX, newY);
+                var newX = GetNewX(currentX, digInstruction.Direction);
+                var newY = GetNewY(currentY, digInstruction.Direction);
+                var newNode = new Node(newX, newY);
 
-                    nodes.TryAdd((newX, newY), newNode);
+                nodes.Add(newNode);
 
-                    currentX = newX;
-                    currentY = newY;
-                }
-            }));
+                currentX = newX;
+                currentY = newY;
+            }
         }
-
-        await Task.WhenAll(tasks);
 
         Grid = CreateGrid(nodes);
     }
@@ -57,37 +47,36 @@ public class ExcavationSite
     public void DigHole()
         => Grid?.DigHole();
 
-    private List<Node> SetNewGridExtremes(ConcurrentDictionary<(int, int), Node> nodes)
+    private void SetNewGridExtremes(List<Node> nodes)
     {
-        var nodesList = nodes.Values.OrderBy(x => x.Coordinates.X).ThenBy(x => x.Coordinates.Y).Distinct().ToList();
+        var nodesList = nodes.OrderBy(x => x.Coordinates.X).ThenBy(x => x.Coordinates.Y).Distinct().ToList();
         SmallestX = nodesList.Min(x => x.Coordinates.X);
         LargestX = nodesList.Max(x => x.Coordinates.X);
         SmallestY = nodesList.Min(x => x.Coordinates.Y);
         LargestY = nodesList.Max(x => x.Coordinates.Y);
-
-        return nodesList;
     }
 
-    private static int GetNewX(int currentX, (int, int) digInstructionDirection) 
+    private static int GetNewX(int currentX, (int, int) digInstructionDirection)
         => currentX + digInstructionDirection.Item1;
 
-    private static int GetNewY(int currentY, (int, int) digInstructionDirection) 
+    private static int GetNewY(int currentY, (int, int) digInstructionDirection)
         => currentY + digInstructionDirection.Item2;
 
-    private Grid CreateGrid(ConcurrentDictionary<(int, int), Node> inputNodes)
+    private Grid CreateGrid(List<Node> inputNodes)
     {
-        var nodesList = SetNewGridExtremes(inputNodes);
+        SetNewGridExtremes(inputNodes);
+        inputNodes = inputNodes.GroupBy(elem => elem.Coordinates).Select(group => group.First()).ToList();
         var nodes = new ConcurrentBag<Node>();
 
-        Parallel.ForEach(nodesList, node =>
+        Parallel.ForEach(inputNodes, node =>
         {
             var (inputX, inputY) = node.Coordinates;
             var newNode = new Node(inputX + Math.Abs(SmallestX), inputY + Math.Abs(SmallestY));
             nodes.Add(newNode);
         });
 
-        var orderedNodes = nodes.OrderBy(x => x.Coordinates.X).ThenBy(x => x.Coordinates.Y).ToHashSet();
-        
+        var orderedNodes = nodes.OrderBy(node => node.Coordinates.Y).ThenBy(node => node.Coordinates.X).ToHashSet();
+
         var gridHeight = Math.Abs(SmallestY) + Math.Abs(LargestY) + 1;
         var gridWidth = Math.Abs(SmallestX) + Math.Abs(LargestX) + 1;
 
@@ -96,7 +85,7 @@ public class ExcavationSite
         return new Grid(orderedNodes, gridWidth, gridHeight);
     }
 
-    private void DecideEdgeTypes(HashSet<Node> nodes)
+    private static void DecideEdgeTypes(HashSet<Node> nodes)
     {
         var points = nodes.Select(x => x.Coordinates).ToHashSet();
 
@@ -109,6 +98,7 @@ public class ExcavationSite
 
     private static readonly List<Direction> AllDirections = new()
         {Direction.Up, Direction.Right, Direction.Down, Direction.Left};
+
     private static readonly List<(int, int)> OffSets = new() {(0, -1), (1, 0), (0, 1), (-1, 0)};
 
     private static HashSet<Direction> GetNeighbours(Point2D point, HashSet<Point2D> points)
@@ -118,7 +108,7 @@ public class ExcavationSite
         for (var i = 0; i < OffSets.Count; i++)
         {
             var (offSetX, offSetY) = OffSets[i];
-            var (x,y) = point;
+            var (x, y) = point;
             var neighbourPosition = new Point2D(x + offSetX, y + offSetY);
             if (points.Contains(neighbourPosition))
                 neighbours.Add(AllDirections[i]);

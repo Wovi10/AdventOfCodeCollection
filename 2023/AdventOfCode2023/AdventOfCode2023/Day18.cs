@@ -6,22 +6,26 @@ namespace AdventOfCode2023_1;
 
 public class Day18 : DayBase
 {
-    protected override async Task PartOne()
+    protected override Task PartOne()
     {
-        var result = await CalculateHoleSize();
+        var result = CalculateHoleSize();
         SharedMethods.PrintAnswer(result);
+
+        return Task.CompletedTask;
     }
 
-    protected override async Task PartTwo()
+    protected override Task PartTwo()
     {
-        var result = await CalculateHoleSize();
+        var result = CalculateHoleSize();
         SharedMethods.PrintAnswer(result);
+
+        return Task.CompletedTask;
     }
 
-    private static async Task<long> CalculateHoleSize()
+    private static  long CalculateHoleSize()
     {
         var excavationSite = new ExcavationSite(Input);
-        await excavationSite.CalculateDigPlan();
+        excavationSite.CalculateDigPlan();
 
         excavationSite.DigHole();
 
