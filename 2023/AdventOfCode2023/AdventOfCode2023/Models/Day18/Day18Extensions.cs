@@ -31,7 +31,7 @@ public static class Day18Extensions
     public static Point2D Move(this Point2D position, DigInstruction instruction)
     {
         var (dir, len) = instruction;
-        var (dy, dx) = dir switch
+        var (dx, dy) = dir switch
         {
             (0, -1) => (-len, 0),
             (0, 1) => (+len, 0),
@@ -39,6 +39,6 @@ public static class Day18Extensions
             (1, 0) => (0, +len)
         };
 
-        return new Point2D(position.Y + dy, position.X + dx);
+        return new Point2D(position.X + dx, position.Y + dy);
     }
 }

@@ -20,5 +20,5 @@ public static class Constants
     public const bool IsDebug = true;
     public const bool IsMock = true;
 
-    public const PartsToRun PartToRun = PartsToRun.Part1;
+    public const PartsToRun PartToRun = PartsToRun.Both;
 }

@@ -4,6 +4,10 @@ namespace AdventOfCode2023_1.Models.Day18;
 
 public class DigInstruction
 {
+    public DigInstruction()
+    {
+        
+    }
     public DigInstruction(string inputLine)
     {
         if (Variables.RunningPartOne)
@@ -20,12 +24,23 @@ public class DigInstruction
         }
     }
 
-    public (int, int) Offset { get; }
-    public int Distance { get; }
+    public (int, int) Offset { get; set; }
+    public int Distance { get; set;}
     
     public void Deconstruct(out (int, int) offset, out int distance)
     {
         offset = Offset;
         distance = Distance;
     }
+    
+    public override bool Equals(object? obj)
+    {
+        if (obj is DigInstruction instruction)
+            return Equals(instruction);
+
+        return false;
+    }
+    
+    public bool Equals(DigInstruction other)
+        => Offset == other.Offset && Distance == other.Distance;
 }
