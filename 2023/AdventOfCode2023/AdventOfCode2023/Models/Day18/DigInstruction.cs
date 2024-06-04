@@ -8,17 +8,24 @@ public class DigInstruction
     {
         if (Variables.RunningPartOne)
         {
-            Direction = inputLine[0].CharToDirection();
+            Offset = inputLine[0].ToOffset();
             Distance = int.Parse(inputLine.Substring(2, inputLine.IndexOf(' ', 2) - 2));
         }
         else
         {
             var colorHex = inputLine.Substring(inputLine.IndexOf('#') + 1, inputLine.IndexOf(')') - inputLine.IndexOf('#') - 1);
             Distance = Convert.ToInt32(colorHex[..^1], 16);
-            Direction = colorHex.Last().IntToDirection();
+            var lastChar = colorHex.Last().ToString();
+            Offset = int.Parse(lastChar).ToOffset();
         }
     }
 
-    public (int, int) Direction { get; }
+    public (int, int) Offset { get; }
     public int Distance { get; }
+    
+    public void Deconstruct(out (int, int) offset, out int distance)
+    {
+        offset = Offset;
+        distance = Distance;
+    }
 }

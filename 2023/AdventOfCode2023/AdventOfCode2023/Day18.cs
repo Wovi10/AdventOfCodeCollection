@@ -25,10 +25,6 @@ public class Day18 : DayBase
     private static  long CalculateHoleSize()
     {
         var excavationSite = new ExcavationSite(Input);
-        excavationSite.CalculateDigPlan();
-
-        excavationSite.DigHole();
-
-        return excavationSite.GetHoleSize();
+        return excavationSite.CalculateArea();
     }
 }

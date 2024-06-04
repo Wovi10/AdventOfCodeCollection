@@ -18,7 +18,7 @@ public class Point2D(int internalX, int internalY)
 
         return false;
     }
-
+    
     public bool Equals(Point2D other)
         => X == other.X && Y == other.Y;
 
