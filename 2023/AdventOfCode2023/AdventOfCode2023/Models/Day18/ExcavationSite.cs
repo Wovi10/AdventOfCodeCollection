@@ -9,22 +9,17 @@ public class ExcavationSite
     public ExcavationSite(List<string> input)
     {
         DigPlan = input.Select(x => new DigInstruction(x)).ToList();
-        var fakeDigplan = new List<DigInstruction>{new(){Distance = 461937, Offset = (1, 0)},new(){Distance = 56407, Offset = (0, 1)},new(){Distance = 356671, Offset = (1, 0)},new(){Distance = 863240, Offset = (0, 1)},new(){Distance = 367720,Offset = (1, 0)},new(){Distance = 266681,Offset = (0, 1)},new(){Distance = 577262,Offset = (-1, 0)},new(){Distance = 829975,Offset = (0, -1)},new(){Distance = 112010,Offset = (-1, 0)},new(){Distance = 829975,Offset = (0, 1)},new(){Distance = 491645,Offset = (-1, 0)},new(){Distance = 686074,Offset = (0, -1)},new(){Distance = 5411,Offset = (-1, 0)},new(){Distance = 500254,Offset = (0, -1)}};
-
-        if (!Variables.RunningPartOne)
-        {
-            Assert.AreEqual(DigPlan, fakeDigplan);
-        }
     }
 
     private List<DigInstruction> DigPlan { get; }
 
     public long CalculateArea()
     {
+        var digplanArray = DigPlan.Select(x => (x.Offset, x.Distance)).ToArray();
+        // return Area(digplanArray);
         List<Point2D> points = new();
-        var perimeter = 0L;
 
-        perimeter = InitialisePositions(points, perimeter);
+        var perimeter = InitialisePositions(points);
 
         var area = 0L;
 
@@ -33,11 +28,7 @@ public class ExcavationSite
             var nextIndex = (i + 1) % points.Count;
             var prevIndex = i - 1 < 0 ? points.Count - 1 : i - 1;
 
-            var currentX = points[i].X;
-            var nextY = points[nextIndex].Y;
-            var prevY = points[prevIndex].Y;
-
-            area += currentX * (nextY - prevY);
+            area += points[i].X * (points[nextIndex].Y - points[prevIndex].Y);
         }
 
         area = Math.Abs(area) / 2;
@@ -46,8 +37,9 @@ public class ExcavationSite
         return area;
     }
 
-    private long InitialisePositions(List<Point2D> points, long perimeter)
+    private long InitialisePositions(List<Point2D> points)
     {
+        var perimeter = 0L;
         var position = new Point2D(0, 0);
         foreach (var instruction in DigPlan)
         {
@@ -57,5 +49,51 @@ public class ExcavationSite
         }
 
         return perimeter;
+    }
+
+    static long Area(((int, int) dir, int len)[] instructions)
+    {
+        var pos = (x: 0L, y: 0L);
+        var points = new (long x, long y)[instructions.Length];
+        var perimeter = 0L;
+
+        for (var i = 0; i < instructions.Length; i++)
+        {
+            points[i] = pos;
+            var instruction = instructions[i];
+            var (_, len) = instruction;
+            pos = PosFromInstruction(pos, instruction);
+            perimeter += len;
+        }
+
+        // shoelace formula
+        var area = 0L;
+            
+        for (var i = 0; i < points.Length; i++)
+        {
+            var nextI = (i + 1) % points.Length;
+            var prevI = i - 1 < 0 ? points.Length - 1 : i - 1;
+            area += points[i].x * (points[nextI].y - points[prevI].y);
+        }
+
+        area = Math.Abs(area) / 2;
+        // adjust for the perimeter being the outer edge of the area
+        area += perimeter / 2 + 1;
+
+        return area;
+
+        static (long x, long y) PosFromInstruction((long x, long y) pos, ((int, int) dir, int len) instruction)
+        {
+            var (dir, len) = instruction;
+            var (dx, dy) = dir switch
+            {
+                (0, -1) => (-len, 0),
+                (0, 1) => (+len, 0),
+                (-1, 0) => (0, -len),
+                (1, 0) => (0, +len)
+            };
+
+            return (pos.x + dx, pos.y + dy);
+        }
     }
 }

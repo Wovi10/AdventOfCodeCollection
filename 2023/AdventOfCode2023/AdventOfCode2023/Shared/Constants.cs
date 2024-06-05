@@ -18,7 +18,7 @@ public static class Constants
     public const string XAxis = "x";
 
     public const bool IsDebug = true;
-    public const bool IsMock = true;
+    public const bool IsMock = false;
 
     public const PartsToRun PartToRun = PartsToRun.Both;
 }
