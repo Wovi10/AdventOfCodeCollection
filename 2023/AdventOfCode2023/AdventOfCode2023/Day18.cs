@@ -1,25 +1,21 @@
-﻿using System.Numerics;
-using AdventOfCode2023_1.Models.Day18;
-using AdventOfCode2023_1.Shared;
+﻿using AdventOfCode2023_1.Models.Day18;
 
 namespace AdventOfCode2023_1;
 
 public class Day18 : DayBase
 {
-    protected override Task PartOne()
+    protected override Task<object> PartOne()
     {
         var result = CalculateHoleSize();
-        SharedMethods.PrintAnswer(result);
 
-        return Task.CompletedTask;
+        return Task.FromResult<object>(result);
     }
 
-    protected override Task PartTwo()
+    protected override Task<object> PartTwo()
     {
         var result = CalculateHoleSize();
-        SharedMethods.PrintAnswer(result);
 
-        return Task.CompletedTask;
+        return Task.FromResult<object>(result);
     }
 
     private static  long CalculateHoleSize()

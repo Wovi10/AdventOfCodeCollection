@@ -1,5 +1,6 @@
 ﻿using AdventOfCode2023_1.Models.Day11;
 using AdventOfCode2023_1.Shared;
+using NUnit.Framework;
 
 namespace AdventOfCode2023_1;
 
@@ -7,18 +8,18 @@ public class Day11 : DayBase
 {
     private Universe? _universe;
 
-    protected override Task PartOne()
+    protected override Task<object> PartOne()
     {
         var result = GetSumOfShortestPaths();
-        SharedMethods.PrintAnswer(result);
-        return Task.CompletedTask;
+
+        return Task.FromResult<object>(result);
     }
 
-    protected override Task PartTwo()
+    protected override Task<object> PartTwo()
     {
         var result = GetSumOfShortestPaths();
-        SharedMethods.PrintAnswer(result);
-        return Task.CompletedTask;
+
+        return Task.FromResult<object>(result);
     }
 
     private long GetSumOfShortestPaths()

@@ -1,24 +1,25 @@
 ﻿using System.Diagnostics;
 using AdventOfCode2023_1.Models.Day14;
 using AdventOfCode2023_1.Shared;
+using NUnit.Framework;
 using UtilsCSharp;
 
 namespace AdventOfCode2023_1;
 
 public class Day14 : DayBase
 {
-    protected override Task PartOne()
+    protected override Task<object> PartOne()
     {
         var result = CalculateTotalLoad();
-        SharedMethods.PrintAnswer(result);
-        return Task.CompletedTask;
+
+        return Task.FromResult<object>(result);
     }
 
-    protected override Task PartTwo()
+    protected override Task<object> PartTwo()
     {
         var result = CalculateTotalLoad();
-        SharedMethods.PrintAnswer(result);
-        return Task.CompletedTask;
+
+        return Task.FromResult<object>(result);
     }
 
     private static long CalculateTotalLoad()
@@ -31,10 +32,11 @@ public class Day14 : DayBase
         {
             var stopwatch = new Stopwatch();
             stopwatch.Start();
+
             const int numCycles = 1000000000;
             var foundLoop = false;
             var listOfLoads = new List<long>();
-            for (var i = 0; i < numCycles; i++)
+            for (var i = 0L; i < numCycles; i++)
             {
                 var totalLoad = dish.Cycle();
                 listOfLoads.Add(totalLoad);

@@ -1,4 +1,5 @@
 ﻿using System.Numerics;
+using UtilsCSharp;
 using UtilsCSharp.Utils;
 
 namespace AdventOfCode2023_1.Models.Day18;
@@ -34,7 +35,7 @@ public static class Day18Extensions
         };
     }
 
-    public static Node<T> Move<T>(this Node<T> position, DigInstruction<T> instruction) where T : ISignedNumber<T>
+    public static Node<T> Move<T>(this Node<T> position, DigInstruction<T> instruction) where T : struct, INumber<T>
     {
         var (dir, len) = instruction;
         var (dx, dy) = dir switch
@@ -45,6 +46,7 @@ public static class Day18Extensions
             _ when dir == Offset.Down => (0, +len)
         };
 
-        return new Node<T>(position.Add(position.X, dx), position.Add(position.Y, dy));
+        return new Node<T>(MathUtils.Add(position.X, T.CreateChecked(dx)),
+            MathUtils.Add(position.Y, T.CreateChecked(dy)));
     }
 }

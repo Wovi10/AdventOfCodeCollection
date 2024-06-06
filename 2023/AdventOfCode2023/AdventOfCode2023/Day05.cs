@@ -17,21 +17,20 @@ public class Day05 : DayBase
     private readonly List<SeedMapping> _tempToHumid = new();
     private readonly List<SeedMapping> _humidToLoc = new();
 
-    protected override async Task PartOne()
+    protected override Task<object> PartOne()
     {
-        await RunPart();
+        EmptyLists();
+        var result = SearchLowestLocation() ?? 0;
+
+        return Task.FromResult<object>(result);
     }
 
-    protected override async Task PartTwo()
-    {
-        await RunPart();
-    }
-
-    private async Task RunPart()
+    protected override async Task<object> PartTwo()
     {
         EmptyLists();
         var result = await GetLowestLocationNumber();
-        SharedMethods.PrintAnswer(result);
+
+        return Task.FromResult<object>(result);
     }
 
     private void EmptyLists()
@@ -49,9 +48,6 @@ public class Day05 : DayBase
     private async Task<long> GetLowestLocationNumber()
     {
         ProcessFile();
-
-        if (Variables.RunningPartOne)
-            return SearchLowestLocation() ?? 0;
 
         var totalTasks = SeedsToTestPart2.Count;
         var completedTasks = 0;
@@ -79,6 +75,8 @@ public class Day05 : DayBase
 
     private long? SearchLowestLocation()
     {
+        ProcessFile();
+
         return _seedsToTest
             .Select(seed => seed.SeedToLocation(_seedToSoil, _soilToFert, _fertToWater, _waterToLight, _lightToTemp,
                 _tempToHumid, _humidToLoc))

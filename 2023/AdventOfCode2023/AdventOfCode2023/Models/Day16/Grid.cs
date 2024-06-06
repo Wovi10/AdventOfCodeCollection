@@ -1,4 +1,4 @@
-﻿using AdventOfCode2023_1.Models.Day16.Enums;
+﻿using UtilsCSharp.Enums;
 
 namespace AdventOfCode2023_1.Models.Day16;
 
@@ -53,8 +53,8 @@ public class Grid
     {
         return direction switch
         {
-            Direction.Upwards => y - 1,
-            Direction.Downwards => y + 1,
+            Direction.Up => y - 1,
+            Direction.Down => y + 1,
             _ => y
         };
     }

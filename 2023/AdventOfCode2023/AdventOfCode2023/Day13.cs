@@ -1,20 +1,23 @@
 ﻿using AdventOfCode2023_1.Models.Day13;
 using AdventOfCode2023_1.Shared;
+using NUnit.Framework;
 
 namespace AdventOfCode2023_1;
 
 public class Day13 : DayBase
 {
-    protected override async Task PartOne()
+    protected override async Task<object> PartOne()
     {
         var result = await GetPatternNotesSum().ConfigureAwait(false);
-        SharedMethods.PrintAnswer(result);
+
+        return result;
     }
 
-    protected override async Task PartTwo()
+    protected override async Task<object> PartTwo()
     {
         var result = await GetPatternNotesSum().ConfigureAwait(false);
-        SharedMethods.PrintAnswer(result);
+
+        return result;
     }
 
     private static async Task<long> GetPatternNotesSum()
@@ -36,8 +39,8 @@ public class Day13 : DayBase
                     Interlocked.Increment(ref completedTasks);
                     ((IProgress<long>) progress).Report(completedTasks);
                     return result;
-                }))
-                : await Task.WhenAll(tasks);
+                })).ConfigureAwait(false)
+                : await Task.WhenAll(tasks).ConfigureAwait(false);
 
         return results.GetPatternNotesSum();
     }

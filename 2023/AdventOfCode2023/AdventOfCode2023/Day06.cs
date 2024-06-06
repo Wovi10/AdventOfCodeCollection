@@ -1,5 +1,6 @@
 ﻿using AdventOfCode2023_1.Models.Day06;
 using AdventOfCode2023_1.Shared;
+using NUnit.Framework;
 
 namespace AdventOfCode2023_1;
 
@@ -7,18 +8,18 @@ public class Day06 : DayBase
 {
     private readonly List<Race> _races = new();
 
-    protected override Task PartOne()
+    protected override Task<object> PartOne()
     {
         var result = GetTotalWaysToWin();
-        SharedMethods.PrintAnswer(result);
-        return Task.CompletedTask;
+
+        return Task.FromResult<object>(result);
     }
 
-    protected override Task PartTwo()
+    protected override Task<object> PartTwo()
     {
         var result = GetTotalWaysToWin();
-        SharedMethods.PrintAnswer(result);
-        return Task.CompletedTask;
+
+        return Task.FromResult<object>(result);
     }
 
     private int GetTotalWaysToWin()

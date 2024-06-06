@@ -1,12 +1,14 @@
-﻿namespace AdventOfCode2023_1.Models.Day11;
+﻿using System.Numerics;
+using UtilsCSharp;
 
-public class GalaxyPair(Galaxy galaxy, Galaxy galaxy2)
+namespace AdventOfCode2023_1.Models.Day11;
+
+public class GalaxyPair<T>(Galaxy<T> galaxy, Galaxy<T> galaxy2) where T  : struct, INumber<T>
 {
-    public long ManhattanDistance;
+    public T ManhattanDistance;
 
     public void SetManhattanDistance()
     {
-        ManhattanDistance = Math.Abs(galaxy.XCoordinate - galaxy2.XCoordinate) +
-                            Math.Abs(galaxy.YCoordinate - galaxy2.YCoordinate);
+        ManhattanDistance = MathUtils.ManhattanDistance((galaxy.X, galaxy.Y), (galaxy2.X, galaxy2.Y));
     }
 }

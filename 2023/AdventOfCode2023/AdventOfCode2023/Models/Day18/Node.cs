@@ -1,10 +1,11 @@
 ﻿using System.Numerics;
+using UtilsCSharp;
 using UtilsCSharp.Enums;
 using UtilsCSharp.Objects;
 
 namespace AdventOfCode2023_1.Models.Day18;
 
-public class Node<T>(T internalX, T internalY): NodeBase<T>(internalX, internalY) where T : ISignedNumber<T>
+public class Node<T>(T internalX, T internalY): NodeBase<T>(internalX, internalY) where T : struct, INumber<T>
 {
     private Node((T, T) position) : this(position.Item1, position.Item2)
     {
@@ -16,7 +17,7 @@ public class Node<T>(T internalX, T internalY): NodeBase<T>(internalX, internalY
         xOffset *= distance;
         yOffset *= distance;
 
-        return (Add(X, xOffset), Add(Y, yOffset));
+        return (MathUtils.Add(X, T.CreateChecked(xOffset)), MathUtils.Add(Y, T.CreateChecked(yOffset)));
     }
 
     public Node<T> MoveToNode(Direction direction, int distance = 1)

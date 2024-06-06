@@ -1,4 +1,5 @@
 ﻿using AdventOfCode2023_1.Models.Day16.Enums;
+using UtilsCSharp.Enums;
 
 namespace AdventOfCode2023_1.Models.Day16;
 
@@ -24,9 +25,9 @@ public static class Day16Extensions
 
         return direction switch
         {
-            Direction.Upwards => direction.GetNewDirectionForVertical(tileType),
+            Direction.Up => direction.GetNewDirectionForVertical(tileType),
             Direction.Right => direction.GetNewDirectionForHorizontal(tileType),
-            Direction.Downwards => direction.GetNewDirectionForVertical(tileType),
+            Direction.Down => direction.GetNewDirectionForVertical(tileType),
             Direction.Left => direction.GetNewDirectionForHorizontal(tileType),
             _ => throw new ArgumentOutOfRangeException(nameof(direction), direction, null)
         };
@@ -51,8 +52,8 @@ public static class Day16Extensions
             default:
                 return direction switch
                 {
-                    Direction.Upwards => direction.GetNewDirectionForUpwards(tileType),
-                    Direction.Downwards => direction.GetNewDirectionForDownwards(tileType),
+                    Direction.Up => direction.GetNewDirectionForUpwards(tileType),
+                    Direction.Down => direction.GetNewDirectionForDownwards(tileType),
                     _ => throw new ArgumentOutOfRangeException(nameof(direction), direction, null)
                 };
         }
@@ -68,8 +69,8 @@ public static class Day16Extensions
                 newDirections.Add(direction);
                 return newDirections;
             case TileType.VerticalSplitter:
-                newDirections.Add(Direction.Upwards);
-                newDirections.Add(Direction.Downwards);
+                newDirections.Add(Direction.Up);
+                newDirections.Add(Direction.Down);
                 return newDirections;
             case TileType.EmptySpace:
             case TileType.BottomLeftToTopRightMirror:
@@ -115,14 +116,14 @@ public static class Day16Extensions
         switch (tileType)
         {
             case TileType.BottomLeftToTopRightMirror:
-                newDirections.Add(Direction.Upwards);
+                newDirections.Add(Direction.Up);
                 break;
             case TileType.TopLeftToBottomRightMirror:
-                newDirections.Add(Direction.Downwards);
+                newDirections.Add(Direction.Down);
                 break;
             case TileType.VerticalSplitter:
-                newDirections.Add(Direction.Upwards);
-                newDirections.Add(Direction.Downwards);
+                newDirections.Add(Direction.Up);
+                newDirections.Add(Direction.Down);
                 break;
             case TileType.EmptySpace:
             case TileType.HorizontalSplitter:
@@ -165,14 +166,14 @@ public static class Day16Extensions
         switch (tileType)
         {
             case TileType.BottomLeftToTopRightMirror:
-                newDirections.Add(Direction.Downwards);
+                newDirections.Add(Direction.Down);
                 break;
             case TileType.TopLeftToBottomRightMirror:
-                newDirections.Add(Direction.Upwards);
+                newDirections.Add(Direction.Up);
                 break;
             case TileType.VerticalSplitter:
-                newDirections.Add(Direction.Upwards);
-                newDirections.Add(Direction.Downwards);
+                newDirections.Add(Direction.Up);
+                newDirections.Add(Direction.Down);
                 break;
             case TileType.EmptySpace:
             case TileType.HorizontalSplitter:

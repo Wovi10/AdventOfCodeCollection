@@ -1,4 +1,5 @@
 ﻿using AdventOfCode2023_1.Shared;
+using UtilsCSharp.Utils;
 
 namespace AdventOfCode2023_1.Models.Day17;
 
@@ -23,6 +24,8 @@ public class CityMap
     private readonly PriorityQueue<Node, int> _priorityQueue = new();
     private Constraints Constraints { get; }
 
+    private const int DefaultHeatLoss = 0;
+    
     public int GetMinimalHeatLoss()
     {
         var seen = new List<Node>();
@@ -46,7 +49,7 @@ public class CityMap
             CheckNeighbours(currentNode);
         }
 
-        return 0;
+        return DefaultHeatLoss;
     }
 
     private void CheckNeighbours(Node currentNode)
@@ -61,20 +64,12 @@ public class CityMap
             CheckNextNode(currentNode, currentNode.DirectionRow, currentNode.DirectionColumn, true);
     }
 
-
-    private readonly List<(int, int)> _directions = new()
-    {
-        (0, 1),
-        (1, 0),
-        (0, -1),
-        (-1, 0)
-    };
     private void TryTurning(Node currentNode)
     {
         if (!Constraints.IsGreaterThanOrEqualToMin(currentNode.TimesInDirection) && !currentNode.IsStandingStill())
             return;
 
-        foreach (var (nextDirectionRow, nextDirectionColumn) in _directions)
+        foreach (var (nextDirectionRow, nextDirectionColumn) in Offset.Offsets)
         {
             var isStraight = nextDirectionRow == currentNode.DirectionRow &&
                           nextDirectionColumn == currentNode.DirectionColumn;
@@ -96,7 +91,7 @@ public class CityMap
 
         var nextRow = row + nextDirectionRow;
         var nextColumn = column + nextDirectionColumn;
-        var newNode = new Node(0, nextRow, nextColumn, nextDirectionRow,
+        var newNode = new Node(DefaultHeatLoss, nextRow, nextColumn, nextDirectionRow,
             nextDirectionColumn, newTimesInDirection);
 
         if (!newNode.IsValid(Height, Width))

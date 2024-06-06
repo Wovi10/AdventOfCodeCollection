@@ -3,7 +3,7 @@ using AdventOfCode2023_1.Shared;
 
 namespace AdventOfCode2023_1.Models.Day18;
 
-public class DigInstruction<T> where T : ISignedNumber<T>
+public class DigInstruction<T> where T : struct, INumber<T>
 {
     public DigInstruction(string inputLine)
     {

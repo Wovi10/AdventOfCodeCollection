@@ -26,9 +26,15 @@ public static class PatternExtensions
         if (!Variables.RunningPartOne && previousNotes is {IsVertical: true})
             commonMirrorPositions = commonMirrorPositions.Where(position => position != previousNotes.Notes).ToList();
 
-        var commonMirrorPosition = commonMirrorPositions.Count > 0 ? commonMirrorPositions.Max() : 0;
+        var commonMirrorPosition = 
+                commonMirrorPositions.Count > 0 
+                    ? commonMirrorPositions.Max() 
+                    : 0;
 
-        return commonMirrorPosition <= 0 ? 0 : commonMirrorPosition;
+        return 
+            commonMirrorPosition <= 0 
+                ? 0 
+                : commonMirrorPosition;
     }
 
     private static async Task<List<int>> GetCommonMirrorPositions(this List<Line> lines)
@@ -47,8 +53,10 @@ public static class PatternExtensions
             return new List<int>();
 
         var commonPositions = lines[0];
-        commonPositions = lines.Skip(1)
-            .Aggregate(commonPositions, (current, line) => current.Intersect(line).ToList());
+        commonPositions = 
+            lines
+                .Skip(1)
+                .Aggregate(commonPositions, (current, line) => current.Intersect(line).ToList());
 
         return commonPositions;
     }

@@ -1,4 +1,6 @@
-﻿using AdventOfCode2023_1.Shared;
+﻿
+
+using UtilsCSharp.Utils;
 
 namespace AdventOfCode2023_1.Models.Day11;
 
@@ -6,16 +8,16 @@ public class Universe
 {
     private int _inputLength;
     private int _lineLength;
-    private readonly List<Galaxy> _galaxies;
+    private readonly List<Galaxy<int>> _galaxies;
 
     public Universe(List<string> input)
     {
         _galaxies = GetGalaxies(input);
     }
 
-    private List<Galaxy> GetGalaxies(List<string> input)
+    private List<Galaxy<int>> GetGalaxies(List<string> input)
     {
-        var galaxies = new List<Galaxy>();
+        var galaxies = new List<Galaxy<int>>();
         var lineCounter = 0;
         _inputLength = input.Count;
         foreach (var line in input)
@@ -25,7 +27,7 @@ public class Universe
             foreach (var character in line)
             {
                 if (character == Constants.HashTag.First())
-                    galaxies.Add(new Galaxy(characterCounter, lineCounter));
+                    galaxies.Add(new Galaxy<int>(characterCounter, lineCounter));
                 characterCounter++;
             }
 
@@ -35,14 +37,14 @@ public class Universe
         return galaxies;
     }
 
-    public List<GalaxyPair> GetGalaxyPairs()
+    public List<GalaxyPair<int>> GetGalaxyPairs()
     {
-        var galaxyPairs = new List<GalaxyPair>();
+        var galaxyPairs = new List<GalaxyPair<int>>();
         for (var i = 0; i < _galaxies.Count; i++)
         {
             for (var j = i + 1; j < _galaxies.Count; j++)
             {
-                galaxyPairs.Add(new GalaxyPair(_galaxies[i], _galaxies[j]));
+                galaxyPairs.Add(new GalaxyPair<int>(_galaxies[i], _galaxies[j]));
             }
         }
 
@@ -60,11 +62,11 @@ public class Universe
         foreach (var galaxy in _galaxies)
         {
             galaxy.XAfterEnlargement +=
-                (emptyColumns.Count(emptyColumn => galaxy.XCoordinate > emptyColumn) * enlargementFactor);
-            galaxy.YAfterEnlargement += emptyRows.Count(emptyRow => galaxy.YCoordinate > emptyRow) * enlargementFactor;
+                (emptyColumns.Count(emptyColumn => galaxy.X > emptyColumn) * enlargementFactor);
+            galaxy.YAfterEnlargement += emptyRows.Count(emptyRow => galaxy.Y > emptyRow) * enlargementFactor;
 
-            galaxy.XCoordinate = galaxy.XAfterEnlargement;
-            galaxy.YCoordinate = galaxy.YAfterEnlargement;
+            galaxy.X = galaxy.XAfterEnlargement;
+            galaxy.Y = galaxy.YAfterEnlargement;
         }
     }
 
@@ -74,7 +76,7 @@ public class Universe
 
         for (var i = 0; i < _inputLength; i++)
         {
-            if (_galaxies.Any(galaxy => galaxy.YCoordinate == i))
+            if (_galaxies.Any(galaxy => galaxy.Y == i))
                 continue;
             emptyRows.Add(i);
         }
@@ -87,7 +89,7 @@ public class Universe
         var emptyColumns = new List<int>();
         for (var i = 0; i < _lineLength - 1; i++)
         {
-            if (_galaxies.Any(galaxy => galaxy.XCoordinate == i))
+            if (_galaxies.Any(galaxy => galaxy.X == i))
                 continue;
             emptyColumns.Add(i);
         }

@@ -1,22 +1,23 @@
 ﻿using AdventOfCode2023_1.Models.Day10;
 using AdventOfCode2023_1.Shared;
+using NUnit.Framework;
 
 namespace AdventOfCode2023_1;
 
 public class Day10 : DayBase
 {
-    protected override Task PartOne()
+    protected override Task<object> PartOne()
     {
         var result = CalculateFurthestDistanceFromStart();
-        SharedMethods.PrintAnswer(result);
-        return Task.CompletedTask;
+
+        return Task.FromResult<object>(result);
     }
 
-    protected override Task PartTwo()
+    protected override Task<object> PartTwo()
     {
         var result = CalculateEnclosedTiles();
-        SharedMethods.PrintAnswer(result);
-        return Task.CompletedTask;
+
+        return Task.FromResult<object>(result);
     }
 
     private static int CalculateFurthestDistanceFromStart()

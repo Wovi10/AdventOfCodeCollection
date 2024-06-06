@@ -1,5 +1,6 @@
 using AdventOfCode2023_1.Models.Day16;
 using AdventOfCode2023_1.Models.Day16.Enums;
+using UtilsCSharp.Enums;
 
 namespace AdventOfCode2023_Tests;
 
@@ -15,25 +16,25 @@ public class Tests
     [Test]
     public void DirectionUpwards_EmptySpace_DirectionUpwards()
     {
-        var initialDirection = Direction.Upwards;
+        var initialDirection = Direction.Up;
         var actual = initialDirection.GetNewDirections(TileType.EmptySpace);
-        var expected = new List<Direction> {Direction.Upwards};
+        var expected = new List<Direction> {Direction.Up};
         Assert.That(actual, Is.EquivalentTo(expected));
     }
     
     [Test]
     public void DirectionUpwards_VerticalSplitter_DirectionUpward()
     {
-        var initialDirection = Direction.Upwards;
+        var initialDirection = Direction.Up;
         var actual = initialDirection.GetNewDirections(TileType.VerticalSplitter);
-        var expected = new List<Direction> {Direction.Upwards};
+        var expected = new List<Direction> {Direction.Up};
         Assert.That(actual, Is.EquivalentTo(expected));
     }
     
     [Test]
     public void DirectionUpwards_HorizontalSplitter_DirectionRightDirectionLeft()
     {
-        var initialDirection = Direction.Upwards;
+        var initialDirection = Direction.Up;
         var actual = initialDirection.GetNewDirections(TileType.HorizontalSplitter);
         var expected = new List<Direction> {Direction.Right, Direction.Left};
         Assert.That(actual, Is.EquivalentTo(expected));
@@ -42,7 +43,7 @@ public class Tests
     [Test]
     public void DirectionUpwards_BottomLeftToTopRightMirror_DirectionRight()
     {
-        var initialDirection = Direction.Upwards;
+        var initialDirection = Direction.Up;
         var actual = initialDirection.GetNewDirections(TileType.BottomLeftToTopRightMirror);
         var expected = new List<Direction> {Direction.Right};
         Assert.That(actual, Is.EquivalentTo(expected));
@@ -51,7 +52,7 @@ public class Tests
     [Test]
     public void DirectionUpwards_TopLeftToBottomRightMirror_DirectionLeft()
     {
-        var initialDirection = Direction.Upwards;
+        var initialDirection = Direction.Up;
         var actual = initialDirection.GetNewDirections(TileType.TopLeftToBottomRightMirror);
         var expected = new List<Direction> {Direction.Left};
         Assert.That(actual, Is.EquivalentTo(expected));
@@ -75,7 +76,7 @@ public class Tests
     {
         var initialDirection = Direction.Right;
         var actual = initialDirection.GetNewDirections(TileType.VerticalSplitter);
-        var expected = new List<Direction> {Direction.Upwards, Direction.Downwards};
+        var expected = new List<Direction> {Direction.Up, Direction.Down};
         Assert.That(actual, Is.EquivalentTo(expected));
     }
     
@@ -93,7 +94,7 @@ public class Tests
     {
         var initialDirection = Direction.Right;
         var actual = initialDirection.GetNewDirections(TileType.BottomLeftToTopRightMirror);
-        var expected = new List<Direction> {Direction.Upwards};
+        var expected = new List<Direction> {Direction.Up};
         Assert.That(actual, Is.EquivalentTo(expected));
     }
     
@@ -102,7 +103,7 @@ public class Tests
     {
         var initialDirection = Direction.Right;
         var actual = initialDirection.GetNewDirections(TileType.TopLeftToBottomRightMirror);
-        var expected = new List<Direction> {Direction.Downwards};
+        var expected = new List<Direction> {Direction.Down};
         Assert.That(actual, Is.EquivalentTo(expected));
     }
 
@@ -113,25 +114,25 @@ public class Tests
     [Test]
     public void DirectionDownwards_EmptySpace_DirectionDownwards()
     {
-        var initialDirection = Direction.Downwards;
+        var initialDirection = Direction.Down;
         var actual = initialDirection.GetNewDirections(TileType.EmptySpace);
-        var expected = new List<Direction> {Direction.Downwards};
+        var expected = new List<Direction> {Direction.Down};
         Assert.That(actual, Is.EquivalentTo(expected));
     }
     
     [Test]
     public void DirectionDownwards_VerticalSplitter_DirectionDownwards()
     {
-        var initialDirection = Direction.Downwards;
+        var initialDirection = Direction.Down;
         var actual = initialDirection.GetNewDirections(TileType.VerticalSplitter);
-        var expected = new List<Direction> {Direction.Downwards};
+        var expected = new List<Direction> {Direction.Down};
         Assert.That(actual, Is.EquivalentTo(expected));
     }
     
     [Test]
     public void DirectionDownwards_HorizontalSplitter_DirectionRightDirectionLeft()
     {
-        var initialDirection = Direction.Downwards;
+        var initialDirection = Direction.Down;
         var actual = initialDirection.GetNewDirections(TileType.HorizontalSplitter);
         var expected = new List<Direction> {Direction.Right, Direction.Left};
         Assert.That(actual, Is.EquivalentTo(expected));
@@ -140,7 +141,7 @@ public class Tests
     [Test]
     public void DirectionDownwards_BottomLeftToTopRightMirror_DirectionLeft()
     {
-        var initialDirection = Direction.Downwards;
+        var initialDirection = Direction.Down;
         var actual = initialDirection.GetNewDirections(TileType.BottomLeftToTopRightMirror);
         var expected = new List<Direction> {Direction.Left};
         Assert.That(actual, Is.EquivalentTo(expected));
@@ -149,7 +150,7 @@ public class Tests
     [Test]
     public void DirectionDownwards_TopLeftToBottomRightMirror_DirectionRight()
     {
-        var initialDirection = Direction.Downwards;
+        var initialDirection = Direction.Down;
         var actual = initialDirection.GetNewDirections(TileType.TopLeftToBottomRightMirror);
         var expected = new List<Direction> {Direction.Right};
         Assert.That(actual, Is.EquivalentTo(expected));
@@ -173,7 +174,7 @@ public class Tests
     {
         var initialDirection = Direction.Left;
         var actual = initialDirection.GetNewDirections(TileType.VerticalSplitter);
-        var expected = new List<Direction> {Direction.Upwards, Direction.Downwards};
+        var expected = new List<Direction> {Direction.Up, Direction.Down};
         Assert.That(actual, Is.EquivalentTo(expected));
     }
     
@@ -191,7 +192,7 @@ public class Tests
     {
         var initialDirection = Direction.Left;
         var actual = initialDirection.GetNewDirections(TileType.BottomLeftToTopRightMirror);
-        var expected = new List<Direction> {Direction.Downwards};
+        var expected = new List<Direction> {Direction.Down};
         Assert.That(actual, Is.EquivalentTo(expected));
     }
     
@@ -200,7 +201,7 @@ public class Tests
     {
         var initialDirection = Direction.Left;
         var actual = initialDirection.GetNewDirections(TileType.TopLeftToBottomRightMirror);
-        var expected = new List<Direction> {Direction.Upwards};
+        var expected = new List<Direction> {Direction.Up};
         Assert.That(actual, Is.EquivalentTo(expected));
     }
 

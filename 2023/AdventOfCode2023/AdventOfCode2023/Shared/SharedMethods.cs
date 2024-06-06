@@ -20,7 +20,7 @@ public static class SharedMethods
     public static List<string> GetInput(string day)
     {
         var filePath = GetFilePath(day);
-        var fullPath = Directory.GetCurrentDirectory() + filePath;
+        var fullPath = Path.Combine(Directory.GetCurrentDirectory(), filePath);
         var inputFile = File.ReadAllText(fullPath);
         var splitInput = SplitInputFile(inputFile);
         return splitInput.Select(line => line.Trim()).ToList();
@@ -93,7 +93,12 @@ public static class SharedMethods
 
     private static string GetFilePath(string day)
     {
-        const string mock = Constants.IsMock ? "Mock" : Constants.EmptyString;
+        var differentMockDays = new List<string> {"01", "08", "10"};
+        if (differentMockDays.Contains(day) && !Constants.IsReal)
+        {
+            return $"{Constants.RootInputPath}/Day{day}/MockDay{day}Part01.in";
+        }
+        const string mock = Constants.IsReal ? Constants.EmptyString : "Mock";
         return $"{Constants.RootInputPath}/Day{day}/{mock}Day{day}.in";
     }
 

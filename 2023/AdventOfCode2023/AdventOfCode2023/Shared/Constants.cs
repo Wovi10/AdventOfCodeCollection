@@ -11,14 +11,16 @@ public static class Constants
     public const string LineReturn = "\r";
     public const string LineSeparator = "\n";
     public const string Pipe = "|";
-    public const string RootInputPath = "../../../../Input";
+    public const string RootInputPath = "../../../Input";
     public const string SemiColon = ";";
     public const string Space = " ";
     public const string YAxis = "y";
     public const string XAxis = "x";
 
-    public const bool IsDebug = true;
-    public const bool IsMock = false;
+    public const bool IsDebug = false;
+    public const bool IsReal = false;
 
-    public const PartsToRun PartToRun = PartsToRun.Both;
+    public const string NotYetFound = "NOT YET FOUND";
+
+    public const PartsToRun PartToRun = PartsToRun.Part1;
 }
