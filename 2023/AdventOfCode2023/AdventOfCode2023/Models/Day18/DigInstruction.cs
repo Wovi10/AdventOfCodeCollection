@@ -21,8 +21,8 @@ public class DigInstruction<T> where T : ISignedNumber<T>
         }
     }
 
-    public (int, int) Offset { get; set; }
-    public int Distance { get; set;}
+    public (int, int) Offset { get; }
+    public int Distance { get; }
     
     public void Deconstruct(out (int, int) offset, out int distance)
     {
@@ -37,7 +37,10 @@ public class DigInstruction<T> where T : ISignedNumber<T>
 
         return false;
     }
-    
+
     public bool Equals(DigInstruction<T> other)
         => Offset == other.Offset && Distance == other.Distance;
+
+    public override int GetHashCode() 
+        => HashCode.Combine(Offset, Distance);
 }
