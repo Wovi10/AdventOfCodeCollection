@@ -1,4 +1,4 @@
-﻿using UtilsCSharp;
+﻿using UtilsCSharp.Objects;
 
 namespace AdventOfCode2023_1.Models.Day18;
 
@@ -6,77 +6,44 @@ public class ExcavationSite
 {
     public ExcavationSite(List<string> input)
     {
-        DigPlan = input.Select(x => new DigInstruction(x)).ToList();
+        DigPlan = input.Select(x => new DigInstruction<long>(x)).ToList();
     }
 
-    private List<DigInstruction> DigPlan { get; }
-    private int SmallestX { get; set; }
-    private int SmallestY { get; set; }
-    private int LargestX { get; set; }
-    private int LargestY { get; set; }
-    private Grid? Grid { get; set; }
+    private List<DigInstruction<long>> DigPlan { get; }
 
-    public int GetHoleSize() 
-        => Grid?.Nodes.Count ?? 0;
-
-    public async Task ExecuteDigPlan()
+    public long CalculateArea()
     {
-        var currentX = 0;
-        var currentY = 0;
-        var nodes = new List<Node> {new() {X = currentX, Y = currentY}};
-        foreach (var digInstruction in DigPlan)
+        List<Node<long>> points = new();
+        var perimeter = InitialisePositions(points);
+
+        var area = 0L;
+
+        for (var i = 0; i < points.Count; i++)
         {
-            for (var i = 0; i < digInstruction.Distance; i++)
-            {
-                var newX = GetNewX(currentX, digInstruction.Direction);
-                var newY = GetNewY(currentY, digInstruction.Direction);
-                var newNode = new Node {X = newX, Y = newY};
+            var nextIndex = (i + 1) % points.Count;
+            var prevIndex = i - 1 < 0 ? points.Count - 1 : i - 1;
 
-                nodes.TryAddNode(newNode);
-
-                SetNewGridExtremes(newX, newY);
-                currentX = newX;
-                currentY = newY;
-            }
+            area += points[i].X * (points[nextIndex].Y - points[prevIndex].Y);
         }
 
-        Grid = CreateGrid(nodes);
-        Grid.DecideEdgeTypes();
-        await Grid.DigHole();
+        area = Math.Abs(area) / 2;
+        area += perimeter / 2 + 1;
+
+        return area;
     }
 
-    private static int GetNewX(int currentX, (int, int) digInstructionDirection) 
-        => currentX + digInstructionDirection.Item1;
-
-    private static int GetNewY(int currentY, (int, int) digInstructionDirection) 
-        => currentY + digInstructionDirection.Item2;
-
-    private void SetNewGridExtremes(int newX, int newY)
+    private long InitialisePositions(List<Node<long>> points)
     {
-        if (newX.IsLessThan(SmallestX) == true)
-            SmallestX = newX;
-        else if (newX.IsGreaterThan(LargestX) == true)
-            LargestX = newX;
-
-        if (newY.IsLessThan(SmallestY) == true)
-            SmallestY = newY;
-        else if (newY.IsGreaterThan(LargestY) == true)
-            LargestY = newY;
-    }
-
-    private Grid CreateGrid(List<Node> inputNodes)
-    {
-        var nodes = new List<Node>();
-
-        foreach (var inputNode in inputNodes)
+        var perimeter = 0L;
+        var node = new Node<long>(0, 0);
+        foreach (var instruction in DigPlan)
         {
-            var newNode = new Node {X = inputNode.X + Math.Abs(SmallestX), Y = inputNode.Y + Math.Abs(SmallestY)};
-            nodes.TryAddNode(newNode);
+            points.Add(node);
+            node = node.MoveToNode(instruction.Offset.ToDirection(), instruction.Distance);
+
+            perimeter += instruction.Distance;
         }
 
-        var gridHeight = Math.Abs(SmallestY) + Math.Abs(LargestY) + 1;
-        var gridWidth = Math.Abs(SmallestX) + Math.Abs(LargestX) + 1;
-
-        return new Grid(nodes, gridWidth, gridHeight);
+        return perimeter;
     }
 }

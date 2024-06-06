@@ -1,10 +1,10 @@
-﻿using AdventOfCode2023_1.Models.Day18.Enums;
+﻿using System.Numerics;
 
 namespace AdventOfCode2023_1.Models.Day18;
 
 public static class Day18Extensions
 {
-    public static (int, int) CharToDirection(this char direction)
+    public static (int, int) ToOffset(this char direction)
     {
         return direction switch
         {
@@ -16,36 +16,29 @@ public static class Day18Extensions
         };
     }
 
-    public static void TryAddNode(this List<Node> nodes, Node? newNode)
+    public static (int, int) ToOffset(this int direction)
     {
-        if (newNode == null)
-            return;
-
-        if (nodes.Any(x => x.X == newNode.X && x.Y == newNode.Y) == false)
-            nodes.Add(newNode);
+        return direction switch
+        {
+            0 => (1, 0),
+            1 => (0, 1),
+            2 => (-1, 0),
+            3 => (0, -1),
+            _ => (0, 0)
+        };
     }
 
-    public static bool IsMatching(this NodeType type, NodeType otherType, bool isOnYAxis)
+    public static Node<T> Move<T>(this Node<T> position, DigInstruction<T> instruction) where T : ISignedNumber<T>
     {
-        if (isOnYAxis)
+        var (dir, len) = instruction;
+        var (dx, dy) = dir switch
         {
-            return otherType == type switch
-            {
-                NodeType.NorthEast => NodeType.SouthEast,
-                NodeType.NorthWest => NodeType.SouthWest,
-                NodeType.SouthWest => NodeType.NorthWest,
-                NodeType.SouthEast => NodeType.NorthEast,
-                _ => NodeType.Enclosed
-            };
-        }
-
-        return otherType == type switch
-        {
-            NodeType.NorthEast => NodeType.NorthWest,
-            NodeType.NorthWest => NodeType.NorthEast,
-            NodeType.SouthWest => NodeType.SouthEast,
-            NodeType.SouthEast => NodeType.SouthWest,
-            _ => NodeType.Enclosed
+            (0, -1) => (-len, 0),
+            (0, 1) => (+len, 0),
+            (-1, 0) => (0, -len),
+            (1, 0) => (0, +len)
         };
+
+        return new Node<T>(position.Add(position.X, dx), position.Add(position.Y, dy));
     }
 }
