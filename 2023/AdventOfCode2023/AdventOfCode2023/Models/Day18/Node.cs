@@ -1,44 +1,28 @@
-﻿using AdventOfCode2023_1.Models.Day18.Enums;
+﻿using System.Numerics;
+using UtilsCSharp.Enums;
+using UtilsCSharp.Objects;
 
 namespace AdventOfCode2023_1.Models.Day18;
 
-public class Node
+public class Node<T>(T internalX, T internalY): NodeBase<T>(internalX, internalY) where T : ISignedNumber<T>
 {
-    public int X { get; set; }
-    public int Y { get; set; }
-    public NodeType Type { get; set; }
-
-    public void DecideType(List<Direction> neighbours)
+    private Node((T, T) position) : this(position.Item1, position.Item2)
     {
-        switch (neighbours.Count)
-        {
-            case 4:
-                Type = NodeType.Enclosed;
-                return;
-            case 2 when neighbours.Contains(Direction.Up) && neighbours.Contains(Direction.Down):
-                Type = NodeType.NorthSouth;
-                return;
-            case 2 when neighbours.Contains(Direction.Right) && neighbours.Contains(Direction.Left):
-                Type = NodeType.EastWest;
-                return;
-            case 2 when neighbours.Contains(Direction.Up) && neighbours.Contains(Direction.Right):
-                Type = NodeType.NorthEast;
-                return;
-            case 2 when neighbours.Contains(Direction.Up) && neighbours.Contains(Direction.Left):
-                Type = NodeType.NorthWest;
-                return;
-            case 2 when neighbours.Contains(Direction.Down) && neighbours.Contains(Direction.Left):
-                Type = NodeType.SouthWest;
-                return;
-            case 2 when neighbours.Contains(Direction.Down) && neighbours.Contains(Direction.Right):
-                Type = NodeType.SouthEast;
-                return;
-            case 1 when neighbours.Contains(Direction.Up) || neighbours.Contains(Direction.Down):
-                Type = NodeType.NorthSouth;
-                return;
-            case 1 when neighbours.Contains(Direction.Right) || neighbours.Contains(Direction.Left):
-                Type = NodeType.EastWest;
-                return;
-        }
+    }
+
+    public override (T, T) Move(Direction direction, int distance = 1)
+    {
+        var (xOffset, yOffset) = direction.ToOffset();
+        xOffset *= distance;
+        yOffset *= distance;
+
+        return (Add(X, xOffset), Add(Y, yOffset));
+    }
+
+    public Node<T> MoveToNode(Direction direction, int distance = 1)
+    {
+        var newPosition = Move(direction, distance);
+
+        return new Node<T>(newPosition);
     }
 }

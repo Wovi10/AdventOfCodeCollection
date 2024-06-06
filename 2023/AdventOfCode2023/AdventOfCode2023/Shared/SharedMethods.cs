@@ -26,10 +26,16 @@ public static class SharedMethods
         return splitInput.Select(line => line.Trim()).ToList();
     }
 
-    public static void PrintPercentage(long current, long max)
+    public static int GetPercentage(long current, long max)
     {
         var progress = (double) current / max;
         var percentage = (int) (progress * 100);
+        return percentage;
+    }
+
+    public static void PrintPercentage(long current, long max)
+    {
+        var percentage = GetPercentage(current, max);
         PrintPercentage(percentage);
     }
 
