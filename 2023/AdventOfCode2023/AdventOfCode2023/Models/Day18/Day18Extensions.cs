@@ -1,4 +1,4 @@
-﻿using AdventOfCode2023_1.Shared.Types;
+﻿using System.Numerics;
 
 namespace AdventOfCode2023_1.Models.Day18;
 
@@ -28,7 +28,7 @@ public static class Day18Extensions
         };
     }
 
-    public static Point2D Move(this Point2D position, DigInstruction instruction)
+    public static Node<T> Move<T>(this Node<T> position, DigInstruction<T> instruction) where T : ISignedNumber<T>
     {
         var (dir, len) = instruction;
         var (dx, dy) = dir switch
@@ -39,6 +39,6 @@ public static class Day18Extensions
             (1, 0) => (0, +len)
         };
 
-        return new Point2D(position.X + dx, position.Y + dy);
+        return new Node<T>(position.Add(position.X, dx), position.Add(position.Y, dy));
     }
 }

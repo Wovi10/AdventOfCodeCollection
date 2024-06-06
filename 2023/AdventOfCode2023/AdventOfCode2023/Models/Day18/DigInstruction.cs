@@ -1,13 +1,10 @@
-﻿using AdventOfCode2023_1.Shared;
+﻿using System.Numerics;
+using AdventOfCode2023_1.Shared;
 
 namespace AdventOfCode2023_1.Models.Day18;
 
-public class DigInstruction
+public class DigInstruction<T> where T : ISignedNumber<T>
 {
-    public DigInstruction()
-    {
-        
-    }
     public DigInstruction(string inputLine)
     {
         if (Variables.RunningPartOne)
@@ -35,12 +32,12 @@ public class DigInstruction
     
     public override bool Equals(object? obj)
     {
-        if (obj is DigInstruction instruction)
+        if (obj is DigInstruction<T> instruction)
             return Equals(instruction);
 
         return false;
     }
     
-    public bool Equals(DigInstruction other)
+    public bool Equals(DigInstruction<T> other)
         => Offset == other.Offset && Distance == other.Distance;
 }

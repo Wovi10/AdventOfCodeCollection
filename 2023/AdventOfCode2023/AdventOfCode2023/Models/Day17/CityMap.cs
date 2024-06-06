@@ -20,7 +20,7 @@ public class CityMap
     private List<List<int>> Rows { get; }
     private int Height { get; }
     private int Width { get; }
-    private readonly PriorityQueue<Node, int> _priorityQueue = new();
+    private readonly PriorityQueue<Node<int>, int> _priorityQueue = new();
     private Constraints Constraints { get; set; }
 
     private readonly List<(int, int)> _directions = new()
@@ -33,13 +33,13 @@ public class CityMap
 
     public int GetMinimalHeatLoss()
     {
-        var seen = new List<Node>();
-        _priorityQueue.Enqueue(new Node(), 0);
+        var seen = new List<Node<int>>();
+        _priorityQueue.Enqueue(new Node<int>(0,0), 0);
 
         while (_priorityQueue.Count > 0)
         {
             var currentNode = _priorityQueue.Dequeue();
-            var (row, column) = currentNode.RowColumn;
+            var (row, column) = currentNode.Coordinates;
 
             var isEndNode = row == Height - 1 && column == Width - 1;
             var crucibleCanStop = Constraints.IsGreaterThanOrEqualToMin(currentNode.TimesInDirection);
@@ -57,19 +57,19 @@ public class CityMap
         return 0;
     }
 
-    private void CheckNeighbours(Node currentNode)
+    private void CheckNeighbours(Node<int> currentNode)
     {
         TryStraight(currentNode);
         TryTurning(currentNode);
     }
 
-    private void TryStraight(Node currentNode)
+    private void TryStraight(Node<int> currentNode)
     {
         if (Constraints.IsSmallerThanMax(currentNode.TimesInDirection) && !currentNode.IsStandingStill())
             CheckNextNode(currentNode, currentNode.DirectionRow, currentNode.DirectionColumn, true);
     }
 
-    private void TryTurning(Node currentNode)
+    private void TryTurning(Node<int> currentNode)
     {
         if (!Constraints.IsGreaterThanOrEqualToMin(currentNode.TimesInDirection) && !currentNode.IsStandingStill())
             return;
@@ -88,15 +88,15 @@ public class CityMap
         }
     }
 
-    private void CheckNextNode(Node currentNode, int nextDirectionRow, int nextDirectionColumn, bool isSameDirection)
+    private void CheckNextNode(Node<int> currentNode, int nextDirectionRow, int nextDirectionColumn, bool isSameDirection)
     {
         var newTimesInDirection = isSameDirection ? currentNode.TimesInDirection + 1 : 1;
 
-        var (row, column) = currentNode.RowColumn;
-        
+        var (row, column) = currentNode.Coordinates;
+
         var nextRow = row + nextDirectionRow;
         var nextColumn = column + nextDirectionColumn;
-        var newNode = new Node(0, nextRow, nextColumn, nextDirectionRow,
+        var newNode = new Node<int>(0, nextRow, nextColumn, nextDirectionRow,
             nextDirectionColumn, newTimesInDirection);
 
         if (!newNode.IsValid(Height, Width))
