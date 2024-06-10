@@ -1,6 +1,5 @@
 ﻿using AdventOfCode2023_1.Models.Day17;
 using AdventOfCode2023_1.Shared;
-using NUnit.Framework;
 
 namespace AdventOfCode2023_1;
 

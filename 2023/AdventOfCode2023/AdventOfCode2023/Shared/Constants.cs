@@ -1,4 +1,6 @@
-﻿namespace AdventOfCode2023_1.Shared;
+﻿using AdventOfCode2023_1.Shared.Enums;
+
+namespace AdventOfCode2023_1.Shared;
 
 public static class Constants
 {
@@ -17,10 +19,10 @@ public static class Constants
     public const string YAxis = "y";
     public const string XAxis = "x";
 
-    public const bool IsDebug = true;
+    public const bool IsDebug = false;
     public const bool IsReal = true;
 
     public const string NotYetFound = "NOT YET FOUND";
 
-    public const PartsToRun PartToRun = PartsToRun.Part2;
+    public const PartsToRun PartToRun = PartsToRun.Both;
 }

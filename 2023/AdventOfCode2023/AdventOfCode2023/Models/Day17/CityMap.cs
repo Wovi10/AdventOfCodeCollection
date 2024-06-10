@@ -1,4 +1,6 @@
 ﻿using AdventOfCode2023_1.Shared;
+using UtilsCSharp.Enums;
+using UtilsCSharp.Objects;
 using UtilsCSharp.Utils;
 
 namespace AdventOfCode2023_1.Models.Day17;
@@ -7,34 +9,41 @@ public class CityMap
 {
     public CityMap(List<string> rows, Constraints constraints)
     {
-        Rows = new List<List<int>>();
+        for (var y = 0; y < rows.Count; y++)
+        {
+            var row = rows[y];
+            for (var x = 0; x < row.Length; x++)
+            {
+                var nodeToAdd = new Node(x, y)
+                {
+                    HeatLoss = int.Parse(row[x].ToString())
+                };
+                NodesDictionary.Add((x, y), nodeToAdd);
+            }
+        }
 
-        foreach (var rowBlocks in rows.Select(row => row.Select(num => int.Parse(num.ToString())).ToList()))
-            Rows.Add(rowBlocks);
-
-        Rows[0][0] = 0;
-        Height = Rows.Count;
-        Width = Rows[0].Count;
+        Height = rows.Count;
+        Width = rows[0].Length;
         Constraints = constraints;
     }
 
-    private List<List<int>> Rows { get; }
+    private Dictionary<(int, int), Node> NodesDictionary { get; } = new();
     private int Height { get; }
     private int Width { get; }
     private readonly PriorityQueue<Node, int> _priorityQueue = new();
     private Constraints Constraints { get; }
 
     private const int DefaultHeatLoss = 0;
-    
+
     public int GetMinimalHeatLoss()
     {
-        var seen = new List<Node>();
-        _priorityQueue.Enqueue(new Node(0,0), 0);
+        var seen = new HashSet<Node>();
+        _priorityQueue.Enqueue(new Node(0, 0), 0);
 
         while (_priorityQueue.Count > 0)
         {
             var currentNode = _priorityQueue.Dequeue();
-            var (row, column) = currentNode.Coordinates;
+            var (column, row) = currentNode;
 
             var isEndNode = row == Height - 1 && column == Width - 1;
             var crucibleCanStop = Constraints.IsGreaterThanOrEqualToMin(currentNode.TimesInDirection);
@@ -61,7 +70,7 @@ public class CityMap
     private void TryStraight(Node currentNode)
     {
         if (Constraints.IsSmallerThanMax(currentNode.TimesInDirection) && !currentNode.IsStandingStill())
-            CheckNextNode(currentNode, currentNode.DirectionRow, currentNode.DirectionColumn, true);
+            CheckNextNode(currentNode, currentNode.Direction, true);
     }
 
     private void TryTurning(Node currentNode)
@@ -69,35 +78,43 @@ public class CityMap
         if (!Constraints.IsGreaterThanOrEqualToMin(currentNode.TimesInDirection) && !currentNode.IsStandingStill())
             return;
 
-        foreach (var (nextDirectionRow, nextDirectionColumn) in Offset.Offsets)
+        var (currentDirectionColumn, currentDirectionRow) = currentNode.Direction.ToOffset();
+
+        foreach (var (nextDirectionColumn, nextDirectionRow) in Offset.Offsets)
         {
-            var isStraight = nextDirectionRow == currentNode.DirectionRow &&
-                          nextDirectionColumn == currentNode.DirectionColumn;
-            var isBack = nextDirectionRow == -currentNode.DirectionRow &&
-                         nextDirectionColumn == -currentNode.DirectionColumn;
+            var isStraight = nextDirectionRow == currentDirectionRow &&
+                             nextDirectionColumn == currentDirectionColumn;
+            var isBack = nextDirectionRow == -currentDirectionRow &&
+                         nextDirectionColumn == -currentDirectionColumn;
 
             if (isStraight || isBack)
                 continue;
 
-            CheckNextNode(currentNode, nextDirectionRow, nextDirectionColumn, false);
+            CheckNextNode(currentNode, (nextDirectionColumn, nextDirectionRow).ToDirection(), false);
         }
     }
 
-    private void CheckNextNode(Node currentNode, int nextDirectionRow, int nextDirectionColumn, bool isSameDirection)
+    private void CheckNextNode(Node currentNode, Direction nextDirection, bool isSameDirection)
     {
         var newTimesInDirection = isSameDirection ? currentNode.TimesInDirection + 1 : 1;
 
-        var (row, column) = currentNode.Coordinates;
+        var (column, row) = currentNode;
+
+        var (nextDirectionColumn, nextDirectionRow) = nextDirection.ToOffset();
 
         var nextRow = row + nextDirectionRow;
         var nextColumn = column + nextDirectionColumn;
-        var newNode = new Node(DefaultHeatLoss, nextRow, nextColumn, nextDirectionRow,
-            nextDirectionColumn, newTimesInDirection);
+        var newNode = new Node(DefaultHeatLoss, nextColumn, nextRow, nextDirectionColumn,
+            nextDirectionRow, newTimesInDirection);
 
         if (!newNode.IsValid(Height, Width))
             return;
 
-        var heatLoss = Rows[nextRow][nextColumn] + currentNode.HeatLoss;
+        var currentHeatLoss = NodesDictionary.TryGetValue((nextColumn, nextRow), out var node)
+            ? node.HeatLoss
+            : DefaultHeatLoss;
+
+        var heatLoss = currentHeatLoss + currentNode.HeatLoss;
         newNode.HeatLoss = heatLoss;
         _priorityQueue.Enqueue(newNode, newNode.HeatLoss);
     }

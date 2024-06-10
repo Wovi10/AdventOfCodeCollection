@@ -15,6 +15,8 @@ public class Day12 : DayBase
 
     protected override async Task<object> PartTwo()
     {
+        return Constants.NotYetFound;
+        
         var result = await GetSumDifferentArrangementCount().ConfigureAwait(false);
 
         return result;
