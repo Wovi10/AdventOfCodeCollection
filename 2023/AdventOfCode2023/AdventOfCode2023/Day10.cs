@@ -15,6 +15,7 @@ public class Day10 : DayBase
 
     protected override Task<object> PartTwo()
     {
+        Input = SharedMethods.GetInput(Day);
         var result = CalculateEnclosedTiles();
 
         return Task.FromResult<object>(result);

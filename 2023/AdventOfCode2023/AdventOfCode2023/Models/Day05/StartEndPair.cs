@@ -59,21 +59,23 @@ public class StartEndPair
         return result;
     }
 
-    public async Task<long> TestPair(List<SeedMapping> seedToSoil, List<SeedMapping> soilToFert,
-        List<SeedMapping> fertToWater, List<SeedMapping> waterToLight, List<SeedMapping> lightToTemp,
-        List<SeedMapping> tempToHumid, List<SeedMapping> humidToLoc)
+    public async Task<long> TestPair(HashSet<SeedMapping> soils, HashSet<SeedMapping> fertilizers,
+        HashSet<SeedMapping> waters, HashSet<SeedMapping> lights, HashSet<SeedMapping> temperatures,
+        HashSet<SeedMapping> humidities, HashSet<SeedMapping> locations)
     {
         var tasks = new List<Task>();
         for (var seed = _start; seed < _end; seed++)
         {
             var currentSeed = seed;
-            tasks.Add(Task.Run(() =>
+            var task = Task.Run(() =>
             {
-                var location = currentSeed.SeedToLocation(seedToSoil, soilToFert, fertToWater, waterToLight,
-                    lightToTemp, tempToHumid, humidToLoc);
+                var location = currentSeed.SeedToLocation(soils, fertilizers, waters, lights, temperatures, humidities,
+                    locations);
                 if (location < _lowestLocation)
                     Interlocked.Exchange(ref _lowestLocation, location);
-            }));
+            });
+
+            tasks.Add(task);
         }
 
         await Task.WhenAll(tasks);

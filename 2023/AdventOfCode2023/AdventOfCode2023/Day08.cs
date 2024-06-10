@@ -20,6 +20,7 @@ public class Day08 : DayBase
 
     protected override Task<object> PartTwo()
     {
+        Input = SharedMethods.GetInput(Day);
         var result = CalculateSteps();
 
         return Task.FromResult<object>(result);

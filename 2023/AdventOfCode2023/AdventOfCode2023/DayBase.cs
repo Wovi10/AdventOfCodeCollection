@@ -7,8 +7,8 @@ namespace AdventOfCode2023_1;
 public abstract class DayBase
 {
     protected static List<string> Input = new();
-    protected object expectedAnswer;
-    protected string Day;
+    private object _expectedAnswer = 0;
+    protected string Day = "01";
 
     public async Task Run(string day, string title)
     {
@@ -17,9 +17,7 @@ public abstract class DayBase
         var watch = new Stopwatch();
         watch.Start();
 
-        Input = SharedMethods.GetInput(day);
         SharedMethods.WriteBeginText(day, title);
-        Variables.RunningPartOne = true;
         switch (Constants.PartToRun)
         {
             case PartsToRun.Part1:
@@ -56,23 +54,25 @@ public abstract class DayBase
     private async Task RunPartOne()
     {
         Variables.RunningPartOne = true;
-        expectedAnswer = Answers.GetExpectedAnswer(Day, true);
+        Input = SharedMethods.GetInput(Day);
+        _expectedAnswer = Answers.GetExpectedAnswer(Day, true);
 
         var result = await PartOne();
         SharedMethods.PrintAnswer(result);
 
-        Assert.That(result, Is.EqualTo(expectedAnswer));
+        Assert.That(result, Is.EqualTo(_expectedAnswer));
     }
 
     private async Task RunPartTwo()
     {
         Variables.RunningPartOne = false;
-        expectedAnswer = Answers.GetExpectedAnswer(Day, false);
+        Input = SharedMethods.GetInput(Day);
+        _expectedAnswer = Answers.GetExpectedAnswer(Day, false);
 
         var result = await PartTwo();
         SharedMethods.PrintAnswer(result);
 
-        Assert.That(result, Is.EqualTo(expectedAnswer));
+        Assert.That(result, Is.EqualTo(_expectedAnswer));
     }
 
     protected abstract Task<object> PartOne();

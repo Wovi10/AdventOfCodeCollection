@@ -14,6 +14,7 @@ public class Day01 : DayBase
 
     protected override Task<object> PartTwo()
     {
+        Input = SharedMethods.GetInput(Day);
         var result = GetCalibrationSum(@"\d|one|two|three|four|five|six|seven|eight|nine");
 
         return Task.FromResult<object>(result);

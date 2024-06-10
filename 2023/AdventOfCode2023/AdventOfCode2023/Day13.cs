@@ -15,6 +15,7 @@ public class Day13 : DayBase
 
     protected override async Task<object> PartTwo()
     {
+        Input = SharedMethods.GetInput(Day);
         var result = await GetPatternNotesSum().ConfigureAwait(false);
 
         return result;

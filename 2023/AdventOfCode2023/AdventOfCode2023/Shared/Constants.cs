@@ -17,10 +17,10 @@ public static class Constants
     public const string YAxis = "y";
     public const string XAxis = "x";
 
-    public const bool IsDebug = false;
-    public const bool IsReal = false;
+    public const bool IsDebug = true;
+    public const bool IsReal = true;
 
     public const string NotYetFound = "NOT YET FOUND";
 
-    public const PartsToRun PartToRun = PartsToRun.Part1;
+    public const PartsToRun PartToRun = PartsToRun.Part2;
 }
