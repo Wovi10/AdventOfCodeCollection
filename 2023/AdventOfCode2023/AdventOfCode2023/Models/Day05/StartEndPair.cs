@@ -1,4 +1,6 @@
-﻿namespace AdventOfCode2023_1.Models.Day05;
+﻿using System.Collections.Concurrent;
+
+namespace AdventOfCode2023_1.Models.Day05;
 
 public class StartEndPair
 {
@@ -10,7 +12,7 @@ public class StartEndPair
 
     private readonly long _start;
     private readonly long _end;
-    private long _lowestLocation = long.MaxValue;
+    // private long _lowestLocation = long.MaxValue;
 
     public static List<StartEndPair> GetPairs(List<long> seedsToTest)
     {
@@ -59,27 +61,56 @@ public class StartEndPair
         return result;
     }
 
-    public async Task<long> TestPair(HashSet<SeedMapping> soils, HashSet<SeedMapping> fertilizers,
+    public long TestPair(HashSet<SeedMapping> soils, HashSet<SeedMapping> fertilizers,
         HashSet<SeedMapping> waters, HashSet<SeedMapping> lights, HashSet<SeedMapping> temperatures,
         HashSet<SeedMapping> humidities, HashSet<SeedMapping> locations)
     {
-        var tasks = new List<Task>();
-        for (var seed = _start; seed < _end; seed++)
+        var range = LongRange(_start, _end - _start);
+        var partitioner = Partitioner.Create(range);
+
+        var lowestLocation = long.MaxValue;
+
+        Parallel.ForEach(partitioner, (seed, _) =>
         {
-            var currentSeed = seed;
-            var task = Task.Run(() =>
+            var location = seed.SeedToLocation(soils, fertilizers, waters, lights, temperatures, humidities,
+                locations);
+            var currentLowest = Interlocked.Read(ref lowestLocation);
+            while (location < currentLowest)
             {
-                var location = currentSeed.SeedToLocation(soils, fertilizers, waters, lights, temperatures, humidities,
-                    locations);
-                if (location < _lowestLocation)
-                    Interlocked.Exchange(ref _lowestLocation, location);
-            });
+                if (Interlocked.CompareExchange(ref lowestLocation, location, currentLowest) == currentLowest)
+                    break;
 
-            tasks.Add(task);
+                currentLowest = Interlocked.CompareExchange(ref lowestLocation, location, currentLowest);
+            }
+        });
+
+        return lowestLocation;
+
+        // var tasks = new List<Task>();
+        // for (var seed = _start; seed < _end; seed++)
+        // {
+        //     var currentSeed = seed;
+        //     var task = Task.Run(() =>
+        //     {
+        //         var location = currentSeed.SeedToLocation(soils, fertilizers, waters, lights, temperatures, humidities,
+        //             locations);
+        //         if (location < _lowestLocation)
+        //             Interlocked.Exchange(ref _lowestLocation, location);
+        //     });
+        //
+        //     tasks.Add(task);
+        // }
+        //
+        // await Task.WhenAll(tasks);
+        //
+        // return _lowestLocation;
+    }
+
+    private static IEnumerable<long> LongRange(long start, long count)
+    {
+        for (var i = start; i < start + count; i++)
+        {
+            yield return i;
         }
-
-        await Task.WhenAll(tasks);
-
-        return _lowestLocation;
     }
 }
