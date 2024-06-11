@@ -1,31 +1,35 @@
-﻿using AdventOfCode2023_1.Shared;
+﻿
+
+using System.Numerics;
+using UtilsCSharp;
+using UtilsCSharp.Utils;
 
 namespace AdventOfCode2023_1.Models.Day11;
 
-public class Universe
+public class Universe<T> where T : struct, INumber<T>
 {
-    private int _inputLength;
-    private int _lineLength;
-    private readonly List<Galaxy> _galaxies;
+    private T _inputLength;
+    private T _lineLength;
+    private readonly List<Galaxy<T>> _galaxies;
 
     public Universe(List<string> input)
     {
         _galaxies = GetGalaxies(input);
     }
 
-    private List<Galaxy> GetGalaxies(List<string> input)
+    private List<Galaxy<T>> GetGalaxies(List<string> input)
     {
-        var galaxies = new List<Galaxy>();
-        var lineCounter = 0;
-        _inputLength = input.Count;
+        var galaxies = new List<Galaxy<T>>();
+        var lineCounter = T.Zero;
+        _inputLength = T.CreateChecked(input.Count);
         foreach (var line in input)
         {
-            var characterCounter = 0;
-            _lineLength = _lineLength == 0 ? line.Length : _lineLength;
+            var characterCounter = T.Zero;
+            _lineLength = T.IsZero(_lineLength) ? T.CreateChecked(line.Length) : _lineLength;
             foreach (var character in line)
             {
                 if (character == Constants.HashTag.First())
-                    galaxies.Add(new Galaxy(characterCounter, lineCounter));
+                    galaxies.Add(new Galaxy<T>(characterCounter, lineCounter));
                 characterCounter++;
             }
 
@@ -35,14 +39,14 @@ public class Universe
         return galaxies;
     }
 
-    public List<GalaxyPair> GetGalaxyPairs()
+    public List<GalaxyPair<T>> GetGalaxyPairs()
     {
-        var galaxyPairs = new List<GalaxyPair>();
+        var galaxyPairs = new List<GalaxyPair<T>>();
         for (var i = 0; i < _galaxies.Count; i++)
         {
             for (var j = i + 1; j < _galaxies.Count; j++)
             {
-                galaxyPairs.Add(new GalaxyPair(_galaxies[i], _galaxies[j]));
+                galaxyPairs.Add(new GalaxyPair<T>(_galaxies[i], _galaxies[j]));
             }
         }
 
@@ -59,22 +63,24 @@ public class Universe
 
         foreach (var galaxy in _galaxies)
         {
-            galaxy.XAfterEnlargement +=
-                (emptyColumns.Count(emptyColumn => galaxy.XCoordinate > emptyColumn) * enlargementFactor);
-            galaxy.YAfterEnlargement += emptyRows.Count(emptyRow => galaxy.YCoordinate > emptyRow) * enlargementFactor;
+            var enlargementSizeX = emptyColumns.Count(emptyColumn => galaxy.X > emptyColumn) * enlargementFactor;
+            galaxy.XAfterEnlargement = MathUtils.Add(galaxy.XAfterEnlargement, T.CreateChecked(enlargementSizeX));
+            
+            var enlargementSizeY = emptyRows.Count(emptyRow => galaxy.Y > emptyRow) * enlargementFactor;
+            galaxy.YAfterEnlargement = MathUtils.Add(galaxy.YAfterEnlargement, T.CreateChecked(enlargementSizeY));
 
-            galaxy.XCoordinate = galaxy.XAfterEnlargement;
-            galaxy.YCoordinate = galaxy.YAfterEnlargement;
+            galaxy.X = galaxy.XAfterEnlargement;
+            galaxy.Y = galaxy.YAfterEnlargement;
         }
     }
 
-    private List<int> GetEmptyRows()
+    private List<T> GetEmptyRows()
     {
-        var emptyRows = new List<int>();
+        var emptyRows = new List<T>();
 
-        for (var i = 0; i < _inputLength; i++)
+        for (var i = T.Zero; i < _inputLength; i++)
         {
-            if (_galaxies.Any(galaxy => galaxy.YCoordinate == i))
+            if (_galaxies.Any(galaxy => galaxy.Y == i))
                 continue;
             emptyRows.Add(i);
         }
@@ -82,12 +88,12 @@ public class Universe
         return emptyRows;
     }
 
-    private List<int> GetEmptyColumns()
+    private List<T> GetEmptyColumns()
     {
-        var emptyColumns = new List<int>();
-        for (var i = 0; i < _lineLength - 1; i++)
+        var emptyColumns = new List<T>();
+        for (var i = T.Zero; i < _lineLength - T.One; i++)
         {
-            if (_galaxies.Any(galaxy => galaxy.XCoordinate == i))
+            if (_galaxies.Any(galaxy => galaxy.X == i))
                 continue;
             emptyColumns.Add(i);
         }

@@ -5,18 +5,18 @@ namespace AdventOfCode2023_1;
 
 public class Day02 : DayBase
 {
-    protected override Task PartOne()
+    protected override Task<object> PartOne()
     {
         var result = GetListPossibleGames().Sum();
-        SharedMethods.PrintAnswer(result);
-        return Task.CompletedTask;
+
+        return Task.FromResult<object>(result);
     }
 
-    protected override Task PartTwo()
+    protected override Task<object> PartTwo()
     {
         var result = GetListPartTwoGames().Sum();
-        SharedMethods.PrintAnswer(result);
-        return Task.CompletedTask;
+
+        return Task.FromResult<object>(result);
     }
 
     private static List<int> GetListPartTwoGames()

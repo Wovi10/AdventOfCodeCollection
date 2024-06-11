@@ -1,21 +1,17 @@
-﻿namespace AdventOfCode2023_1.Models.Day12;
+﻿using AdventOfCode2023_1.Models.Day12.Enums;
+using UtilsCSharp.Utils;
 
-public enum SpringType
-{
-    Operational,
-    Damaged,
-    Unknown
-}
+namespace AdventOfCode2023_1.Models.Day12;
 
 public static class SpringStateExtensions
 {
     public static SpringType ToSpringState(this char stateChar)
     {
-        return stateChar switch
+        return stateChar.ToString() switch
         {
-            '.' => SpringType.Operational,
-            '#' => SpringType.Damaged,
-            '?' => SpringType.Unknown,
+            Constants.Dot => SpringType.Operational,
+            Constants.HashTag => SpringType.Damaged,
+            Constants.QuestionMark => SpringType.Unknown,
             _ => throw new ArgumentOutOfRangeException(nameof(stateChar), stateChar, null)
         };
     }

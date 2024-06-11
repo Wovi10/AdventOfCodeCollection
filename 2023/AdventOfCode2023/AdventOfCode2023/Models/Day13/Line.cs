@@ -1,4 +1,5 @@
 ﻿using AdventOfCode2023_1.Shared;
+using Constants = UtilsCSharp.Utils.Constants;
 
 namespace AdventOfCode2023_1.Models.Day13;
 
@@ -8,7 +9,7 @@ public class Line
     {
         foreach (var character in lineString.Trim())
         {
-            Rocks.Add(character == '#');
+            Rocks.Add(character.ToString() == Constants.HashTag);
         }
     }
 

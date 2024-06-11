@@ -1,4 +1,4 @@
-﻿using AdventOfCode2023_1.Models.Day14.Enums;
+﻿using UtilsCSharp.Enums;
 
 namespace AdventOfCode2023_1.Models.Day14;
 
@@ -31,27 +31,27 @@ public class Dish
     }
 
     public void TiltNorth()
-        => Tilt(Direction.North);
+        => Tilt(WindDirection.North);
 
     public long Cycle()
     {
-        Tilt(Direction.North);
-        Tilt(Direction.West);
-        Tilt(Direction.South);
-        Tilt(Direction.East);
+        Tilt(WindDirection.North);
+        Tilt(WindDirection.West);
+        Tilt(WindDirection.South);
+        Tilt(WindDirection.East);
 
         CalculateTotalLoad();
         return TotalLoad;
     }
 
-    private async void Tilt(Direction direction)
+    private async void Tilt(WindDirection direction)
     {
         var tasks = direction switch
         {
-            Direction.North => Columns.Select(column => column.TiltToStartAsync()),
-            Direction.South => Columns.Select(column => column.TiltToEndAsync()),
-            Direction.East => Rows.Select(row => row.TiltToEndAsync()),
-            Direction.West => Rows.Select(row => row.TiltToStartAsync()),
+            WindDirection.North => Columns.Select(column => column.TiltToStartAsync()),
+            WindDirection.South => Columns.Select(column => column.TiltToEndAsync()),
+            WindDirection.East => Rows.Select(row => row.TiltToEndAsync()),
+            WindDirection.West => Rows.Select(row => row.TiltToStartAsync()),
             _ => throw new ArgumentOutOfRangeException(nameof(direction), direction, null)
         };
 
@@ -59,12 +59,12 @@ public class Dish
 
         switch (direction)
         {
-            case Direction.North:
-            case Direction.South:
+            case WindDirection.North:
+            case WindDirection.South:
                 AlignRows();
                 break;
-            case Direction.East:
-            case Direction.West:
+            case WindDirection.East:
+            case WindDirection.West:
                 AlignColumns();
                 break;
             default:

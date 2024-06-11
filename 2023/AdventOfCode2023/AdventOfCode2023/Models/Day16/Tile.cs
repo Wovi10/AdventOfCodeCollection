@@ -1,4 +1,5 @@
 ﻿using AdventOfCode2023_1.Models.Day16.Enums;
+using UtilsCSharp.Enums;
 
 namespace AdventOfCode2023_1.Models.Day16;
 

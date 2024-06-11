@@ -2,22 +2,21 @@
 
 public static class Day05Extensions
 {
-    public static long SeedToLocation(this long seed, List<SeedMapping> seedToSoil, List<SeedMapping> soilToFert,
-        List<SeedMapping> fertToWater, List<SeedMapping> waterToLight, List<SeedMapping> lightToTemp,
-        List<SeedMapping> tempToHumid, List<SeedMapping> humidToLoc)
+    public static long SeedToLocation(this long seed, HashSet<SeedMapping> soils, HashSet<SeedMapping> fertilizers,
+        HashSet<SeedMapping> waters, HashSet<SeedMapping> lights, HashSet<SeedMapping> temperatures,
+        HashSet<SeedMapping> humidities, HashSet<SeedMapping> locations)
     {
-        var result = TestLocation(seed, seedToSoil);
-        result = TestLocation(result, soilToFert);
-        result = TestLocation(result, fertToWater);
-        result = TestLocation(result, waterToLight);
-        result = TestLocation(result, lightToTemp);
-        result = TestLocation(result, tempToHumid);
-        result = TestLocation(result, humidToLoc);
-
-        return result;
+        return 
+                seed.MapTo(soils)
+                    .MapTo(fertilizers)
+                    .MapTo(waters)
+                    .MapTo(lights)
+                    .MapTo(temperatures)
+                    .MapTo(humidities)
+                    .MapTo(locations);
     }
 
-    private static long TestLocation(long seed, List<SeedMapping> mappings)
+    private static long MapTo(this long seed, HashSet<SeedMapping> mappings)
     {
         foreach (var seedMapping in mappings
                      .Where(seedMapping => seedMapping.SourceStart <= seed && seedMapping.SourceEnd >= seed))

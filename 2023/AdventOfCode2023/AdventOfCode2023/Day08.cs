@@ -1,5 +1,6 @@
 ﻿using AdventOfCode2023_1.Models.Day08;
 using AdventOfCode2023_1.Shared;
+using NUnit.Framework;
 using UtilsCSharp;
 
 namespace AdventOfCode2023_1;
@@ -10,18 +11,19 @@ public class Day08 : DayBase
     private readonly List<bool> _instructions = new();
     private readonly List<Node> _nodes = new();
 
-    protected override Task PartOne()
+    protected override Task<object> PartOne()
     {
         var result = CalculateSteps();
-        SharedMethods.PrintAnswer(result);
-        return Task.CompletedTask;
+
+        return Task.FromResult<object>(result);
     }
 
-    protected override Task PartTwo()
+    protected override Task<object> PartTwo()
     {
+        Input = SharedMethods.GetInput(Day);
         var result = CalculateSteps();
-        SharedMethods.PrintAnswer(result);
-        return Task.CompletedTask;
+
+        return Task.FromResult<object>(result);
     }
 
     private long CalculateSteps()

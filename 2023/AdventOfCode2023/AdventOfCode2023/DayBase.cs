@@ -1,34 +1,35 @@
 ﻿using System.Diagnostics;
 using AdventOfCode2023_1.Shared;
+using AdventOfCode2023_1.Shared.Enums;
+using NUnit.Framework;
 
 namespace AdventOfCode2023_1;
 
 public abstract class DayBase
 {
     protected static List<string> Input = new();
+    private object _expectedAnswer = 0;
+    protected string Day = "01";
 
     public async Task Run(string day, string title)
     {
+        Day = day;
         WriteStopwatchStartText();
         var watch = new Stopwatch();
         watch.Start();
 
-        Input = SharedMethods.GetInput(day);
         SharedMethods.WriteBeginText(day, title);
-        Variables.RunningPartOne = true;
         switch (Constants.PartToRun)
         {
             case PartsToRun.Part1:
-                await PartOne();
+                await RunPartOne();
                 break;
             case PartsToRun.Part2:
-                Variables.RunningPartOne = false;
-                await PartTwo();
+                await RunPartTwo();
                 break;
             case PartsToRun.Both:
-                await PartOne();
-                Variables.RunningPartOne = false;
-                await PartTwo();
+                await RunPartOne();
+                await RunPartTwo();
                 break;
             default:
                 throw new ArgumentOutOfRangeException();
@@ -51,7 +52,31 @@ public abstract class DayBase
             Console.WriteLine($"Elapsed time: {watchElapsedMilliseconds} ms");
     }
 
-    protected abstract Task PartOne();
+    private async Task RunPartOne()
+    {
+        Variables.RunningPartOne = true;
+        Input = SharedMethods.GetInput(Day);
+        _expectedAnswer = Answers.GetExpectedAnswer(Day, true);
 
-    protected abstract Task PartTwo();
+        var result = await PartOne();
+        SharedMethods.PrintAnswer(result);
+
+        Assert.That(result, Is.EqualTo(_expectedAnswer));
+    }
+
+    private async Task RunPartTwo()
+    {
+        Variables.RunningPartOne = false;
+        Input = SharedMethods.GetInput(Day);
+        _expectedAnswer = Answers.GetExpectedAnswer(Day, false);
+
+        var result = await PartTwo();
+        SharedMethods.PrintAnswer(result);
+
+        Assert.That(result, Is.EqualTo(_expectedAnswer));
+    }
+
+    protected abstract Task<object> PartOne();
+
+    protected abstract Task<object> PartTwo();
 }

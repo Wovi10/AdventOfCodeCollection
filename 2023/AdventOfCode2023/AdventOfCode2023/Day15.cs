@@ -1,21 +1,23 @@
 ﻿using AdventOfCode2023_1.Models.Day15;
 using AdventOfCode2023_1.Shared;
+using NUnit.Framework;
 
 namespace AdventOfCode2023_1;
 
 public class Day15 : DayBase
 {
-    protected override async Task PartOne()
+    protected override async Task<object> PartOne()
     {
         var result = await GetSumHashes();
-        SharedMethods.PrintAnswer(result);
+
+        return result;
     }
 
-    protected override Task PartTwo()
+    protected override Task<object> PartTwo()
     {
         var result = GetFocusingPower();
-        SharedMethods.PrintAnswer(result);
-        return Task.CompletedTask;
+
+        return Task.FromResult<object>(result);
     }
 
     private static async Task<int> GetSumHashes()

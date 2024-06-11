@@ -5,33 +5,36 @@ namespace AdventOfCode2023_1;
 
 public class Day04 : DayBase
 {
-    protected override async Task PartOne()
+    protected override Task<object> PartOne()
     {
-        var result = await GetSumScratchCardPoints();
-        SharedMethods.PrintAnswer(result);
+        var result = GetSumScratchCardPoints();
+
+        return Task.FromResult<object>(result);
     }
 
-    protected override async Task PartTwo()
+    protected override Task<object> PartTwo()
     {
-        var result = await GetTotalNumberCards();
-        SharedMethods.PrintAnswer(result);
+        var result = GetTotalNumberCards();
+
+        return Task.FromResult<object>(result);
     }
 
     #region Part 1
 
-    private static async Task<int> GetSumScratchCardPoints()
+    private static int GetSumScratchCardPoints()
     {
-        var scratchCardPoints = await GetScratchCardPoints();
+        var scratchCardPoints = GetScratchCardPoints();
         return scratchCardPoints.Sum();
     }
 
-    private static async Task<List<int>> GetScratchCardPoints()
+    private static List<int> GetScratchCardPoints()
     {
-        var scratchCards = await GetScratchCards(true);
+        var scratchCards = GetScratchCards(true);
+
         return scratchCards.Select(card => card.Points).ToList();
     }
 
-    private static Task<List<ScratchCard>> GetScratchCards(bool needPoints = false)
+    private static List<ScratchCard> GetScratchCards(bool needPoints = false)
     {
         var scratchCards = new List<ScratchCard>();
         foreach (var line in Input)
@@ -51,21 +54,22 @@ public class Day04 : DayBase
             scratchCards.Add(scratchCard);
         }
 
-        if (!needPoints) return Task.FromResult(scratchCards);
+        if (!needPoints)
+            return scratchCards;
 
         foreach (var scratchCard in scratchCards)
             scratchCard.CalculatePoints();
 
-        return Task.FromResult(scratchCards);
+        return scratchCards;
     }
 
     #endregion
 
     #region Part 2
 
-    private static async Task<int> GetTotalNumberCards()
+    private static int GetTotalNumberCards()
     {
-        var scratchCards = await GetScratchCards();
+        var scratchCards = GetScratchCards();
         var numScratchCards = CountDuplicateScratchCards(scratchCards);
         return numScratchCards;
     }

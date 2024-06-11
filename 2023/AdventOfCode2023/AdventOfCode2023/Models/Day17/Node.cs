@@ -1,53 +1,44 @@
-﻿using System.Numerics;
-using UtilsCSharp;
+﻿using UtilsCSharp;
 using UtilsCSharp.Enums;
 using UtilsCSharp.Objects;
 
 namespace AdventOfCode2023_1.Models.Day17;
 
-public class Node<T>(T row, T column) : NodeBase<T>(row, column) where T: ISignedNumber<T>
+public class Node(int column, int row) : NodeBase<int>(column, row)
 {
-    public Node(int heatLoss, T row, T column, int directionRow, int directionColumn, int timesInDirection): this(row, column)
+    public Node(int heatLoss, int column, int row, int directionColumn, int directionRow, int timesInDirection): this
+        (column, row)
     {
         HeatLoss = heatLoss;
-        DirectionRow = directionRow;
-        DirectionColumn = directionColumn;
+        Direction = (directionColumn, directionRow).ToDirection();
         TimesInDirection = timesInDirection;
     }
 
     public int HeatLoss { get; set; }
-    private int Row { get; set; }
-    private int Column { get; set; }
-    public int DirectionRow { get; set; }
-    public int DirectionColumn { get; set; }
     public int TimesInDirection { get; set; }
-    public (int, int) Coordinates => (Row, Column);
+    public Direction Direction { get; set; }
 
     public bool IsValid(int height, int width)
-        => Row.IsBetween(0, height, true, false) &&
-           Column.IsBetween(0, width, true, false);
+        => X.IsBetween(0, height, true, false) &&
+           Y.IsBetween(0, width, true, false);
 
     public bool IsStandingStill()
-        => DirectionRow == 0 && DirectionColumn == 0;
+        => Direction == Direction.None;
 
-    public override bool Equals(object? obj)
-    {
-        return obj is Node<T> node && Equals(node);
-    }
+    public override bool Equals(object? obj) 
+        => obj is Node node && Equals(node);
 
-    private bool Equals(Node<T> other)
+    private bool Equals(Node other)
     {
-        return Row == other.Row && Column == other.Column &&
-               DirectionRow == other.DirectionRow && DirectionColumn == other.DirectionColumn &&
+        return X == other.X && Y == other.Y &&
+               Direction == other.Direction &&
                TimesInDirection == other.TimesInDirection;
     }
 
-    public override int GetHashCode()
-    {
-        return HashCode.Combine(Row, Column, DirectionRow, DirectionColumn, TimesInDirection);
-    }
+    public override int GetHashCode() 
+        => HashCode.Combine(X, Y, Direction, TimesInDirection);
 
-    public override (T, T) Move(Direction direction, int distance = 1)
+    public override (int, int) Move(Direction direction, int distance = 1)
     {
         throw new NotImplementedException();
     }

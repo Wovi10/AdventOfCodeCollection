@@ -6,88 +6,86 @@ namespace AdventOfCode2023_1;
 
 public class Day05 : DayBase
 {
-    private readonly List<long> _seedsToTest = new();
-    private static readonly List<StartEndPair> SeedsToTestPart2 = new();
+    private readonly HashSet<long> _seedsToTest = new();
+    private static readonly HashSet<StartEndPair> StartSeeds = new();
 
-    private readonly List<SeedMapping> _seedToSoil = new();
-    private readonly List<SeedMapping> _soilToFert = new();
-    private readonly List<SeedMapping> _fertToWater = new();
-    private readonly List<SeedMapping> _waterToLight = new();
-    private readonly List<SeedMapping> _lightToTemp = new();
-    private readonly List<SeedMapping> _tempToHumid = new();
-    private readonly List<SeedMapping> _humidToLoc = new();
+    private readonly HashSet<SeedMapping> _soils = new();
+    private readonly HashSet<SeedMapping> _fertilizers = new();
+    private readonly HashSet<SeedMapping> _waters = new();
+    private readonly HashSet<SeedMapping> _lights = new();
+    private readonly HashSet<SeedMapping> _temperatures = new();
+    private readonly HashSet<SeedMapping> _humidities = new();
+    private readonly HashSet<SeedMapping> _locations = new();
 
-    protected override async Task PartOne()
-    {
-        await RunPart();
-    }
-
-    protected override async Task PartTwo()
-    {
-        await RunPart();
-    }
-
-    private async Task RunPart()
+    protected override Task<object> PartOne()
     {
         EmptyLists();
-        var result = await GetLowestLocationNumber();
-        SharedMethods.PrintAnswer(result);
+        var result = SearchLowestLocation() ?? 0;
+
+        return Task.FromResult<object>(result);
+    }
+
+    protected override Task<object> PartTwo()
+    {
+        EmptyLists();
+        var result = GetLowestLocationNumber();
+
+        return Task.FromResult<object>(result);
     }
 
     private void EmptyLists()
     {
         _seedsToTest.Clear();
-        _seedToSoil.Clear();
-        _soilToFert.Clear();
-        _fertToWater.Clear();
-        _waterToLight.Clear();
-        _lightToTemp.Clear();
-        _tempToHumid.Clear();
-        _humidToLoc.Clear();
+        _soils.Clear();
+        _fertilizers.Clear();
+        _waters.Clear();
+        _lights.Clear();
+        _temperatures.Clear();
+        _humidities.Clear();
+        _locations.Clear();
     }
 
-    private async Task<long> GetLowestLocationNumber()
+    private long GetLowestLocationNumber()
     {
         ProcessFile();
 
-        if (Variables.RunningPartOne)
-            return SearchLowestLocation() ?? 0;
+        IEnumerable<long> results;
 
-        var totalTasks = SeedsToTestPart2.Count;
-        var completedTasks = 0;
-
-        var progress = new Progress<long>(current =>
+        if (!Constants.IsDebug)
         {
-            SharedMethods.ClearCurrentConsoleLine();
-            Console.Write($"Finished {current} parts of {totalTasks}");
-        });
+            results = StartSeeds.Select(pair =>
+                pair.TestPair(_soils, _fertilizers, _waters, _lights, _temperatures, _humidities, _locations));
 
-        var tasks = SeedsToTestPart2.Select(pair => pair.TestPair(_seedToSoil, _soilToFert, _fertToWater,
-            _waterToLight, _lightToTemp, _tempToHumid, _humidToLoc));
-        var results = Constants.IsDebug
-            ? await Task.WhenAll(tasks.Select(async task =>
-            {
-                var result = await task.ConfigureAwait(false);
-                Interlocked.Increment(ref completedTasks);
-                ((IProgress<long>) progress).Report(completedTasks);
-                return result;
-            })).ConfigureAwait(false)
-            : await Task.WhenAll(tasks).ConfigureAwait(false);
+            return results.Min();
+        }
+
+        var total = StartSeeds.Count;
+        var counter = 1;
+        results = StartSeeds.Select(pair =>
+        {
+            var result = pair.TestPair(_soils, _fertilizers, _waters, _lights, _temperatures, _humidities, _locations);
+            SharedMethods.ClearCurrentConsoleLine();
+            Console.Write($"Finished {counter++} parts of {total}");
+
+            return result;
+        });
 
         return results.Min();
     }
 
     private long? SearchLowestLocation()
     {
+        ProcessFile();
+
         return _seedsToTest
-            .Select(seed => seed.SeedToLocation(_seedToSoil, _soilToFert, _fertToWater, _waterToLight, _lightToTemp,
-                _tempToHumid, _humidToLoc))
+            .Select(seed => seed.SeedToLocation(_soils, _fertilizers, _waters, _lights, _temperatures,
+                _humidities, _locations))
             .Aggregate(long.MaxValue, (current, result) => MathUtils.GetLowest(result, current));
     }
 
     private void ProcessFile()
     {
-        List<SeedMapping>? currentList = null;
+        HashSet<SeedMapping>? currentList = null;
 
         var isFirstLine = true;
         foreach (var line in Input.Select(l => l.Trim()))
@@ -96,11 +94,11 @@ public class Day05 : DayBase
             {
                 var seedsLineAsLong = line[7..].Split(Constants.Space).Select(long.Parse).ToList();
                 if (Variables.RunningPartOne)
-                    _seedsToTest.AddRange(seedsLineAsLong);
+                    _seedsToTest.UnionWith(seedsLineAsLong);
                 else
                 {
-                    var seedsToTestPart2 = StartEndPair.GetPairs(seedsLineAsLong);
-                    SeedsToTestPart2.AddRange(seedsToTestPart2);
+                    var startEndPairs = StartEndPair.GetPairs(seedsLineAsLong);
+                    StartSeeds.UnionWith(startEndPairs);
                 }
 
                 isFirstLine = false;
@@ -113,22 +111,22 @@ public class Day05 : DayBase
         }
     }
 
-    private List<SeedMapping>? GetMappingList(string line)
+    private HashSet<SeedMapping>? GetMappingList(string line)
     {
         return line switch
         {
-            "seed-to-soil map:" => _seedToSoil,
-            "soil-to-fertilizer map:" => _soilToFert,
-            "fertilizer-to-water map:" => _fertToWater,
-            "water-to-light map:" => _waterToLight,
-            "light-to-temperature map:" => _lightToTemp,
-            "temperature-to-humidity map:" => _tempToHumid,
-            "humidity-to-location map:" => _humidToLoc,
+            "seed-to-soil map:" => _soils,
+            "soil-to-fertilizer map:" => _fertilizers,
+            "fertilizer-to-water map:" => _waters,
+            "water-to-light map:" => _lights,
+            "light-to-temperature map:" => _temperatures,
+            "temperature-to-humidity map:" => _humidities,
+            "humidity-to-location map:" => _locations,
             _ => null
         };
     }
 
-    private static void AddSeedMapping(List<SeedMapping> currentList, string line)
+    private static void AddSeedMapping(HashSet<SeedMapping> currentList, string line)
     {
         var parts = line.Split(Constants.Space).Where(x => long.TryParse(x, out _)).Select(long.Parse).ToArray();
         if (parts.Length == 3)

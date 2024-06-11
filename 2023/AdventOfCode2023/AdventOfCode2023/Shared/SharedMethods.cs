@@ -1,4 +1,6 @@
-﻿namespace AdventOfCode2023_1.Shared;
+﻿using System.Security.Cryptography;
+
+namespace AdventOfCode2023_1.Shared;
 
 public static class SharedMethods
 {
@@ -20,7 +22,7 @@ public static class SharedMethods
     public static List<string> GetInput(string day)
     {
         var filePath = GetFilePath(day);
-        var fullPath = Directory.GetCurrentDirectory() + filePath;
+        var fullPath = Path.Combine(Directory.GetCurrentDirectory(), filePath);
         var inputFile = File.ReadAllText(fullPath);
         var splitInput = SplitInputFile(inputFile);
         return splitInput.Select(line => line.Trim()).ToList();
@@ -93,8 +95,18 @@ public static class SharedMethods
 
     private static string GetFilePath(string day)
     {
-        const string mock = Constants.IsMock ? "Mock" : Constants.EmptyString;
-        return $"{Constants.RootInputPath}/Day{day}/{mock}Day{day}.in";
+        var basePath = $"{Constants.RootInputPath}/Day{day}/";
+
+        if (!Constants.IsReal) 
+            basePath += "Mock";
+        
+        basePath += $"Day{day}";
+
+        var differentMockDays = new List<string> {"01", "08", "10", "13"};
+        if (!Constants.IsReal && Variables.RunningPartOne && differentMockDays.Contains(day)) 
+            basePath += "Part01";
+
+        return $"{basePath}.in";
     }
 
     public static void ClearCurrentConsoleLine() 

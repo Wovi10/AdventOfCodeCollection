@@ -1,5 +1,7 @@
-﻿using AdventOfCode2023_1.Shared;
+﻿using AdventOfCode2023_1.Models.Day12.Enums;
+using AdventOfCode2023_1.Shared;
 using UtilsCSharp;
+using Constants = UtilsCSharp.Utils.Constants;
 
 namespace AdventOfCode2023_1.Models.Day12;
 
