@@ -26,6 +26,9 @@ public static class Day07Extensions
         };
     }
 
-    public static bool? IsHigherThan(this Card card1, Card card2)
-        => MathUtils.IsGreaterThan((int)card1, (int)card2);
+    public static bool IsHigherThan(this Card card1, Card card2)
+        => ((int)card1).IsGreaterThan((int)card2);
+    
+    public static bool IsLowerThan(this Card card1, Card card2)
+        => ((int)card1).IsLessThan((int)card2);
 }

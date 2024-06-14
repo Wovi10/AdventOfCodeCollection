@@ -42,6 +42,9 @@ public static class Card2Extensions
         };
     }
 
-    public static bool? IsHigherThan(this Card2 card1, Card2 card2)
-        => MathUtils.IsGreaterThan((int)card1, (int)card2);
+    public static bool IsHigherThan(this Card2 card1, Card2 card2)
+        => ((int)card1).IsGreaterThan((int)card2);
+    
+    public static bool IsLowerThan(this Card2 card1, Card2 card2)
+        => ((int)card1).IsLessThan((int)card2);
 }

@@ -1,7 +1,4 @@
-﻿
-
-using System.Numerics;
-using UtilsCSharp;
+﻿using System.Numerics;
 using UtilsCSharp.Utils;
 
 namespace AdventOfCode2023_1.Models.Day11;
@@ -63,14 +60,7 @@ public class Universe<T> where T : struct, INumber<T>
 
         foreach (var galaxy in _galaxies)
         {
-            var enlargementSizeX = emptyColumns.Count(emptyColumn => galaxy.X > emptyColumn) * enlargementFactor;
-            galaxy.XAfterEnlargement = MathUtils.Add(galaxy.XAfterEnlargement, T.CreateChecked(enlargementSizeX));
-            
-            var enlargementSizeY = emptyRows.Count(emptyRow => galaxy.Y > emptyRow) * enlargementFactor;
-            galaxy.YAfterEnlargement = MathUtils.Add(galaxy.YAfterEnlargement, T.CreateChecked(enlargementSizeY));
-
-            galaxy.X = galaxy.XAfterEnlargement;
-            galaxy.Y = galaxy.YAfterEnlargement;
+            galaxy.Enlarge(enlargementFactor, emptyColumns, emptyRows);
         }
     }
 

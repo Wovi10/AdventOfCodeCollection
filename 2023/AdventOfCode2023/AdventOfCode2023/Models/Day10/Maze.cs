@@ -149,13 +149,13 @@ public class Maze
 
     private Direction FindClosestEdge(Coordinates coordinates)
     {
-        var distanceNorth = coordinates.GetYCoordinate();
-        var distanceEast = _mazeWidth - coordinates.GetXCoordinate();
-        var distanceSouth = _mazeLength - coordinates.GetYCoordinate();
-        var distanceWest = coordinates.GetXCoordinate();
-        var lowest = MathUtils.GetLowest(distanceNorth, distanceSouth);
-        lowest = MathUtils.GetLowest(lowest, distanceEast);
-        lowest = MathUtils.GetLowest(lowest, distanceWest);
+        var distanceNorth = coordinates.Y;
+        var distanceEast = _mazeWidth - coordinates.X;
+        var distanceSouth = _mazeLength - coordinates.Y;
+        var distanceWest = coordinates.X;
+        var lowest = GetLowest(distanceNorth, distanceSouth);
+        lowest = GetLowest(lowest, distanceEast);
+        lowest = GetLowest(lowest, distanceWest);
 
         if (lowest == distanceNorth)
             return Direction.North;
@@ -170,36 +170,36 @@ public class Maze
 
     private int CountEdgeCrossesNorth(Coordinates startCoordinates)
     {
-        var startPoint = startCoordinates.GetYCoordinate() - 1;
+        var startPoint = startCoordinates.Y - 1;
         const int endPoint = 0;
-        var constantCoordinatePart = startCoordinates.GetXCoordinate();
+        var constantCoordinatePart = startCoordinates.X;
 
         return CountEdgesCrossed(startPoint, endPoint, constantCoordinatePart, Constants.YAxis);
     }
 
     private int CountEdgeCrossesEast(Coordinates startCoordinates)
     {
-        var startPoint = startCoordinates.GetXCoordinate() + 1;
+        var startPoint = startCoordinates.X + 1;
         var endPoint = _mazeWidth;
-        var constantCoordinatePart = startCoordinates.GetYCoordinate();
+        var constantCoordinatePart = startCoordinates.Y;
 
         return CountEdgesCrossed(startPoint, endPoint, constantCoordinatePart, Constants.XAxis);
     }
 
     private int CountEdgeCrossesSouth(Coordinates startCoordinates)
     {
-        var startPoint = startCoordinates.GetYCoordinate() + 1;
+        var startPoint = startCoordinates.Y + 1;
         var endPoint = _mazeLength;
-        var constantCoordinatePart = startCoordinates.GetXCoordinate();
+        var constantCoordinatePart = startCoordinates.X;
 
         return CountEdgesCrossed(startPoint, endPoint, constantCoordinatePart, Constants.YAxis);
     }
 
     private int CountEdgeCrossesWest(Coordinates startCoordinates)
     {
-        var startPoint = startCoordinates.GetXCoordinate() - 1;
+        var startPoint = startCoordinates.X - 1;
         const int endPoint = 0;
-        var constantCoordinatePart = startCoordinates.GetYCoordinate();
+        var constantCoordinatePart = startCoordinates.Y;
 
         return CountEdgesCrossed(startPoint, endPoint, constantCoordinatePart, Constants.XAxis);
     }
@@ -277,4 +277,7 @@ public class Maze
 
     private static bool ShouldStop(int index, int endPoint)
         => endPoint == 0 ? index >= endPoint : index < endPoint;
+    
+    private static int GetLowest(int first, int second)
+        => MathUtils.GetLowest(first, second);
 }

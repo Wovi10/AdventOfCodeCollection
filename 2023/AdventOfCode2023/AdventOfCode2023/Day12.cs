@@ -15,7 +15,7 @@ public class Day12 : DayBase
 
     protected override async Task<object> PartTwo()
     {
-        return Constants.NotYetFound;
+        return Answers.NotYetFound;
         
         var result = await GetSumDifferentArrangementCount().ConfigureAwait(false);
 
@@ -34,7 +34,7 @@ public class Day12 : DayBase
         });
 
         var tasks = springRows.Select(springRow => springRow.GetPossibleArrangementsAsync());
-        var results = Constants.IsDebug
+        var results = IsDebug
             ? await Task.WhenAll(tasks.Select(async task =>
             {
                 var result = await task.ConfigureAwait(false);

@@ -4,8 +4,9 @@ public static class Answers
 {
     private const bool Mock = false;
     private const bool Real = true;
+    public const string NotYetFound = "NOT YET FOUND";
 
-    public static readonly List<Answer> AnswersList = new()
+    private static readonly List<Answer> AnswersList = new()
     {
         new(1, 1, Mock, 142),
         new(1, 1, Real, 55971),
@@ -54,7 +55,7 @@ public static class Answers
         new(12, 1, Mock, 21),
         new(12, 1, Real, 7350),
         new(12, 2, Mock, 525152),
-        new(12, 2, Real, Constants.NotYetFound),
+        new(12, 2, Real, NotYetFound),
         new(13, 1, Mock, 405),
         new(13, 1, Real, 28651),
         new(13, 2, Mock, 400),
@@ -85,9 +86,8 @@ public static class Answers
     {
         var partInt = runningPartOne ? 1 : 2;
         var answer = AnswersList.FirstOrDefault(a => a.Day == int.Parse(day) && a.Part == partInt && a.IsReal == 
-            Constants
-            .IsReal);
+            DayBase.IsReal);
 
-        return answer?.Result ?? Constants.NotYetFound;
+        return answer?.Result ?? NotYetFound;
     }
 }

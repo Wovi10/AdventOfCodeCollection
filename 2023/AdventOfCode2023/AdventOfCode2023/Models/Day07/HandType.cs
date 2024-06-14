@@ -15,6 +15,9 @@ public enum HandType
 
 public static class HandTypeExtensions
 {
-    public static bool? IsHigherThan(this HandType type1, HandType type2)
-        => MathUtils.IsGreaterThan((int)type1, (int)type2);
+    public static bool IsHigherThan(this HandType type1, HandType type2)
+        => ((int)type1).IsGreaterThan((int)type2);
+    
+    public static bool IsLowerThan(this HandType type1, HandType type2)
+        => ((int)type1).IsLessThan((int)type2);
 }

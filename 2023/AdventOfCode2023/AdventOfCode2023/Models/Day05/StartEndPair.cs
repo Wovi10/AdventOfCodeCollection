@@ -85,25 +85,6 @@ public class StartEndPair
         });
 
         return lowestLocation;
-
-        // var tasks = new List<Task>();
-        // for (var seed = _start; seed < _end; seed++)
-        // {
-        //     var currentSeed = seed;
-        //     var task = Task.Run(() =>
-        //     {
-        //         var location = currentSeed.SeedToLocation(soils, fertilizers, waters, lights, temperatures, humidities,
-        //             locations);
-        //         if (location < _lowestLocation)
-        //             Interlocked.Exchange(ref _lowestLocation, location);
-        //     });
-        //
-        //     tasks.Add(task);
-        // }
-        //
-        // await Task.WhenAll(tasks);
-        //
-        // return _lowestLocation;
     }
 
     private static IEnumerable<long> LongRange(long start, long count)

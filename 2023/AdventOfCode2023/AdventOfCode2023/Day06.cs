@@ -1,6 +1,6 @@
 ﻿using AdventOfCode2023_1.Models.Day06;
 using AdventOfCode2023_1.Shared;
-using NUnit.Framework;
+using Constants = UtilsCSharp.Utils.Constants;
 
 namespace AdventOfCode2023_1;
 

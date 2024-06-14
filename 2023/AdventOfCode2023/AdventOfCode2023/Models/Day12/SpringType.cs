@@ -19,5 +19,6 @@ public static class SpringStateExtensions
     public static bool IsOperational(this SpringType state)
         => state == SpringType.Operational;
 
-    public static bool IsDamaged(this SpringType state) => state == SpringType.Damaged;
+    public static bool IsDamaged(this SpringType state) 
+        => state == SpringType.Damaged;
 }

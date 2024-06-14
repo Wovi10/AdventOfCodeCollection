@@ -17,6 +17,6 @@
 
     <ItemGroup>
       <PackageReference Include="NUnit" Version="4.1.0" />
-      <PackageReference Include="Wovi10.UtilsCSharp" Version="1.6.1" />
+      <PackageReference Include="Wovi10.UtilsCSharp" Version="2.0.0" />
     </ItemGroup>
 </Project>

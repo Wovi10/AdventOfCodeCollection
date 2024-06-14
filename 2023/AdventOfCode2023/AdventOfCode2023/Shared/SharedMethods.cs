@@ -1,6 +1,4 @@
-﻿using System.Security.Cryptography;
-
-namespace AdventOfCode2023_1.Shared;
+﻿namespace AdventOfCode2023_1.Shared;
 
 public static class SharedMethods
 {
@@ -13,7 +11,7 @@ public static class SharedMethods
     public static void PrintAnswer(object result)
     {
         ClearCurrentConsoleLine();
-        Console.WriteLine($"{Constants.LineReturn}Answer of part {GetRunningPart()} is: \n{result}");
+        Console.WriteLine($"{UtilsCSharp.Utils.Constants.LineReturn}Answer of part {GetRunningPart()} is: \n{result}");
     }
 
     private static string GetRunningPart()
@@ -64,10 +62,10 @@ public static class SharedMethods
 
         var promilleDec = permille / 100;
 
-        var spaces = new string(Convert.ToChar(Constants.Space), 100 - promilleDec);
-        var promilleString = new string(Convert.ToChar(Constants.HashTag), promilleDec);
+        var spaces = new string(Convert.ToChar(UtilsCSharp.Utils.Constants.Space), 100 - promilleDec);
+        var promilleString = new string(Convert.ToChar(UtilsCSharp.Utils.Constants.HashTag), promilleDec);
 
-        Console.Write($"{Constants.LineReturn}[{promilleString}{spaces}] {permille:D3}‰");
+        Console.Write($"{UtilsCSharp.Utils.Constants.LineReturn}[{promilleString}{spaces}] {permille:D3}‰");
     }
 
     private static long? _previousPercentage;
@@ -81,29 +79,29 @@ public static class SharedMethods
 
         var percentageDec = percentage / 10;
 
-        var spaces = new string(Convert.ToChar(Constants.Space), 10 - percentageDec);
-        var percentageString = new string(Convert.ToChar(Constants.HashTag), percentageDec);
+        var spaces = new string(Convert.ToChar(UtilsCSharp.Utils.Constants.Space), 10 - percentageDec);
+        var percentageString = new string(Convert.ToChar(UtilsCSharp.Utils.Constants.HashTag), percentageDec);
 
         ClearCurrentConsoleLine();
-        Console.Write($"{Constants.LineReturn}[{percentageString}{spaces}] {percentage:D2}%");
+        Console.Write($"{UtilsCSharp.Utils.Constants.LineReturn}[{percentageString}{spaces}] {percentage:D2}%");
     }
 
     private static List<string> SplitInputFile(string inputFile)
     {
-        return inputFile.Split(Constants.LineSeparator).ToList();
+        return inputFile.Split(UtilsCSharp.Utils.Constants.LineSeparator).ToList();
     }
 
     private static string GetFilePath(string day)
     {
-        var basePath = $"{Constants.RootInputPath}/Day{day}/";
+        var basePath = $"{Shared.Constants.RootInputPath}/Day{day}/";
 
-        if (!Constants.IsReal) 
+        if (!DayBase.IsReal) 
             basePath += "Mock";
         
         basePath += $"Day{day}";
 
         var differentMockDays = new List<string> {"01", "08", "10", "13"};
-        if (!Constants.IsReal && Variables.RunningPartOne && differentMockDays.Contains(day)) 
+        if (!DayBase.IsReal && Variables.RunningPartOne && differentMockDays.Contains(day)) 
             basePath += "Part01";
 
         return $"{basePath}.in";

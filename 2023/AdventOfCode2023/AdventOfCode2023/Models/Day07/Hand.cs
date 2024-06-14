@@ -84,10 +84,10 @@ public class Hand(int bid) : IComparable<Hand>
         if (hand2 == null)
             return 1;
 
-        if (_type.IsHigherThan(hand2._type) == true)
+        if (_type.IsHigherThan(hand2._type))
             return 1;
 
-        if (_type.IsHigherThan(hand2._type) == false)
+        if (_type.IsLowerThan(hand2._type))
             return -1;
 
         if (Variables.RunningPartOne)
@@ -96,9 +96,9 @@ public class Hand(int bid) : IComparable<Hand>
             var hand2Cards = hand2._cards;
             for (var i = 0; i < cardsCount; i++)
             {
-                if (_cards[i].IsHigherThan(hand2Cards[i]) == true)
+                if (_cards[i].IsHigherThan(hand2Cards[i]))
                     return 1;
-                if (_cards[i].IsHigherThan(hand2Cards[i]) == false)
+                if (_cards[i].IsLowerThan(hand2Cards[i]))
                     return -1;
             }
 
@@ -110,10 +110,11 @@ public class Hand(int bid) : IComparable<Hand>
 
         for (var i = 0; i < cards2Count; i++)
         {
-            if (_cards2[i].IsHigherThan(hand2Cards2[i]) == true)
+            
+            if (_cards2[i].IsHigherThan(hand2Cards2[i]))
                 return 1;
 
-            if (_cards2[i].IsHigherThan(hand2Cards2[i]) == false)
+            if (_cards2[i].IsLowerThan(hand2Cards2[i]))
                 return -1;
         }
 

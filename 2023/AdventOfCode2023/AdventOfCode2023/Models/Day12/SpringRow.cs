@@ -59,7 +59,8 @@ public class SpringRow
     {
         if (Variables.RunningPartOne)
         {
-            _continuousDamagedSprings.AddRange(arrangementsFromInput.Split(Constants.Comma).Select(int.Parse));
+            _continuousDamagedSprings
+                .AddRange(arrangementsFromInput.Split(Constants.Comma).Select(int.Parse));
             return;
         }
 
@@ -193,9 +194,7 @@ public class SpringRow
     }
 
     private async Task<bool> CombinationIsPossibleAsync(List<int> combination)
-    {
-        return await Task.Run(() => CombinationIsPossible(combination));
-    }
+        => await Task.Run(() => CombinationIsPossible(combination));
 
     private async Task<bool> CombinationIsPossible(List<int> combination)
     {
@@ -211,10 +210,8 @@ public class SpringRow
         return true;
     }
 
-    private async Task<bool> ContainsAllContinuousDamagedSpringsAsync(List<int> combination)
-    {
-        return await Task.Run(() => ContainsAllContinuousDamagedSprings(combination));
-    }
+    private async Task<bool> ContainsAllContinuousDamagedSpringsAsync(List<int> combination) 
+        => await Task.Run(() => ContainsAllContinuousDamagedSprings(combination));
 
     private async Task<bool> ContainsAllContinuousDamagedSprings(List<int> combination)
     {
@@ -224,10 +221,8 @@ public class SpringRow
         return results.All(result => result);
     }
 
-    private async Task<bool> DamagedSpringIndexIsUsedAsync(List<int> combination, int damagedSpringIndex)
-    {
-        return await Task.Run(() => DamagedSpringIndexIsUsed(combination, damagedSpringIndex));
-    }
+    private async Task<bool> DamagedSpringIndexIsUsedAsync(List<int> combination, int damagedSpringIndex) 
+        => await Task.Run(() => DamagedSpringIndexIsUsed(combination, damagedSpringIndex));
 
     private bool DamagedSpringIndexIsUsed(List<int> combination, int damagedSpringIndex)
     {

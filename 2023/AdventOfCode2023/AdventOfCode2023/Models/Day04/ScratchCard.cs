@@ -1,4 +1,6 @@
-﻿using AdventOfCode2023_1.Shared;
+﻿// using AdventOfCode2023_1.Shared;
+
+using UtilsCSharp.Utils;
 
 namespace AdventOfCode2023_1.Models.Day04;
 
@@ -25,10 +27,7 @@ public class ScratchCard(string cardId)
         });
     }
 
-    public void SetMatchingNumbers()
-    {
-        MatchingNumbers = CardNumbers.Where(number => WinningNumbers.Contains(number)).ToList();
-    }
+    public void SetMatchingNumbers() => MatchingNumbers = CardNumbers.Where(number => WinningNumbers.Contains(number)).ToList();
 
     public void CalculatePoints()
     {

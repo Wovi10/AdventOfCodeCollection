@@ -7,11 +7,13 @@ namespace AdventOfCode2023_1;
 
 public abstract class DayBase
 {
+    protected const bool IsDebug = false;
+    public const bool IsReal = true;
     protected static List<string> Input = new();
     private object _expectedAnswer = 0;
     protected string Day = "01";
 
-    public async Task Run(string day, string title)
+    public async Task Run(string day, string title, PartsToRun partToRun = PartsToRun.Both)
     {
         Day = day;
         WriteStopwatchStartText();
@@ -19,7 +21,7 @@ public abstract class DayBase
         watch.Start();
 
         SharedMethods.WriteBeginText(day, title);
-        switch (Constants.PartToRun)
+        switch (partToRun)
         {
             case PartsToRun.Part1:
                 await RunPartOne();
@@ -42,13 +44,13 @@ public abstract class DayBase
 
     private static void WriteStopwatchStartText()
     {
-        if (Constants.IsDebug)
+        if (IsDebug)
             Console.WriteLine($"Started at {DateTime.Now:HH:mm:ss}");
     }
 
     private static void WriteStopwatchText(long watchElapsedMilliseconds)
     {
-        if (Constants.IsDebug)
+        if (IsDebug)
             Console.WriteLine($"Elapsed time: {watchElapsedMilliseconds} ms");
     }
 

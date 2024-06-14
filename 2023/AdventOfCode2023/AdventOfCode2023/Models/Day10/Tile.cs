@@ -25,10 +25,11 @@ public class Tile
         if (pointsOut)
             TileType = TileType.Ground;
 
+        Coordinates = new Coordinates(tileCounter, mazeLineCounter);
+
         if (TileType == TileType.Ground)
             return;
 
-        Coordinates = new Coordinates(tileCounter, mazeLineCounter);
 
         SetAdjacentTiles(mazeLineCounter, tileCounter, mazeWidth, mazeLength);
     }

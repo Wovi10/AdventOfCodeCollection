@@ -33,7 +33,7 @@ public class Day13 : DayBase
         });
 
         var tasks = patterns.Select(pattern => pattern.GetPatternNotesAsync());
-        var results = Constants.IsDebug 
+        var results = IsDebug 
                 ? await Task.WhenAll(tasks.Select(async task =>
                 {
                     var result = await task.ConfigureAwait(false);

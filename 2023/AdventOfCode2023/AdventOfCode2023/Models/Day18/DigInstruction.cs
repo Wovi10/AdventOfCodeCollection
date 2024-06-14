@@ -23,13 +23,7 @@ public class DigInstruction<T> where T : struct, INumber<T>
 
     public (int, int) Offset { get; }
     public int Distance { get; }
-    
-    public void Deconstruct(out (int, int) offset, out int distance)
-    {
-        offset = Offset;
-        distance = Distance;
-    }
-    
+
     public override bool Equals(object? obj)
     {
         if (obj is DigInstruction<T> instruction)
@@ -38,7 +32,7 @@ public class DigInstruction<T> where T : struct, INumber<T>
         return false;
     }
 
-    public bool Equals(DigInstruction<T> other)
+    private bool Equals(DigInstruction<T> other)
         => Offset == other.Offset && Distance == other.Distance;
 
     public override int GetHashCode() 

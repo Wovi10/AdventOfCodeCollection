@@ -1,6 +1,7 @@
 ﻿using AdventOfCode2023_1.Models.Day05;
 using AdventOfCode2023_1.Shared;
 using UtilsCSharp;
+using Constants = UtilsCSharp.Utils.Constants;
 
 namespace AdventOfCode2023_1;
 
@@ -51,7 +52,7 @@ public class Day05 : DayBase
 
         IEnumerable<long> results;
 
-        if (!Constants.IsDebug)
+        if (!IsDebug)
         {
             results = StartSeeds.Select(pair =>
                 pair.TestPair(_soils, _fertilizers, _waters, _lights, _temperatures, _humidities, _locations));

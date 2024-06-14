@@ -41,7 +41,7 @@ public class Day14 : DayBase
                 var totalLoad = dish.Cycle();
                 listOfLoads.Add(totalLoad);
 
-                if (Constants.IsDebug)
+                if (IsDebug)
                 {
                     SharedMethods.ClearCurrentConsoleLine();
                     SharedMethods.PrintProgress(i, numCycles);

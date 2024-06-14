@@ -1,15 +1,10 @@
-﻿namespace AdventOfCode2023_1.Models.Day10;
+﻿using UtilsCSharp.Enums;
+using UtilsCSharp.Objects;
 
-public class Coordinates(int xCoordinate, int yCoordinate)
+namespace AdventOfCode2023_1.Models.Day10;
+
+public class Coordinates(int xCoordinate, int yCoordinate): NodeBase<int>(xCoordinate, yCoordinate)
 {
-    private readonly int _xCoordinate = xCoordinate;
-    private readonly int _yCoordinate = yCoordinate;
-
-    public int GetYCoordinate()
-        => _yCoordinate;
-
-    public int GetXCoordinate()
-        => _xCoordinate;
 
     public override bool Equals(object? obj)
     {
@@ -20,8 +15,13 @@ public class Coordinates(int xCoordinate, int yCoordinate)
     }
 
     public bool Equals(Coordinates other)
-        => _xCoordinate == other._xCoordinate && _yCoordinate == other._yCoordinate;
+        => X == other.X && Y == other.Y;
 
     public override int GetHashCode()
-        => HashCode.Combine(_xCoordinate, _yCoordinate);
+        => HashCode.Combine(X, Y);
+
+    public override (int, int) Move(Direction direction, int distance = 1)
+    {
+        throw new NotImplementedException();
+    }
 }

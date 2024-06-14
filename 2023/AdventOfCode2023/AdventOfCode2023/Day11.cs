@@ -28,9 +28,6 @@ public class Day11 : DayBase
         universe.Enlarge(enlargementFactor);
         var galaxyPairs = universe.GetGalaxyPairs();
 
-        foreach (var galaxyPair in galaxyPairs) 
-            galaxyPair.SetManhattanDistance();
-
         return galaxyPairs.Sum(galaxyPair => galaxyPair.ManhattanDistance);
     }
 }

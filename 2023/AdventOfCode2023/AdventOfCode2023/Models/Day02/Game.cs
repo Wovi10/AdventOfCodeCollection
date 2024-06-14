@@ -1,4 +1,4 @@
-﻿using AdventOfCode2023_1.Shared;
+﻿using UtilsCSharp.Utils;
 
 namespace AdventOfCode2023_1.Models.Day02;
 

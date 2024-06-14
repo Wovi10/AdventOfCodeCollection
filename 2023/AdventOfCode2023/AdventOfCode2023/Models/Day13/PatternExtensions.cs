@@ -13,8 +13,8 @@ public static class PatternExtensions
         return sumVerticalNotes + (100 * sumHorizontalNotes);
     }
 
-    private static bool? IsBeforeMiddle(this int position, double placesFromEnd)
-        => MathUtils.IsLessThan(position, placesFromEnd);
+    private static bool IsBeforeMiddle(this int position, int placesFromEnd)
+        => position.IsLessThan(placesFromEnd);
 
     public static async Task<int> GetCommonMirrorPosition(this List<Line> lines, ReturnObject? previousNotes = null)
     {
@@ -82,9 +82,9 @@ public static class PatternExtensions
 
         var rangeToCheck = isBeforeMiddle switch
         {
+            true when placesFromEnd == position => rocks,
             true => rocks[..(position * 2)],
-            false => rocks[(position - placesFromEnd)..],
-            null => rocks
+            false => rocks[(position - placesFromEnd)..]
         };
 
         for (var i = 0; i < rangeToCheck.Count / 2; i++)
