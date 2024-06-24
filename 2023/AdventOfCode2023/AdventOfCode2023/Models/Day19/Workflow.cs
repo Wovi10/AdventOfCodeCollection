@@ -4,6 +4,7 @@ public class Workflow
 {
     public string Name { get; }
     public List<Rule> Rules { get; }
+    
 
     public Workflow(string workflowLine)
     {

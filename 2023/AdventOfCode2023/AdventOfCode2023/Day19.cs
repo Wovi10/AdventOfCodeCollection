@@ -6,17 +6,25 @@ public class Day19 : DayBase
 {
     protected override Task<object> PartOne()
     {
-        var result = SumRatingNumbers();
+        var result = SumPartRatingNumbers();
 
         return Task.FromResult<object>(result);
     }
 
     protected override Task<object> PartTwo()
     {
-        throw new NotImplementedException();
+        var result = GetTotalCombinations();
+        
+        return Task.FromResult<object>(result);
     }
 
-    private static long SumRatingNumbers()
+    private long GetTotalCombinations()
+    {
+        var aplenty = new Aplenty(Input);
+        return aplenty.CheckCombos([1,1,1,1],[4000,4000,4000,4000], "in");
+    }
+
+    private static long SumPartRatingNumbers()
     {
         var aplenty = new Aplenty(Input);
         aplenty.Process();
