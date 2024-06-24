@@ -1,6 +1,7 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
 using AdventOfCode2023_1;
+using AdventOfCode2023_1.Shared.Enums;
 
 // await new Day01().Run("01","Trebuchet?!");
 // await new Day02().Run("02","Cube Conundrum");
@@ -12,7 +13,7 @@ using AdventOfCode2023_1;
 // await new Day08().Run("08", "Haunted Wasteland");
 // await new Day09().Run("09", "Mirage Maintenance");
 // await new Day10().Run("10", "Pipe Maze");
-await new Day11().Run("11", "Cosmic Expansion");
+// await new Day11().Run("11", "Cosmic Expansion");
 // await new Day12().Run("12", "Hot Springs");
 // await new Day13().Run("13", "Point of Incidence");
 // await new Day14().Run("14", "Parabolic Reflector Dish");
@@ -20,3 +21,4 @@ await new Day11().Run("11", "Cosmic Expansion");
 // await new Day16().Run("16", "The Floor Will Be Lava");
 // await new Day17().Run("17", "Clumsy Crucible");
 // await new Day18().Run("18", "Lavaduct Lagoon");
+await new Day19().Run("19", "Aplenty", PartsToRun.Part1);

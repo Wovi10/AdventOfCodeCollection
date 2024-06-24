@@ -80,6 +80,8 @@ public static class Answers
         new(18, 1, Real, 40131),
         new(18, 2, Mock, 952408144115),
         new(18, 2, Real, 104454050898331),
+        new(19, 1, Mock, 19114),
+        new(19, 1, Real, 575412),
     };
 
     public static object GetExpectedAnswer(string day, bool runningPartOne)
