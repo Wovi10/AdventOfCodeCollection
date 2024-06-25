@@ -93,14 +93,14 @@ public static class SharedMethods
 
     private static string GetFilePath(string day)
     {
-        var basePath = $"{Shared.Constants.RootInputPath}/Day{day}/";
+        var basePath = $"{Constants.RootInputPath}/Day{day}/";
 
         if (!DayBase.IsReal) 
             basePath += "Mock";
         
         basePath += $"Day{day}";
 
-        var differentMockDays = new List<string> {"01", "08", "10", "13"};
+        var differentMockDays = new List<string> {"01", "08", "10", "13", "20"};
         if (!DayBase.IsReal && Variables.RunningPartOne && differentMockDays.Contains(day)) 
             basePath += "Part01";
 

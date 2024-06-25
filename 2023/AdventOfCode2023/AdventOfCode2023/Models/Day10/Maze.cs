@@ -279,5 +279,5 @@ public class Maze
         => endPoint == 0 ? index >= endPoint : index < endPoint;
     
     private static int GetLowest(int first, int second)
-        => MathUtils.GetLowest(first, second);
+        => Comparisons.GetLowest(first, second);
 }
