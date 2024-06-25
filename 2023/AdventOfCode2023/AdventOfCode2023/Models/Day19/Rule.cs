@@ -1,5 +1,6 @@
 ﻿
 using AdventOfCode2023_1.Shared;
+using Constants = UtilsCSharp.Utils.Constants;
 
 namespace AdventOfCode2023_1.Models.Day19;
 
@@ -9,13 +10,13 @@ public class Rule
     {
         if (Variables.RunningPartOne)
         {
-            if (rulesLine.Contains(':'))
+            if (rulesLine.Contains(Constants.Colon))
             {
-                var firstHalf = rulesLine.Split(':').First();
+                var firstHalf = rulesLine.Split(Constants.Colon).First();
                 Type = firstHalf.First().ToType();
                 Comparer = firstHalf[1];
                 CompareValue = int.Parse(firstHalf[2..]);
-                NextState = rulesLine.Split(':').Last().Trim();
+                NextState = rulesLine.Split(Constants.Colon).Last().Trim();
             }
             else
             {
@@ -32,8 +33,8 @@ public class Rule
         {
             Type = rulesLine[0].ToType();
             Comparer = rulesLine[1];
-            CompareValue = int.Parse(rulesLine[2..rulesLine.IndexOf(':')]);
-            NextState = rulesLine[(rulesLine.IndexOf(':') + 1)..];
+            CompareValue = int.Parse(rulesLine[2..rulesLine.IndexOf(Constants.Colon, StringComparison.Ordinal)]);
+            NextState = rulesLine[(rulesLine.IndexOf(Constants.Colon, StringComparison.Ordinal) + 1)..];
         }
         else
         {
