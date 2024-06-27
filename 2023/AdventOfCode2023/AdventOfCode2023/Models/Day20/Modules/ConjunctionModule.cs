@@ -26,8 +26,8 @@ public class ConjunctionModule(string name) : Module(name)
         {
             IsHighPulse = !Memory.All(p => p.Value.IsHighPulse)
         };
-
-        WroteHighPulse = pulseToSend.IsHighPulse;
+        
+        WroteHighPulse = pulseToSend.IsHighPulse || WroteHighPulse;
 
         SendPulse(pulseToSend);
     }
