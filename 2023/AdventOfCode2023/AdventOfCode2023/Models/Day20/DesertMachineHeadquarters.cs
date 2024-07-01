@@ -5,8 +5,8 @@ namespace AdventOfCode2023_1.Models.Day20;
 
 public class DesertMachineHeadquarters
 {
-    public ButtonModule Button { get; set; }
-    public int[] HelperCounter { get; set; } = new int[4];
+    private ButtonModule Button { get; }
+    public long[] HelperCounter { get; } = new long[4];
     
     public DesertMachineHeadquarters(List<string> input)
     {
@@ -70,8 +70,8 @@ public class DesertMachineHeadquarters
         Button.AddDestination(allModules.First(module => module.Name == "broadcaster"));
     }
 
-    public void PressButton(int times = 0) 
-        => Button.PressButton(HelperCounter,times);
+    public void PressButton(int times = 0)
+        => Button.PressButton(HelperCounter, times);
 
     public static long GetTotalPulses() 
         => PulseModuleQueue.TotalPulses;

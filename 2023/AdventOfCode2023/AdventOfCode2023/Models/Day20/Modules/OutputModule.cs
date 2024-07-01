@@ -2,7 +2,6 @@
 
 public class OutputModule(string name = "output") :Module(name)
 {
-    public override void HandlePulse(Pulse pulse)
-    {
-    }
+    public override OutputModule HandlePulse(Pulse pulse) 
+        => this;
 }

@@ -2,14 +2,15 @@
 
 public class FlipFlopModule(string name) : Module(name)
 {
-    public override void HandlePulse(Pulse pulse)
+    public override FlipFlopModule HandlePulse(Pulse pulse)
     {
         if (pulse.IsHighPulse)
-            return;
+            return this;
 
         IsTurnedOn = !IsTurnedOn;
 
         var pulseToSend = new Pulse {IsHighPulse = IsTurnedOn};
         SendPulse(pulseToSend);
+        return this;
     }
 }

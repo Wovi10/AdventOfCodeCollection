@@ -28,8 +28,9 @@ public static class PulseModuleQueue
         var pulse = Pulses.Dequeue();
         var module = Modules.Dequeue();
 
-        module.IsProcessingPulse = true;
-        module.HandlePulse(pulse);
-        module.IsProcessingPulse = false;
+        module
+            .SetIsProcessingPulse(true)
+            .HandlePulse(pulse)
+            .SetIsProcessingPulse(false);
     }
 }

@@ -2,6 +2,9 @@
 
 public class BroadcastModule() : Module("broadcaster")
 {
-    public override void HandlePulse(Pulse pulse) 
-        => SendPulse(pulse);
+    public override BroadcastModule HandlePulse(Pulse pulse)
+    {
+        SendPulse(pulse);
+        return this;
+    }
 }

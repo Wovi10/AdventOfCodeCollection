@@ -18,7 +18,7 @@ public class ConjunctionModule(string name) : Module(name)
         base.Reset();
     }
 
-    public override void HandlePulse(Pulse pulse)
+    public override ConjunctionModule HandlePulse(Pulse pulse)
     {
         UpdateMemory(pulse);
 
@@ -30,6 +30,8 @@ public class ConjunctionModule(string name) : Module(name)
         WroteHighPulse = pulseToSend.IsHighPulse || WroteHighPulse;
 
         SendPulse(pulseToSend);
+        
+        return this;
     }
 
     private void UpdateMemory(Pulse pulse)

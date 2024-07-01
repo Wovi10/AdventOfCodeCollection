@@ -5,10 +5,13 @@ namespace AdventOfCode2023_1.Models.Day20.Modules;
 public class ButtonModule() : Module("aptly")
 {
     public List<Module> AllModules { get; set; } = new();
-    public int TotalPresses { get; set; }
+    private int TotalPresses { get; set; }
 
-    public override void HandlePulse(Pulse pulse)
-        => SendPulse(pulse);
+    public override ButtonModule HandlePulse(Pulse pulse)
+    {
+        SendPulse(pulse);
+        return this;
+    }
 
     public override void Reset()
     {
@@ -27,34 +30,39 @@ public class ButtonModule() : Module("aptly")
         HandlePulse(lowPulse);
     }
 
-    public void PressButton(int[] helperCounter, int times)
+    public ButtonModule PressButton(long[] helperCounter, int times)
     {
-        if (!Variables.RunningPartOne)
+        if (Variables.RunningPartOne)
         {
-            var rxModule = (RxModule)AllModules.First(module => module is RxModule);
-            var rxInitiator = (ConjunctionModule)rxModule.Initiators.First();
-            var parents = rxInitiator.Initiators;
-
-            var counter = 0;
-            foreach (var parent in parents.Cast<ConjunctionModule>())
+            do
             {
-                do
-                {
-                    PressButton();
-                } while (!parent.WroteHighPulse);
+                PressButton();
+            } while (TotalPresses < times);
 
-                helperCounter[counter] = TotalPresses;
-                counter++;
-
-                AllModules.ForEach(module => module.Reset());
-            }
-
-            return;
+            return this;
         }
 
-        do
+        var rxModule = (RxModule)AllModules.First(module => module is RxModule);
+        var rxInitiator = (ConjunctionModule)rxModule.Initiators.First();
+        var parents = rxInitiator.Initiators.Cast<ConjunctionModule>();
+        var counter = 0;
+
+        foreach (var parent in parents)
         {
-            PressButton();
-        } while (TotalPresses < times);
+            if (parent == null)
+                continue;
+
+            do
+            {
+                PressButton();
+            } while (!parent.WroteHighPulse);
+
+            helperCounter[counter] = TotalPresses;
+            counter++;
+
+            AllModules.ForEach(module => module.Reset());
+        }
+
+        return this;
     }
 }

@@ -8,7 +8,7 @@ public abstract class Module(string name)
     private List<Module> Destinations { get; set; } = new();
     public bool IsProcessingPulse { get; set; }
 
-    public abstract void HandlePulse(Pulse pulse);
+    public abstract Module HandlePulse(Pulse pulse);
 
     public virtual void AddInitiator(Module module)
     {
@@ -36,5 +36,11 @@ public abstract class Module(string name)
     {
         IsTurnedOn = false;
         IsProcessingPulse = false;
+    }
+    
+    public Module SetIsProcessingPulse(bool isProcessingPulse)
+    {
+        IsProcessingPulse = isProcessingPulse;
+        return this;
     }
 }
