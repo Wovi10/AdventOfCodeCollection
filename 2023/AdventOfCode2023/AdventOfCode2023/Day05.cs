@@ -81,7 +81,7 @@ public class Day05 : DayBase
         return _seedsToTest
             .Select(seed => seed.SeedToLocation(_soils, _fertilizers, _waters, _lights, _temperatures,
                 _humidities, _locations))
-            .Aggregate(long.MaxValue, (current, result) => MathUtils.GetLowest(result, current));
+            .Aggregate(long.MaxValue, (current, result) => Comparisons.GetLowest(result, current));
     }
 
     private void ProcessFile()

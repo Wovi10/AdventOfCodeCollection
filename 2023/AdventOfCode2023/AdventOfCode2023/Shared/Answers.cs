@@ -5,6 +5,7 @@ public static class Answers
     private const bool Mock = false;
     private const bool Real = true;
     public const string NotYetFound = "NOT YET FOUND";
+    private const string NotApplicable = "N/A";
 
     private static readonly List<Answer> AnswersList = new()
     {
@@ -84,6 +85,10 @@ public static class Answers
         new(19, 1, Real, 575412),
         new(19, 2, Mock, 167409079868000),
         new(19, 2, Real, 126107942006821),
+        new(20, 1, Mock, 32000000),
+        new(20, 1, Real, 788848550),
+        new(20, 2, Mock, NotApplicable),
+        new(20, 2, Real, 228300182686739)
     };
 
     public static object GetExpectedAnswer(string day, bool runningPartOne)

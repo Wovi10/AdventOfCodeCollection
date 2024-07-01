@@ -21,4 +21,5 @@ using AdventOfCode2023_1.Shared.Enums;
 // await new Day16().Run("16", "The Floor Will Be Lava");
 // await new Day17().Run("17", "Clumsy Crucible");
 // await new Day18().Run("18", "Lavaduct Lagoon");
-await new Day19().Run("19", "Aplenty");
+// await new Day19().Run("19", "Aplenty");
+await new Day20().Run("20", "Pulse Propagation", PartsToRun.Part2);
