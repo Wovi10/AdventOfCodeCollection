@@ -44,6 +44,7 @@ public class ButtonModule() : Module("aptly")
 
         var rxModule = (RxModule)AllModules.First(module => module is RxModule);
         var rxInitiator = (ConjunctionModule)rxModule.Initiators.First();
+        
         var parents = rxInitiator.Initiators.Cast<ConjunctionModule>();
         var counter = 0;
 

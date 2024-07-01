@@ -5,9 +5,9 @@ namespace AdventOfCode2023_1.Models.Day19;
 
 public class Aplenty
 {
-    private List<Workflow> Workflows { get; }
-    private List<Part> Parts { get; }
-    private Dictionary<string, List<Rule>> Rules { get; }
+    private List<Workflow> Workflows { get; } = new();
+    private List<Part> Parts { get; } = new();
+    private Dictionary<string, List<Rule>> Rules { get; } = new();
 
     public Aplenty(List<string> input)
     {

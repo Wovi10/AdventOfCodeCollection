@@ -94,8 +94,10 @@ public static class TileExtensions
     public static void AddNorthTile(this Tile tile, Dictionary<Coordinates, Tile> tileDictionary)
     {
         var northTileCoords = tile.NorthTile;
+
         if (northTileCoords == null)
             return;
+
         var northTile = tileDictionary.FirstOrDefault(t => t.Key.Equals(northTileCoords)).Value;
         if (northTile == null)
             return;

@@ -4,7 +4,7 @@ public class Pulse
 {
     public bool IsHighPulse { get; set; }
     public bool IsLowPulse => !IsHighPulse;
-    public string Initiator { get; set; }
+    public string? Initiator { get; set; }
 
     public void ChangeInitiator(string name)
     {

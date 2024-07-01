@@ -3,8 +3,21 @@ using UtilsCSharp.Objects;
 
 namespace AdventOfCode2023_1.Models.Day10;
 
-public class Coordinates(int xCoordinate, int yCoordinate): NodeBase<int>(xCoordinate, yCoordinate)
+public class Coordinates(int xCoordinate, int yCoordinate) : NodeBase<int>(xCoordinate, yCoordinate)
 {
+    public static bool operator ==(Coordinates? left, Coordinates? right)
+    {
+        if (left is null && right is null)
+            return true;
+
+        if (left is null || right is null)
+            return false;
+
+        return left.Equals(right);
+    }
+
+    public static bool operator !=(Coordinates left, Coordinates right)
+        => !(left == right);
 
     public override bool Equals(object? obj)
     {
@@ -14,8 +27,13 @@ public class Coordinates(int xCoordinate, int yCoordinate): NodeBase<int>(xCoord
         return false;
     }
 
-    public bool Equals(Coordinates other)
-        => X == other.X && Y == other.Y;
+    public bool Equals(Coordinates? other)
+    {
+        if (other is null)
+            return false;
+
+        return X == other.X && Y == other.Y;
+    }
 
     public override int GetHashCode()
         => HashCode.Combine(X, Y);
