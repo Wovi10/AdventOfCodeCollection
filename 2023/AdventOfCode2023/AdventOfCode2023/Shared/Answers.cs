@@ -88,14 +88,16 @@ public static class Answers
         new(20, 1, Mock, 32000000),
         new(20, 1, Real, 788848550),
         new(20, 2, Mock, NotApplicable),
-        new(20, 2, Real, 228300182686739)
+        new(20, 2, Real, 228300182686739),
+        new(21, 1, Mock, 16),
+        new(21, 1, Real, NotYetFound),
     };
 
     public static object GetExpectedAnswer(string day, bool runningPartOne)
     {
         var partInt = runningPartOne ? 1 : 2;
-        var answer = AnswersList.FirstOrDefault(a => a.Day == int.Parse(day) && a.Part == partInt && a.IsReal == 
-            DayBase.IsReal);
+        var answer = AnswersList.FirstOrDefault(a =>
+            a.Day == int.Parse(day) && a.Part == partInt && a.IsReal == DayBase.IsReal);
 
         return answer?.Result ?? NotYetFound;
     }

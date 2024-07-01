@@ -58,7 +58,7 @@ public abstract class DayBase
     {
         Variables.RunningPartOne = true;
         Input = SharedMethods.GetInput(Day);
-        _expectedAnswer = Answers.GetExpectedAnswer(Day, true);
+        _expectedAnswer = GetExpectedAnswer(true);
 
         var result = await PartOne();
         SharedMethods.PrintAnswer(result);
@@ -70,7 +70,7 @@ public abstract class DayBase
     {
         Variables.RunningPartOne = false;
         Input = SharedMethods.GetInput(Day);
-        _expectedAnswer = Answers.GetExpectedAnswer(Day, false);
+        _expectedAnswer = GetExpectedAnswer(false);
 
         var result = await PartTwo();
         SharedMethods.PrintAnswer(result);
@@ -81,4 +81,7 @@ public abstract class DayBase
     protected abstract Task<object> PartOne();
 
     protected abstract Task<object> PartTwo();
+
+    private object GetExpectedAnswer(bool partOne) 
+        => Answers.GetExpectedAnswer(Day, partOne);
 }
