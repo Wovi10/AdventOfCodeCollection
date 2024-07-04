@@ -19,4 +19,15 @@ public static class TileTypeExtensions
             _ => throw new NotImplementedException("UnexpectedInput")
         };
     }
+
+    public static char ToTileChar(this TileType tileType)
+    {
+        return tileType switch
+        {
+            TileType.StartingPosition => 'S',
+            TileType.GardenPlot => '.',
+            TileType.Rock => '#',
+            _ => throw new NotImplementedException("UnexpectedInput")
+        };
+    }
 }

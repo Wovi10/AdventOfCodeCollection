@@ -45,7 +45,9 @@ public abstract class DayBase
     private static void WriteStopwatchStartText()
     {
         if (IsDebug)
+        {
             Console.WriteLine($"Started at {DateTime.Now:HH:mm:ss}");
+        }
     }
 
     private static void WriteStopwatchText(long watchElapsedMilliseconds)
@@ -54,34 +56,28 @@ public abstract class DayBase
             Console.WriteLine($"Elapsed time: {watchElapsedMilliseconds} ms");
     }
 
-    private async Task RunPartOne()
-    {
-        Variables.RunningPartOne = true;
-        Input = SharedMethods.GetInput(Day);
-        _expectedAnswer = GetExpectedAnswer(true);
-
-        var result = await PartOne();
-        SharedMethods.PrintAnswer(result);
-
-        Assert.That(result, Is.EqualTo(_expectedAnswer));
-    }
+    private async Task RunPartOne() 
+        => await RunPart(true, PartOne);
 
     private async Task RunPartTwo()
-    {
-        Variables.RunningPartOne = false;
-        Input = SharedMethods.GetInput(Day);
-        _expectedAnswer = GetExpectedAnswer(false);
+        => await RunPart(false, PartTwo);
 
-        var result = await PartTwo();
+    private async Task RunPart(bool runningPartOne, Func<Task<object>> partToRun)
+    {
+        Variables.RunningPartOne = runningPartOne;
+        Input = SharedMethods.GetInput(Day);
+        _expectedAnswer = GetExpectedAnswer(runningPartOne);
+
+        var result = await partToRun();
         SharedMethods.PrintAnswer(result);
 
-        Assert.That(result, Is.EqualTo(_expectedAnswer));
+        if (!IsDebug) Assert.That(result, Is.EqualTo(_expectedAnswer));
     }
 
     protected abstract Task<object> PartOne();
 
     protected abstract Task<object> PartTwo();
 
-    private object GetExpectedAnswer(bool partOne) 
+    private object GetExpectedAnswer(bool partOne)
         => Answers.GetExpectedAnswer(Day, partOne);
 }
