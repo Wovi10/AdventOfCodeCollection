@@ -11,9 +11,9 @@ public static class TileExtensions
     public static void StepNonRecursive(this Tile currentTile, int numberOfSteps,
         List<(int, int)> reachableTiles, List<Tile>? allTiles = null)
     {
-        var tilesToProcess = new Queue<(Tile tile, int stepCounter)>();
+        var tilesToProcess = new Queue<Tile>();
         var visitedTiles = new HashSet<int>();
-        tilesToProcess.Enqueue((currentTile, 0));
+        tilesToProcess.Enqueue(currentTile);
 
         var highestStepCounter = 0;
 
@@ -22,27 +22,28 @@ public static class TileExtensions
 
         while (tilesToProcess.Count > 0)
         {
-            var (tile, stepCounter) = tilesToProcess.Dequeue();
+            var tile = tilesToProcess.Dequeue();
 
-            if (stepCounter.IsEven())
-                reachableTiles.Add((tile.ActualX, tile.ActualY));
+            if (tile.StepCounter.IsEven())
+                reachableTiles.Add((tile.X, tile.Y));
 
-            if (stepCounter >= numberOfSteps)
+            if (tile.StepCounter >= numberOfSteps)
                 continue;
 
-            highestStepCounter = Comparisons.GetHighest(stepCounter, highestStepCounter);
+            highestStepCounter = Comparisons.GetHighest(tile.StepCounter, highestStepCounter);
 
             var walkableNeighbourTiles = GetWalkableNeighbourTiles(tile);
 
             foreach (var neighbourTile in walkableNeighbourTiles)
             {
-                var nextStepCounter = stepCounter + 1;
-                var neighbourHashCode = neighbourTile.GetHashCode(nextStepCounter);
+                var nextStepCounter = tile.StepCounter + 1;
+                neighbourTile.StepCounter = nextStepCounter;
+                var neighbourHashCode = neighbourTile.GetHashCode();
 
                 if (!visitedTiles.Add(neighbourHashCode))
                     continue;
 
-                tilesToProcess.Enqueue((neighbourTile, nextStepCounter));
+                tilesToProcess.Enqueue(neighbourTile);
             }
         }
 
@@ -81,17 +82,5 @@ public static class TileExtensions
         }
 
         return neighbourTiles;
-    }
-
-    private static int GetHashCode(this Tile tile, int stepCounter)
-    {
-        unchecked
-        {
-            var hash = 17;
-            hash = hash * 23 + EqualityComparer<int>.Default.GetHashCode(tile.ActualX);
-            hash = hash * 23 + EqualityComparer<int>.Default.GetHashCode(tile.ActualY);
-            hash = hash * 23 + EqualityComparer<int>.Default.GetHashCode(stepCounter);
-            return hash;
-        }
     }
 }

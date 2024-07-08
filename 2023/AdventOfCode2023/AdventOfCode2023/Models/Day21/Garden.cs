@@ -29,7 +29,7 @@ public class Garden
     private List<Tile> Tiles { get; set; }
     public static int Width { get; set; }
     public static int Height { get; set; }
-    
+
     public void Print()
     {
         var maxX = Tiles.Max(t => t.X);
@@ -54,11 +54,12 @@ public class Garden
     {
         var startingPosition = Tiles.First(t => t.Type == TileType.StartingPosition);
         var reachableTiles = new List<(int, int)>();
+        startingPosition.StepCounter = 0;
 
         startingPosition.StepNonRecursive(numberOfSteps, reachableTiles, Tiles);
 
         var distinctTiles = reachableTiles.Distinct().ToList();
-        
+
         return distinctTiles.Count;
     }
 }

@@ -8,8 +8,9 @@ public class Tile(int internalX, int internalY, char tileTypeInput) : NodeBase<i
 {
     private readonly int _internalX = internalX;
     private readonly int _internalY = internalY;
-    public int ActualX { get; set; } = internalX;
-    public int ActualY { get; set; } = internalY;
+    private int ActualX { get; set; } = internalX;
+    private int ActualY { get; set; } = internalY;
+    public int StepCounter { get; set; }
 
     public TileType Type { get; set; } = tileTypeInput.ToTileType();
     public bool IsWalkable => Type != TileType.Rock;
@@ -24,5 +25,17 @@ public class Tile(int internalX, int internalY, char tileTypeInput) : NodeBase<i
             Direction.Left => (ActualX - distance, ActualY),
             _ => (ActualX, ActualY)
         };
+    }
+
+    public override int GetHashCode()
+    {
+        unchecked
+        {
+            var hash = 17;
+            hash = hash * 23 + EqualityComparer<int>.Default.GetHashCode(X);
+            hash = hash * 23 + EqualityComparer<int>.Default.GetHashCode(Y);
+            hash = hash * 23 + EqualityComparer<int>.Default.GetHashCode(StepCounter);
+            return hash;
+        }
     }
 }
