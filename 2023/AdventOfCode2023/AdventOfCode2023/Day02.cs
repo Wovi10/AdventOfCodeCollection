@@ -38,4 +38,5 @@ public class Day02 : DayBase
 
         return validGames.Select(game => game.GameIndex).ToList();
     }
+    
 }

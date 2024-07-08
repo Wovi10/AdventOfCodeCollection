@@ -22,4 +22,5 @@ using AdventOfCode2023_1.Shared.Enums;
 // await new Day17().Run("17", "Clumsy Crucible");
 // await new Day18().Run("18", "Lavaduct Lagoon");
 // await new Day19().Run("19", "Aplenty");
-await new Day20().Run("20", "Pulse Propagation", PartsToRun.Part2);
+// await new Day20().Run("20", "Pulse Propagation");
+await new Day21().Run("21", "Step counter", PartsToRun.Part1);

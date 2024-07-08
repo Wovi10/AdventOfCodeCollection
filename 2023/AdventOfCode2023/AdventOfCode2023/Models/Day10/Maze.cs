@@ -1,6 +1,7 @@
 ﻿using AdventOfCode2023_1.Models.Day10.Enums;
 using AdventOfCode2023_1.Shared;
 using UtilsCSharp;
+using UtilsCSharp.Enums;
 
 namespace AdventOfCode2023_1.Models.Day10;
 
@@ -132,10 +133,10 @@ public class Maze
                 var directionToClosestEdge = FindClosestEdge(coordToCheck);
                 var edgesCrossed = directionToClosestEdge switch
                 {
-                    Direction.North => CountEdgeCrossesNorth(coordToCheck),
-                    Direction.East => CountEdgeCrossesEast(coordToCheck),
-                    Direction.South => CountEdgeCrossesSouth(coordToCheck),
-                    Direction.West => CountEdgeCrossesWest(coordToCheck),
+                    WindDirection.North => CountEdgeCrossesNorth(coordToCheck),
+                    WindDirection.East => CountEdgeCrossesEast(coordToCheck),
+                    WindDirection.South => CountEdgeCrossesSouth(coordToCheck),
+                    WindDirection.West => CountEdgeCrossesWest(coordToCheck),
                     _ => throw new ArgumentOutOfRangeException()
                 };
 
@@ -147,7 +148,7 @@ public class Maze
         return enclosedTiles;
     }
 
-    private Direction FindClosestEdge(Coordinates coordinates)
+    private WindDirection FindClosestEdge(Coordinates coordinates)
     {
         var distanceNorth = coordinates.Y;
         var distanceEast = _mazeWidth - coordinates.X;
@@ -158,14 +159,14 @@ public class Maze
         lowest = GetLowest(lowest, distanceWest);
 
         if (lowest == distanceNorth)
-            return Direction.North;
+            return WindDirection.North;
 
         if (lowest == distanceEast)
-            return Direction.East;
+            return WindDirection.East;
 
         return lowest == distanceSouth
-            ? Direction.South
-            : Direction.West;
+            ? WindDirection.South
+            : WindDirection.West;
     }
 
     private int CountEdgeCrossesNorth(Coordinates startCoordinates)

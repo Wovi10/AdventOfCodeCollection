@@ -1,6 +1,4 @@
-﻿using AdventOfCode2023_1.Shared.Enums;
-
-namespace AdventOfCode2023_1.Shared;
+﻿namespace AdventOfCode2023_1.Shared;
 
 public static class Constants
 {
