@@ -8,7 +8,7 @@ namespace AdventOfCode2023_1;
 public abstract class DayBase
 {
     protected const bool IsDebug = true;
-    public const bool IsReal = true;
+    public const bool IsReal = false;
     protected static List<string> Input = new();
     private object _expectedAnswer = 0;
     protected string Day = "01";

@@ -1,6 +1,4 @@
-﻿using System.Collections.Concurrent;
-using AdventOfCode2023_1.Models.Day21.Enums;
-using UtilsCSharp.Enums;
+﻿using AdventOfCode2023_1.Models.Day21.Enums;
 
 namespace AdventOfCode2023_1.Models.Day21;
 
@@ -8,6 +6,9 @@ public class Garden
 {
     public Garden(List<string> input)
     {
+        Width = input[0].Length;
+        Height = input.Count;
+
         var tiles = new List<Tile>();
 
         for (var y = 0; y < input.Count; y++)
@@ -26,6 +27,8 @@ public class Garden
     }
 
     private List<Tile> Tiles { get; set; }
+    public static int Width { get; set; }
+    public static int Height { get; set; }
     
     public void Print()
     {
@@ -50,11 +53,12 @@ public class Garden
     public long CalculateReachableGardenPlots(int numberOfSteps)
     {
         var startingPosition = Tiles.First(t => t.Type == TileType.StartingPosition);
-        var reachableTiles = new List<Tile> {startingPosition};
+        var reachableTiles = new List<(int, int)>();
 
-        startingPosition.StepNonRecursive(numberOfSteps,reachableTiles, Tiles);
+        startingPosition.StepNonRecursive(numberOfSteps, reachableTiles, Tiles);
 
         var distinctTiles = reachableTiles.Distinct().ToList();
+        
         return distinctTiles.Count;
     }
 }

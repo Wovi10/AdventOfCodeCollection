@@ -1,4 +1,5 @@
-﻿using UtilsCSharp;
+﻿using AdventOfCode2023_1.Models.Day21.Enums;
+using UtilsCSharp;
 using UtilsCSharp.Enums;
 
 namespace AdventOfCode2023_1.Models.Day21;
@@ -8,12 +9,13 @@ public static class TileExtensions
     private static List<Tile> AllTiles { get; set; } = new();
 
     public static void StepNonRecursive(this Tile currentTile, int numberOfSteps,
-        List<Tile> reachableTiles, List<Tile>? allTiles = null)
+        List<(int, int)> reachableTiles, List<Tile>? allTiles = null)
     {
         var tilesToProcess = new Queue<(Tile tile, int stepCounter)>();
-        var minStepCounts = new Dictionary<Tile, int>();
+        var visitedTiles = new HashSet<int>();
         tilesToProcess.Enqueue((currentTile, 0));
-        minStepCounts[currentTile] = 0;
+
+        var highestStepCounter = 0;
 
         if (AllTiles.Count == 0 && allTiles != null)
             AllTiles = allTiles;
@@ -23,24 +25,28 @@ public static class TileExtensions
             var (tile, stepCounter) = tilesToProcess.Dequeue();
 
             if (stepCounter.IsEven())
-                reachableTiles.Add(tile);
+                reachableTiles.Add((tile.ActualX, tile.ActualY));
 
-            if (stepCounter >= numberOfSteps) 
+            if (stepCounter >= numberOfSteps)
                 continue;
 
+            highestStepCounter = Comparisons.GetHighest(stepCounter, highestStepCounter);
+
             var walkableNeighbourTiles = GetWalkableNeighbourTiles(tile);
+
             foreach (var neighbourTile in walkableNeighbourTiles)
             {
                 var nextStepCounter = stepCounter + 1;
+                var neighbourHashCode = neighbourTile.GetHashCode(nextStepCounter);
 
-                if (minStepCounts.TryGetValue(neighbourTile, out var existingStepCount) &&
-                    nextStepCounter >= existingStepCount) 
+                if (!visitedTiles.Add(neighbourHashCode))
                     continue;
 
-                minStepCounts[neighbourTile] = nextStepCounter;
                 tilesToProcess.Enqueue((neighbourTile, nextStepCounter));
             }
         }
+
+        Console.WriteLine($"Highest step counter: {highestStepCounter}");
     }
 
     private static List<Tile> GetWalkableNeighbourTiles(this Tile currentTile)
@@ -53,24 +59,38 @@ public static class TileExtensions
                 continue;
 
             var (x, y) = currentTile.Move(direction);
+            var (newX, newY) = (x, y);
 
-            var neighbourTile = AllTiles.FirstOrDefault(t => t.X == x && t.Y == y);
+            if (newX < 0)
+                newX += Garden.Width - 1;
+            else if (newX >= Garden.Width)
+                newX -= Garden.Width;
 
-            if (neighbourTile is {IsWalkable: true})
-                neighbourTiles.Add(neighbourTile);
+            if (newY < 0)
+                newY += Garden.Height - 1;
+            else if (newY >= Garden.Height)
+                newY -= Garden.Height;
+
+            var neighbourTile = AllTiles.FirstOrDefault(t => t.X == newX && t.Y == newY);
+
+            if (neighbourTile is not {IsWalkable: true})
+                continue;
+
+            var newTile = new Tile(newX, newY, neighbourTile.Type.ToTileChar());
+            neighbourTiles.Add(newTile);
         }
 
         return neighbourTiles;
     }
 
-    public static int GetHashCode(this Tile tile, int counter)
+    private static int GetHashCode(this Tile tile, int stepCounter)
     {
         unchecked
         {
             var hash = 17;
-            hash = hash * 23 + EqualityComparer<int>.Default.GetHashCode(tile.X);
-            hash = hash * 23 + EqualityComparer<int>.Default.GetHashCode(tile.Y);
-            hash = hash * 23 + EqualityComparer<int>.Default.GetHashCode(counter);
+            hash = hash * 23 + EqualityComparer<int>.Default.GetHashCode(tile.ActualX);
+            hash = hash * 23 + EqualityComparer<int>.Default.GetHashCode(tile.ActualY);
+            hash = hash * 23 + EqualityComparer<int>.Default.GetHashCode(stepCounter);
             return hash;
         }
     }

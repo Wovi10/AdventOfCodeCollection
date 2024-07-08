@@ -14,13 +14,15 @@ public class Day21 : DayBase
 
     protected override Task<object> PartTwo()
     {
-        throw new NotImplementedException();
+        const int numberOfSteps = IsReal ? 26501365 : 10;
+        var result = CountReachableGardenPlots(numberOfSteps);
+
+        return Task.FromResult<object>(result);
     }
 
     private long CountReachableGardenPlots(int numberOfSteps)
     {
         var garden = new Garden(Input);
-        // garden.Print();
 
         return garden.CalculateReachableGardenPlots(numberOfSteps);
     }
