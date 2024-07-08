@@ -47,13 +47,12 @@ public class Garden
         }
     }
 
-    public async Task<long> CalculateReachableGardenPlots(int numberOfSteps)
+    public long CalculateReachableGardenPlots(int numberOfSteps)
     {
         var startingPosition = Tiles.First(t => t.Type == TileType.StartingPosition);
-        var reachableTiles = new ConcurrentBag<Tile> {startingPosition};
-        var visitedTiles = new ConcurrentBag<int> {startingPosition.GetHashCode(0)};
+        var reachableTiles = new List<Tile> {startingPosition};
 
-        await startingPosition.Step(0, reachableTiles, numberOfSteps, visitedTiles, Tiles);
+        startingPosition.StepNonRecursive(numberOfSteps,reachableTiles, Tiles);
 
         var distinctTiles = reachableTiles.Distinct().ToList();
         return distinctTiles.Count;

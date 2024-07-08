@@ -1,5 +1,4 @@
-﻿using System.Collections.Concurrent;
-using UtilsCSharp;
+﻿using UtilsCSharp;
 using UtilsCSharp.Enums;
 
 namespace AdventOfCode2023_1.Models.Day21;
@@ -8,31 +7,40 @@ public static class TileExtensions
 {
     private static List<Tile> AllTiles { get; set; } = new();
 
-    public static async Task Step(this Tile currentTile, int stepCounter, ConcurrentBag<Tile> reachableTiles,
-        int numberOfSteps, ConcurrentBag<int> visitedTiles, List<Tile>? allTiles = null)
+    public static void StepNonRecursive(this Tile currentTile, int numberOfSteps,
+        List<Tile> reachableTiles, List<Tile>? allTiles = null)
     {
-        if (stepCounter == numberOfSteps)
-        {
-            reachableTiles.Add(currentTile);
-            return;
-        }
-
-        visitedTiles.Add(currentTile.GetHashCode(stepCounter));
-        if (stepCounter.IsEven())
-            reachableTiles.Add(currentTile);
+        var tilesToProcess = new Queue<(Tile tile, int stepCounter)>();
+        var minStepCounts = new Dictionary<Tile, int>();
+        tilesToProcess.Enqueue((currentTile, 0));
+        minStepCounts[currentTile] = 0;
 
         if (AllTiles.Count == 0 && allTiles != null)
             AllTiles = allTiles;
 
-        stepCounter++;
+        while (tilesToProcess.Count > 0)
+        {
+            var (tile, stepCounter) = tilesToProcess.Dequeue();
 
-        var walkableNeighbourTiles = GetWalkableNeighbourTiles(currentTile);
-        var neighbourTiles = walkableNeighbourTiles.Where(tile => !visitedTiles.Contains(tile
-            .GetHashCode(stepCounter+1)))
-            .ToList();
+            if (stepCounter.IsEven())
+                reachableTiles.Add(tile);
 
-        foreach (var neighbourTile in neighbourTiles)
-            await neighbourTile.Step(stepCounter, reachableTiles, numberOfSteps, visitedTiles);
+            if (stepCounter >= numberOfSteps) 
+                continue;
+
+            var walkableNeighbourTiles = GetWalkableNeighbourTiles(tile);
+            foreach (var neighbourTile in walkableNeighbourTiles)
+            {
+                var nextStepCounter = stepCounter + 1;
+
+                if (minStepCounts.TryGetValue(neighbourTile, out var existingStepCount) &&
+                    nextStepCounter >= existingStepCount) 
+                    continue;
+
+                minStepCounts[neighbourTile] = nextStepCounter;
+                tilesToProcess.Enqueue((neighbourTile, nextStepCounter));
+            }
+        }
     }
 
     private static List<Tile> GetWalkableNeighbourTiles(this Tile currentTile)
@@ -54,7 +62,7 @@ public static class TileExtensions
 
         return neighbourTiles;
     }
-    
+
     public static int GetHashCode(this Tile tile, int counter)
     {
         unchecked

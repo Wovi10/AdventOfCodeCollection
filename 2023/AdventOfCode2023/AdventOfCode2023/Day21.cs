@@ -4,12 +4,12 @@ namespace AdventOfCode2023_1;
 
 public class Day21 : DayBase
 {
-    protected override async Task<object> PartOne()
+    protected override Task<object> PartOne()
     {
         const int numberOfSteps = IsReal ? 64 : 6;
-        var result = await CountReachableGardenPlots(numberOfSteps);
+        var result = CountReachableGardenPlots(numberOfSteps);
 
-        return result;
+        return Task.FromResult<object>(result);
     }
 
     protected override Task<object> PartTwo()
@@ -17,7 +17,7 @@ public class Day21 : DayBase
         throw new NotImplementedException();
     }
 
-    private Task<long> CountReachableGardenPlots(int numberOfSteps)
+    private long CountReachableGardenPlots(int numberOfSteps)
     {
         var garden = new Garden(Input);
         // garden.Print();
