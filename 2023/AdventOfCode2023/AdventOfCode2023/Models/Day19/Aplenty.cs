@@ -1,4 +1,5 @@
-﻿using AdventOfCode2023_1.Shared;
+﻿using AdventOfCode2023_1.Models.Day19.Comparer;
+using AdventOfCode2023_1.Shared;
 using Constants = UtilsCSharp.Utils.Constants;
 
 namespace AdventOfCode2023_1.Models.Day19;
@@ -78,37 +79,8 @@ public class Aplenty
 
         foreach (var rule in Rules[ruleName])
         {
-            var typeIndex = (int)rule.Type;
-            switch (rule.Comparer)
-            {
-                case '=':
-                    returnValue += DoResult(rule.NextState);
-                    break;
-                case '<':
-                    var tempMax = maxXmas[typeIndex];
-                    if (minXmas[typeIndex] < rule.CompareValue)
-                    {
-                        maxXmas[typeIndex] = int.Min(maxXmas[typeIndex], rule.CompareValue - 1);
-                        returnValue += DoResult(rule.NextState);
-                    }
-
-                    maxXmas[typeIndex] = tempMax;
-                    minXmas[typeIndex] = int.Max(minXmas[typeIndex], rule.CompareValue);
-                    break;
-                case '>':
-                    var tempMin = minXmas[typeIndex];
-                    if (maxXmas[typeIndex] > rule.CompareValue)
-                    {
-                        minXmas[typeIndex] = int.Max(minXmas[typeIndex], rule.CompareValue + 1);
-                        returnValue += DoResult(rule.NextState);
-                    }
-
-                    minXmas[typeIndex] = tempMin;
-                    maxXmas[typeIndex] = int.Min(maxXmas[typeIndex], rule.CompareValue);
-                    break;
-                default:
-                    throw new NotImplementedException();
-            }
+            var strategy = ComparisonStrategyFactory.GetStrategy(rule.Comparer);
+            returnValue += strategy.Apply(minXmas, maxXmas, rule, DoResult);
         }
 
         return returnValue;
