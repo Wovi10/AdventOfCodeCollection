@@ -6,14 +6,13 @@ namespace AdventOfCode2023_1.Models.Day21;
 
 public class Tile(int internalX, int internalY, char tileTypeInput) : NodeBase<int>(internalX, internalY)
 {
-    private readonly int _internalX = internalX;
-    private readonly int _internalY = internalY;
-    private int ActualX { get; set; } = internalX;
-    private int ActualY { get; set; } = internalY;
+    public int ActualX { get; set; } = internalX;
+    public int ActualY { get; set; } = internalY;
     public int StepCounter { get; set; }
 
     public TileType Type { get; set; } = tileTypeInput.ToTileType();
     public bool IsWalkable => Type != TileType.Rock;
+    public bool Reachable { get; set; }
 
     public override (int, int) Move(Direction direction, int distance = 1)
     {
@@ -27,14 +26,14 @@ public class Tile(int internalX, int internalY, char tileTypeInput) : NodeBase<i
         };
     }
 
-    public override int GetHashCode()
+    public long GetHashCode()
     {
         unchecked
         {
-            var hash = 17;
-            hash = hash * 23 + EqualityComparer<int>.Default.GetHashCode(X);
-            hash = hash * 23 + EqualityComparer<int>.Default.GetHashCode(Y);
-            hash = hash * 23 + EqualityComparer<int>.Default.GetHashCode(StepCounter);
+            var hash = 17L;
+            hash = hash * 23 + EqualityComparer<long>.Default.GetHashCode(ActualX);
+            hash = hash * 23 + EqualityComparer<long>.Default.GetHashCode(ActualY);
+            hash = hash * 23 + EqualityComparer<long>.Default.GetHashCode(StepCounter);
             return hash;
         }
     }

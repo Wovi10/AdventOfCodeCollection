@@ -6,48 +6,50 @@ namespace AdventOfCode2023_1.Models.Day21;
 
 public static class TileExtensions
 {
-    private static List<Tile> AllTiles { get; set; } = new();
-
-    public static void StepNonRecursive(this Tile currentTile, int numberOfSteps,
-        List<(int, int)> reachableTiles, List<Tile>? allTiles = null)
+    private static Dictionary<(int, int),Tile> AllTiles { get; set; } = new();
+    
+    public static void Step(this Tile startTile, int numberOfSteps,
+        List<(int, int)> reachableTiles, Dictionary<(int X, int Y), Tile> allTiles)
     {
         var tilesToProcess = new Queue<Tile>();
-        var visitedTiles = new HashSet<int>();
-        tilesToProcess.Enqueue(currentTile);
+        var visitedTiles = new Dictionary<(int, int), int>();
+        var numberOfStepsIsEven = numberOfSteps.IsEven();
 
-        var highestStepCounter = 0;
+        tilesToProcess.Enqueue(startTile);
 
-        if (AllTiles.Count == 0 && allTiles != null)
+        if (AllTiles.Count == 0)
             AllTiles = allTiles;
 
         while (tilesToProcess.Count > 0)
         {
             var tile = tilesToProcess.Dequeue();
 
-            if (tile.StepCounter.IsEven())
-                reachableTiles.Add((tile.X, tile.Y));
+            if (tile.StepCounter.IsEven() == numberOfStepsIsEven)
+            {
+                AllTiles[(tile.ActualX, tile.ActualY)].Reachable = true;
+                reachableTiles.Add((tile.ActualX, tile.ActualY));
+            }
 
             if (tile.StepCounter >= numberOfSteps)
                 continue;
-
-            highestStepCounter = Comparisons.GetHighest(tile.StepCounter, highestStepCounter);
 
             var walkableNeighbourTiles = GetWalkableNeighbourTiles(tile);
 
             foreach (var neighbourTile in walkableNeighbourTiles)
             {
-                var nextStepCounter = tile.StepCounter + 1;
-                neighbourTile.StepCounter = nextStepCounter;
-                var neighbourHashCode = neighbourTile.GetHashCode();
+                neighbourTile.StepCounter = tile.StepCounter + 1;
 
-                if (!visitedTiles.Add(neighbourHashCode))
+                var dictionaryKey = (neighbourTile.ActualX, neighbourTile.ActualY);
+                var exists = visitedTiles.TryGetValue(dictionaryKey, out var dictionaryEntry);
+
+                if (exists && dictionaryEntry <= neighbourTile.StepCounter)
                     continue;
+
+                visitedTiles[dictionaryKey] = neighbourTile.StepCounter;
 
                 tilesToProcess.Enqueue(neighbourTile);
             }
         }
-
-        Console.WriteLine($"Highest step counter: {highestStepCounter}");
     }
 
     private static List<Tile> GetWalkableNeighbourTiles(this Tile currentTile)
@@ -59,25 +61,32 @@ public static class TileExtensions
             if (direction == Direction.None)
                 continue;
 
-            var (x, y) = currentTile.Move(direction);
-            var (newX, newY) = (x, y);
+            var (actualX, actualY) = currentTile.Move(direction);
+            var (newX, newY) = (actualX, actualY);
 
-            if (newX < 0)
-                newX += Garden.Width - 1;
-            else if (newX >= Garden.Width)
+            while (newX < 0)
+                newX += Garden.Width;
+
+            while (newX >= Garden.Width)
                 newX -= Garden.Width;
 
-            if (newY < 0)
-                newY += Garden.Height - 1;
-            else if (newY >= Garden.Height)
+            while (newY < 0)
+                newY += Garden.Height;
+
+            while (newY >= Garden.Height)
                 newY -= Garden.Height;
 
-            var neighbourTile = AllTiles.FirstOrDefault(t => t.X == newX && t.Y == newY);
+            var neighbourTile = AllTiles.FirstOrDefault(t => t.Key.Item1 == newX && t.Key.Item2 == newY).Value;
 
             if (neighbourTile is not {IsWalkable: true})
                 continue;
 
-            var newTile = new Tile(newX, newY, neighbourTile.Type.ToTileChar());
+            var newTile = new Tile(newX, newY, neighbourTile.Type.ToTileChar())
+            {
+                ActualX = actualX,
+                ActualY = actualY
+            };
+
             neighbourTiles.Add(newTile);
         }
 

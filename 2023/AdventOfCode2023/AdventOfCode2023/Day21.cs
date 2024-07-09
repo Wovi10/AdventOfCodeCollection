@@ -8,13 +8,13 @@ public class Day21 : DayBase
     {
         const int numberOfSteps = IsReal ? 64 : 6;
         var result = CountReachableGardenPlots(numberOfSteps);
-
+        
         return Task.FromResult<object>(result);
     }
 
     protected override Task<object> PartTwo()
     {
-        const int numberOfSteps = IsReal ? 26501365 : 10;
+        const int numberOfSteps = IsReal ? 26501365 : 5000;
         var result = CountReachableGardenPlots(numberOfSteps);
 
         return Task.FromResult<object>(result);
@@ -24,6 +24,9 @@ public class Day21 : DayBase
     {
         var garden = new Garden(Input);
 
-        return garden.CalculateReachableGardenPlots(numberOfSteps);
+        var result = garden.CalculateReachableGardenPlots(numberOfSteps);
+        garden.PrintReachableTilesInGarden();
+        
+        return result;
     }
 }

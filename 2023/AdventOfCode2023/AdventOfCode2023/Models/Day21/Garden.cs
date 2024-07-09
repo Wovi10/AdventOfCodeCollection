@@ -14,13 +14,7 @@ public class Garden
         for (var y = 0; y < input.Count; y++)
         {
             var row = input[y];
-
-            for (var x = 0; x < row.Length; x++)
-            {
-                var tileChar = row[x];
-
-                tiles.Add(new Tile(x, y, tileChar));
-            }
+            tiles.AddRange(row.Select((tileChar, x) => new Tile(x, y, tileChar)));
         }
 
         Tiles = tiles;
@@ -41,9 +35,8 @@ public class Garden
 
             for (var x = 0; x <= maxX; x++)
             {
-                var tile = Tiles.FirstOrDefault(t => t.X == x && t.Y == y);
-
-                row += tile?.Type.ToTileChar() ?? '.';
+                var tile = Tiles.First(t => t.X == x && t.Y == y);
+                row += tile.Type.ToTileChar();
             }
 
             Console.WriteLine(row);
@@ -52,14 +45,34 @@ public class Garden
 
     public long CalculateReachableGardenPlots(int numberOfSteps)
     {
-        var startingPosition = Tiles.First(t => t.Type == TileType.StartingPosition);
+        var startTile = Tiles.First(t => t.Type == TileType.StartingPosition);
         var reachableTiles = new List<(int, int)>();
-        startingPosition.StepCounter = 0;
+        
+        var tilesDictionary = Tiles.ToDictionary(t => (t.X, t.Y), t => t);
 
-        startingPosition.StepNonRecursive(numberOfSteps, reachableTiles, Tiles);
+        startTile.Step(numberOfSteps, reachableTiles, tilesDictionary);
 
         var distinctTiles = reachableTiles.Distinct().ToList();
-
+        
         return distinctTiles.Count;
+    }
+
+    public void PrintReachableTilesInGarden()
+    {
+        var maxX = Tiles.Max(t => t.X);
+        var maxY = Tiles.Max(t => t.Y);
+
+        for (var y = 0; y <= maxY; y++)
+        {
+            var row = string.Empty;
+
+            for (var x = 0; x <= maxX; x++)
+            {
+                var tile = Tiles.First(t => t.X == x && t.Y == y);
+                row += tile.Reachable ? 'O' : tile.Type.ToTileChar();
+            }
+
+            Console.WriteLine(row);
+        }
     }
 }
