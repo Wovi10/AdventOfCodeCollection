@@ -26,7 +26,7 @@ public static class TileExtensions
 
             if (tile.StepCounter.IsEven() == numberOfStepsIsEven)
             {
-                AllTiles[(tile.ActualX, tile.ActualY)].Reachable = true;
+                // AllTiles[(tile.ActualX, tile.ActualY)].Reachable = true;
                 reachableTiles.Add((tile.ActualX, tile.ActualY));
             }
 
