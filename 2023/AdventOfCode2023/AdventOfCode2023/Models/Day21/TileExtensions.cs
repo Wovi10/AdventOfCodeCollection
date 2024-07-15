@@ -1,44 +1,53 @@
-﻿using UtilsCSharp;
+﻿using AdventOfCode2023_1.Models.Day21.Enums;
+using UtilsCSharp;
 using UtilsCSharp.Enums;
 
 namespace AdventOfCode2023_1.Models.Day21;
 
 public static class TileExtensions
 {
-    private static List<Tile> AllTiles { get; set; } = new();
+    private static Dictionary<(int, int), Tile> AllTiles { get; set; } = new();
 
-    public static void StepNonRecursive(this Tile currentTile, int numberOfSteps,
-        List<Tile> reachableTiles, List<Tile>? allTiles = null)
+    public static void Step(this Tile startTile, int numberOfSteps,
+        List<(int, int)> reachableTiles, Dictionary<(int X, int Y), Tile> allTiles)
     {
-        var tilesToProcess = new Queue<(Tile tile, int stepCounter)>();
-        var minStepCounts = new Dictionary<Tile, int>();
-        tilesToProcess.Enqueue((currentTile, 0));
-        minStepCounts[currentTile] = 0;
+        var tilesToProcess = new Queue<Tile>();
+        var visitedTiles = new Dictionary<(int, int), int>();
+        var numberOfStepsIsEven = numberOfSteps.IsEven();
 
-        if (AllTiles.Count == 0 && allTiles != null)
+        tilesToProcess.Enqueue(startTile);
+
+        if (AllTiles.Count == 0)
             AllTiles = allTiles;
 
         while (tilesToProcess.Count > 0)
         {
-            var (tile, stepCounter) = tilesToProcess.Dequeue();
+            var tile = tilesToProcess.Dequeue();
 
-            if (stepCounter.IsEven())
-                reachableTiles.Add(tile);
+            if (tile.StepCounter.IsEven() == numberOfStepsIsEven)
+            {
+                // AllTiles[(tile.ActualX, tile.ActualY)].Reachable = true;
+                reachableTiles.Add((tile.ActualX, tile.ActualY));
+            }
 
-            if (stepCounter >= numberOfSteps) 
+            if (tile.StepCounter >= numberOfSteps)
                 continue;
 
             var walkableNeighbourTiles = GetWalkableNeighbourTiles(tile);
+
             foreach (var neighbourTile in walkableNeighbourTiles)
             {
-                var nextStepCounter = stepCounter + 1;
+                neighbourTile.StepCounter = tile.StepCounter + 1;
 
-                if (minStepCounts.TryGetValue(neighbourTile, out var existingStepCount) &&
-                    nextStepCounter >= existingStepCount) 
+                var dictionaryKey = (neighbourTile.ActualX, neighbourTile.ActualY);
+                var exists = visitedTiles.TryGetValue(dictionaryKey, out var dictionaryEntry);
+
+                if (exists && dictionaryEntry <= neighbourTile.StepCounter)
                     continue;
 
-                minStepCounts[neighbourTile] = nextStepCounter;
-                tilesToProcess.Enqueue((neighbourTile, nextStepCounter));
+                visitedTiles[dictionaryKey] = neighbourTile.StepCounter;
+
+                tilesToProcess.Enqueue(neighbourTile);
             }
         }
     }
@@ -49,29 +58,32 @@ public static class TileExtensions
 
         foreach (var direction in Enum.GetValues<Direction>())
         {
-            if (direction == Direction.None)
+            if (direction is Direction.None)
                 continue;
 
-            var (x, y) = currentTile.Move(direction);
+            var (actualX, actualY) = currentTile.Move(direction);
 
-            var neighbourTile = AllTiles.FirstOrDefault(t => t.X == x && t.Y == y);
+            if (actualX > Garden.StartingTile.ActualX || actualY > Garden.StartingTile.ActualY)
+                continue;
 
-            if (neighbourTile is {IsWalkable: true})
-                neighbourTiles.Add(neighbourTile);
+            var (newX, newY) = ((actualX % Garden.Width + Garden.Width) % Garden.Width,
+                (actualY % Garden.Height + Garden.Height) % Garden.Height);
+
+
+            var neighbourTile = AllTiles.FirstOrDefault(t => t.Key.Item1 == newX && t.Key.Item2 == newY).Value;
+
+            if (neighbourTile is not {IsWalkable: true})
+                continue;
+
+            var newTile = new Tile(newX, newY, neighbourTile.Type.ToTileChar())
+            {
+                ActualX = actualX,
+                ActualY = actualY
+            };
+
+            neighbourTiles.Add(newTile);
         }
 
         return neighbourTiles;
-    }
-
-    public static int GetHashCode(this Tile tile, int counter)
-    {
-        unchecked
-        {
-            var hash = 17;
-            hash = hash * 23 + EqualityComparer<int>.Default.GetHashCode(tile.X);
-            hash = hash * 23 + EqualityComparer<int>.Default.GetHashCode(tile.Y);
-            hash = hash * 23 + EqualityComparer<int>.Default.GetHashCode(counter);
-            return hash;
-        }
     }
 }

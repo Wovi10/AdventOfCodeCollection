@@ -90,7 +90,9 @@ public static class Answers
         new(20, 2, Mock, NotApplicable),
         new(20, 2, Real, 228300182686739),
         new(21, 1, Mock, 16),
-        new(21, 1, Real, NotYetFound),
+        new(21, 1, Real, 3764),
+        new(21, 2, Mock, 16733044),
+        new(21, 2, Real, NotYetFound),
     };
 
     public static object GetExpectedAnswer(string day, bool runningPartOne)
