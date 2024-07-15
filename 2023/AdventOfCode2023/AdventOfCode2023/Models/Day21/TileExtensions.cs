@@ -6,8 +6,8 @@ namespace AdventOfCode2023_1.Models.Day21;
 
 public static class TileExtensions
 {
-    private static Dictionary<(int, int),Tile> AllTiles { get; set; } = new();
-    
+    private static Dictionary<(int, int), Tile> AllTiles { get; set; } = new();
+
     public static void Step(this Tile startTile, int numberOfSteps,
         List<(int, int)> reachableTiles, Dictionary<(int X, int Y), Tile> allTiles)
     {
@@ -58,23 +58,17 @@ public static class TileExtensions
 
         foreach (var direction in Enum.GetValues<Direction>())
         {
-            if (direction == Direction.None)
+            if (direction is Direction.None)
                 continue;
 
             var (actualX, actualY) = currentTile.Move(direction);
-            var (newX, newY) = (actualX, actualY);
 
-            while (newX < 0)
-                newX += Garden.Width;
+            if (actualX > Garden.StartingTile.ActualX || actualY > Garden.StartingTile.ActualY)
+                continue;
 
-            while (newX >= Garden.Width)
-                newX -= Garden.Width;
+            var (newX, newY) = ((actualX % Garden.Width + Garden.Width) % Garden.Width,
+                (actualY % Garden.Height + Garden.Height) % Garden.Height);
 
-            while (newY < 0)
-                newY += Garden.Height;
-
-            while (newY >= Garden.Height)
-                newY -= Garden.Height;
 
             var neighbourTile = AllTiles.FirstOrDefault(t => t.Key.Item1 == newX && t.Key.Item2 == newY).Value;
 
