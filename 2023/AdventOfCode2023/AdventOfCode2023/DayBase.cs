@@ -53,29 +53,26 @@ public abstract class DayBase(string day, string title)
     }
 
     private async Task RunPartOne() 
-        => await RunPart(true, PartOne);
+        => await RunPart(PartOne, true);
 
     private async Task RunPartTwo()
-        => await RunPart(false, PartTwo);
+        => await RunPart(PartTwo, false);
 
-    private async Task RunPart(bool runningPartOne, Func<Task<object>> partToRun)
+    private async Task RunPart(Func<Task<object>> partToRun, bool runningPartOne)
     {
         Variables.RunningPartOne = runningPartOne;
         Input = SharedMethods.GetInput(Day);
-        GetExpectedAnswer(runningPartOne);
 
         var result = await partToRun();
         SharedMethods.PrintAnswer(result);
 
 #if !DEBUG
-        Assert.That(result, Is.EqualTo(_expectedAnswer));
+        var expectedAnswer = Answers.GetExpectedAnswer(Day);
+        Assert.That(result, Is.EqualTo(expectedAnswer));
 #endif
     }
 
     protected abstract Task<object> PartOne();
 
     protected abstract Task<object> PartTwo();
-
-    private object GetExpectedAnswer(bool partOne)
-        => Answers.GetExpectedAnswer(Day, partOne);
 }
