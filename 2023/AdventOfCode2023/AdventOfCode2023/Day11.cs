@@ -4,7 +4,7 @@ using NUnit.Framework;
 
 namespace AdventOfCode2023_1;
 
-public class Day11 : DayBase
+public class Day11() : DayBase("11", "Cosmic Expansion")
 {
 
     protected override Task<object> PartOne()

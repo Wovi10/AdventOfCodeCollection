@@ -5,7 +5,7 @@ using UtilsCSharp;
 
 namespace AdventOfCode2023_1;
 
-public class Day08 : DayBase
+public class Day08() : DayBase("08", "Haunted Wasteland")
 {
     private const char Left = 'L';
     private readonly List<bool> _instructions = new();

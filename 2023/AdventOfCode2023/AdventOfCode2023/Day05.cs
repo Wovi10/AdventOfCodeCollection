@@ -5,7 +5,7 @@ using Constants = UtilsCSharp.Utils.Constants;
 
 namespace AdventOfCode2023_1;
 
-public class Day05 : DayBase
+public class Day05() : DayBase("05", "If You Give A Seed A Fertilizer")
 {
     private readonly HashSet<long> _seedsToTest = new();
     private static readonly HashSet<StartEndPair> StartSeeds = new();
@@ -50,19 +50,16 @@ public class Day05 : DayBase
     {
         ProcessFile();
 
-        IEnumerable<long> results;
-
-        if (!IsDebug)
-        {
-            results = StartSeeds.Select(pair =>
+#if !DEBUG
+        var results = StartSeeds.Select(pair =>
                 pair.TestPair(_soils, _fertilizers, _waters, _lights, _temperatures, _humidities, _locations));
 
-            return results.Min();
-        }
+        return results.Min();
+#endif
 
         var total = StartSeeds.Count;
         var counter = 1;
-        results = StartSeeds.Select(pair =>
+        var results = StartSeeds.Select(pair =>
         {
             var result = pair.TestPair(_soils, _fertilizers, _waters, _lights, _temperatures, _humidities, _locations);
             SharedMethods.ClearCurrentConsoleLine();

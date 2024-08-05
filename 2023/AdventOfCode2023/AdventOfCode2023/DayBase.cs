@@ -1,26 +1,22 @@
 ﻿using System.Diagnostics;
 using AdventOfCode2023_1.Shared;
 using AdventOfCode2023_1.Shared.Enums;
-using NUnit.Framework;
 
 namespace AdventOfCode2023_1;
 
-public abstract class DayBase
+public abstract class DayBase(string day, string title)
 {
-    protected const bool IsDebug = true;
     public const bool IsReal = true;
     protected static List<string> Input = new();
-    private object _expectedAnswer = 0;
-    protected string Day = "01";
+    protected string Day { get; } = day;
 
-    public async Task Run(string day, string title, PartsToRun partToRun = PartsToRun.Both)
+    public async Task Run(PartsToRun partToRun = PartsToRun.Both)
     {
-        Day = day;
         WriteStopwatchStartText();
         var watch = new Stopwatch();
         watch.Start();
 
-        SharedMethods.WriteBeginText(day, title);
+        SharedMethods.WriteBeginText(Day, title);
         switch (partToRun)
         {
             case PartsToRun.Part1:
@@ -44,16 +40,16 @@ public abstract class DayBase
 
     private static void WriteStopwatchStartText()
     {
-        if (IsDebug)
-        {
+#if DEBUG
             Console.WriteLine($"Started at {DateTime.Now:HH:mm:ss}");
-        }
+#endif
     }
 
     private static void WriteStopwatchText(long watchElapsedMilliseconds)
     {
-        if (IsDebug)
-            Console.WriteLine($"Elapsed time: {watchElapsedMilliseconds} ms");
+#if DEBUG
+        Console.WriteLine($"Elapsed time: {watchElapsedMilliseconds} ms");
+#endif
     }
 
     private async Task RunPartOne() 
@@ -66,12 +62,14 @@ public abstract class DayBase
     {
         Variables.RunningPartOne = runningPartOne;
         Input = SharedMethods.GetInput(Day);
-        _expectedAnswer = GetExpectedAnswer(runningPartOne);
+        GetExpectedAnswer(runningPartOne);
 
         var result = await partToRun();
         SharedMethods.PrintAnswer(result);
 
-        if (!IsDebug) Assert.That(result, Is.EqualTo(_expectedAnswer));
+#if !DEBUG
+        Assert.That(result, Is.EqualTo(_expectedAnswer));
+#endif
     }
 
     protected abstract Task<object> PartOne();

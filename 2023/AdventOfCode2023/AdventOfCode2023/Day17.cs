@@ -3,7 +3,7 @@ using AdventOfCode2023_1.Shared;
 
 namespace AdventOfCode2023_1;
 
-public class Day17 : DayBase
+public class Day17() : DayBase("17", "Clumsy Crucible")
 {
     protected override Task<object> PartOne()
     {

@@ -2,7 +2,7 @@
 
 namespace AdventOfCode2023_1;
 
-public class Day18 : DayBase
+public class Day18() : DayBase("18", "Lavaduct Lagoon")
 {
     protected override Task<object> PartOne()
     {

@@ -6,7 +6,7 @@ using UtilsCSharp;
 
 namespace AdventOfCode2023_1;
 
-public class Day14 : DayBase
+public class Day14() : DayBase("14", "Parabolic Reflector Dish")
 {
     protected override Task<object> PartOne()
     {
@@ -40,22 +40,20 @@ public class Day14 : DayBase
             {
                 var totalLoad = dish.Cycle();
                 listOfLoads.Add(totalLoad);
+#if DEBUG
+                SharedMethods.ClearCurrentConsoleLine();
+                SharedMethods.PrintProgress(i, numCycles);
 
-                if (IsDebug)
+                if (i == 1000)
                 {
-                    SharedMethods.ClearCurrentConsoleLine();
-                    SharedMethods.PrintProgress(i, numCycles);
-
-                    if (i == 1000)
-                    {
-                        stopwatch.Stop();
-                        var elapsed = stopwatch.ElapsedMilliseconds;
-                        Console.WriteLine();
-                        Console.WriteLine($"Finished in {MathUtils.MillSecToSec(elapsed)} seconds");
-                        Console.WriteLine($"Expected time: {MathUtils.MillSecToWeek(elapsed * numCycles / i)} weeks");
-                        Console.WriteLine();
-                    }
+                    stopwatch.Stop();
+                    var elapsed = stopwatch.ElapsedMilliseconds;
+                    Console.WriteLine();
+                    Console.WriteLine($"Finished in {MathUtils.MillSecToSec(elapsed)} seconds");
+                    Console.WriteLine($"Expected time: {MathUtils.MillSecToWeek(elapsed * numCycles / i)} weeks");
+                    Console.WriteLine();
                 }
+#endif
 
                 if (foundLoop)
                     continue;

@@ -4,7 +4,7 @@ using NUnit.Framework;
 
 namespace AdventOfCode2023_1;
 
-public class Day10 : DayBase
+public class Day10() : DayBase("10", "Pipe Maze")
 {
     protected override Task<object> PartOne()
     {
