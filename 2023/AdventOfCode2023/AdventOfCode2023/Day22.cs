@@ -21,6 +21,7 @@ public class Day22() : DayBase("22", "Sand slabs")
     {
         var brickPile = new BrickPile(Input);
         brickPile.MoveBricksDown();
+        brickPile.OrderBricks();
         return brickPile.CountDisintegrableBricks();
         
         brickPile.Print();

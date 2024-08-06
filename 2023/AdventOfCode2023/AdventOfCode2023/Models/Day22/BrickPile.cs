@@ -15,76 +15,94 @@ public class BrickPile
                 Bricks.Add(newBrick);
         }
 
-        Bricks = GetOrderedBricks();
+        OrderBricks();
     }
 
     public List<Brick> Bricks { get; set; }
 
+
+    public void OrderBricks()
+        => Bricks = GetOrderedBricks();
+
     private List<Brick> GetOrderedBricks()
-        => Bricks.OrderBy(b => b.LowestZ).ThenBy(b => b.LowestX).ThenBy(b => b.LowestY).ToList();
+        => Bricks.OrderBy(b => b.HighestZ).ToList();
 
     public void MoveBricksDown()
     {
+        var visitedBricks = new HashSet<Brick>();
+
         foreach (var brick in Bricks)
+        {
+            if (visitedBricks.Contains(brick))
+                continue;
+
             while (CanMoveDown(brick))
+            {
                 brick.MoveDown();
+                visitedBricks.Add(brick);
+            }
+        }
     }
 
     private bool CanMoveDown(Brick brick) 
-        => brick.CanMoveDown && !HasBrickBelow(brick);
+        => !brick.IsAtBottom && !HasBrickBelow(brick);
 
-    private bool HasBrickBelow(Brick brick) 
-        => LevelBelowIsUsed(brick) && HasBrickTouching(brick);
-
-    private bool LevelBelowIsUsed(Brick brick)
+    private bool HasBrickBelow(Brick inputBrick) 
         => Bricks
-            .Where(b => !Equals(b, brick))
-            .Any(b => b.Cubes.Any(c => c.Z == brick.LowestZ - 1));
+            .Any(b => b.HighestZ == inputBrick.LowestZ - 1 && b.IntersectsXY(inputBrick));
 
-    private bool HasBrickTouching(Brick brick) 
+    public int CountDisintegrableBricks()
+    {
+        var bricksToDisintegrate = new HashSet<Brick>();
+
+        var okayBricks = new HashSet<Brick>();
+        foreach (var inputBrick in Bricks)
+        {
+            inputBrick.BricksBelow = GetBrickBelow(inputBrick);
+            inputBrick.BricksAbove = GetBricksAbove(inputBrick);
+
+            if (!inputBrick.IsSupporting())
+                bricksToDisintegrate.Add(inputBrick);
+
+            switch (inputBrick.BricksBelow.Count)
+            {
+                case 0 when inputBrick.LowestZ != 1:
+                    throw new Exception($"Brick has no bricks below: {inputBrick}");
+
+                case 1 when bricksToDisintegrate.Contains(inputBrick.BricksBelow.First()):
+                    bricksToDisintegrate.Remove(inputBrick.BricksBelow.First());
+                    okayBricks.Add(inputBrick.BricksBelow.First());
+                    break;
+
+                case > 1:
+                    bricksToDisintegrate.UnionWith(inputBrick.BricksBelow);
+                    break;
+            }
+        }
+
+        foreach (var brickOkay in okayBricks)
+            bricksToDisintegrate.Remove(brickOkay);
+
+        return bricksToDisintegrate.Count;
+    }
+
+    private List<Brick> GetBrickBelow(Brick inputBrick) 
         => Bricks
-            .Where(b => b.Cubes.Any(c => c.Z == brick.LowestZ - 1))
-            .ToList()
-            .Any(b => b.Cubes.Any(c => brick.Cubes.Any(bc => bc.X == c.X && bc.Y == c.Y)));
+            .Where(brick => 
+                brick.HighestZ == inputBrick.LowestZ - 1 &&
+                brick.IntersectsXY(inputBrick))
+            .ToList();
+
+    private List<Brick> GetBricksAbove(Brick inputBrick)
+        => Bricks
+            .Where(brick =>
+                brick.LowestZ == inputBrick.HighestZ + 1 &&
+                brick.IntersectsXY(inputBrick))
+            .ToList();
 
     public void Print()
     {
         foreach (var brick in Bricks)
             Console.WriteLine(brick);
     }
-
-    public int CountDisintegrableBricks()
-    {
-        var bricksToDisintegrate = new List<Brick>();
-
-        Bricks.Reverse();
-
-        foreach (var brick in Bricks)
-        {
-            if (!IsSupportingBricks(brick)) 
-                bricksToDisintegrate.Add(brick);
-
-            var supportingBricks = Bricks
-                .Where(b => b.Cubes.Any(c => c.Z == brick.LowestZ - 1))
-                .Where(b => b.Cubes.Any(c => brick.Cubes.Any(bc => bc.X == c.X && bc.Y == c.Y)))
-                .ToList();
-
-            if (supportingBricks.Count == 1 && bricksToDisintegrate.Contains(supportingBricks.First())) 
-                bricksToDisintegrate.Remove(supportingBricks.First());
-
-            if (supportingBricks.Count <= 1)
-                continue;
-
-            foreach (var touchingBrick in supportingBricks.Where(touchingBrick => !bricksToDisintegrate.Contains(touchingBrick)))
-                bricksToDisintegrate.Add(touchingBrick);
-        }
-
-        return bricksToDisintegrate.Count;
-    }
-
-    private bool IsSupportingBricks(Brick brick) 
-        => Bricks
-            .Where(b => !Equals(b, brick))
-            .Where(b => b.Cubes.Any(c => c.Z == brick.HighestZ + 1))
-            .Any(b => b.Cubes.Any(c => brick.Cubes.Any(bc => bc.X == c.X && bc.Y == c.Y)));
 }
