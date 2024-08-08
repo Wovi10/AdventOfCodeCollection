@@ -86,18 +86,18 @@ public class BrickPile
         return bricksToDisintegrate.Count;
     }
 
-    private List<Brick> GetBrickBelow(Brick inputBrick) 
+    private List<Brick> GetBrickBelow(Brick brick) 
         => Bricks
-            .Where(brick => 
-                brick.HighestZ == inputBrick.LowestZ - 1 &&
-                brick.IntersectsXY(inputBrick))
+            .Where(otherBrick =>
+                otherBrick.HighestZ == brick.LowestZ - 1 &&
+                otherBrick.IntersectsXY(brick))
             .ToList();
 
-    private List<Brick> GetBricksAbove(Brick inputBrick)
+    private List<Brick> GetBricksAbove(Brick brick)
         => Bricks
-            .Where(brick =>
-                brick.LowestZ == inputBrick.HighestZ + 1 &&
-                brick.IntersectsXY(inputBrick))
+            .Where(otherBrick =>
+                otherBrick.LowestZ == brick.HighestZ + 1 &&
+                otherBrick.IntersectsXY(brick))
             .ToList();
 
     public void Print()
