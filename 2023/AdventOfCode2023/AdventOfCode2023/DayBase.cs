@@ -6,7 +6,7 @@ namespace AdventOfCode2023_1;
 
 public abstract class DayBase(string day, string title)
 {
-    public const bool IsReal = true;
+    public const bool IsReal = false;
     protected static List<string> Input = new();
     protected string Day { get; } = day;
 

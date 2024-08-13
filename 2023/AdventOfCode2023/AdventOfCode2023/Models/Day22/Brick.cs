@@ -40,8 +40,21 @@ public class Brick
         WidthRange.IntersectsWith(brick.WidthRange) &&
         DepthRange.IntersectsWith(brick.DepthRange);
 
-    public bool IsSupporting()
-        => BricksAbove.Count > 0;
+    public int GetDisintegratedBricksCount()
+    {
+        // if (BricksAbove.Count == 0)
+        // {
+        //     return 1;
+        // }
+        //
+        // if (BricksAbove.Count > 1)
+        // {
+        //     return 0;
+        // }
+        return BricksBelow.Count != 1
+            ? 0
+            : BricksBelow.Sum(brick => brick.GetDisintegratedBricksCount());
+    }
 
     public override string ToString()
         => $"{StartCube}~{EndCube}";

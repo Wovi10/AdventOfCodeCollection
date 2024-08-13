@@ -1,4 +1,6 @@
-﻿namespace AdventOfCode2023_1.Models.Day22;
+﻿using UtilsCSharp;
+
+namespace AdventOfCode2023_1.Models.Day22;
 
 public class BrickPile
 {
@@ -15,10 +17,16 @@ public class BrickPile
     }
 
     public List<Brick> Bricks { get; private set; }
+    public List<Brick> DisintegrableBricks { get; } = new();
+    private List<Brick> NonDisintegrableBricks { get; } = new();
 
-    public BrickPile OrderBricks()
+    public BrickPile OrderBricks(bool ascending = true)
     {
-        Bricks = Bricks.OrderBy(b => b.Lowest).ToList();
+        Bricks =
+            ascending
+                ? Bricks.OrderBy(b => b.Lowest).ToList()
+                : Bricks.OrderByDescending(b => b.Lowest).ToList();
+
         return this;
     }
 
@@ -29,34 +37,35 @@ public class BrickPile
         => Bricks
             .Any(otherBrick => (otherBrick.Highest == inputBrick.Lowest - 1) && otherBrick.IntersectsOnX_Y(inputBrick));
 
-    public int CountDisintegrableBricks()
+    public BrickPile FindDisintegrableBricks()
     {
-        var bricksToDisintegrate = new List<Brick>();
-        var okayBricks = new List<Brick>();
         foreach (var brickInLoop in Bricks)
         {
             SetBricksAbove(brickInLoop);
             SetBrickBelow(brickInLoop);
 
             if (!brickInLoop.BricksAbove.Any())
-                bricksToDisintegrate.Add(brickInLoop);
+                DisintegrableBricks.Add(brickInLoop);
 
             switch (brickInLoop.BricksBelow.Count)
             {
                 case 1:
-                    bricksToDisintegrate.Remove(brickInLoop.BricksBelow.First());
-                    okayBricks.Add(brickInLoop.BricksBelow.First());
+                    DisintegrableBricks.Remove(brickInLoop.BricksBelow.First());
+                    NonDisintegrableBricks.Add(brickInLoop.BricksBelow.First());
                     break;
                 case > 1:
-                    bricksToDisintegrate.AddRange(brickInLoop.BricksBelow);
+                    DisintegrableBricks.AddRange(brickInLoop.BricksBelow);
                     break;
             }
         }
 
-        bricksToDisintegrate.RemoveAll(brick => okayBricks.Contains(brick));
+        DisintegrableBricks.RemoveAll(brick => NonDisintegrableBricks.Contains(brick));
 
-        return bricksToDisintegrate.Distinct().Count();
+        return this;
     }
+
+    public int CountDisintegrableBricks()
+        => DisintegrableBricks.Distinct().Count();
 
     private void SetBrickBelow(Brick brickInLoop)
         => brickInLoop.BricksBelow = Bricks
@@ -71,4 +80,18 @@ public class BrickPile
                 otherBrick.Lowest == brick.Highest + 1 &&
                 otherBrick.IntersectsOnX_Y(brick))
             .ToList();
+
+    public int CountChainReaction()
+    {
+        var highestCount = 0;
+        var counts = new List<int>();
+        foreach (var brick in Bricks)
+        {
+            var count = brick.GetDisintegratedBricksCount();
+            counts.Add(count);
+            highestCount = Comparisons.GetHighest(count, highestCount);
+        }
+
+        return highestCount;
+    }
 }
