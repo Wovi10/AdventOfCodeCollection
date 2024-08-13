@@ -2,12 +2,24 @@
 
 public class Cube
 {
-    public int X { get; set; }
-    public int Y { get; set; }
-    public int Z { get; set; }
+    public Cube(string input)
+    {
+        var parts = input.Split(',');
+        Width = int.Parse(parts[0]);
+        Depth = int.Parse(parts[1]);
+        Height = int.Parse(parts[2]);
+    }
+
+    public Cube()
+    {
+    }
+
+    public int Width { get; set; }
+    public int Depth { get; set; }
+    public int Height { get; set; }
 
     public override string ToString() 
-        => $"{X},{Y},{Z}";
+        => $"{Width},{Depth},{Height}";
 
     public override bool Equals(object? obj)
     {
@@ -15,6 +27,6 @@ public class Cube
             return false;
 
         var cube = (Cube) obj;
-        return X == cube.X && Y == cube.Y && Z == cube.Z;
+        return Width == cube.Width && Depth == cube.Depth && Height == cube.Height;
     }
 }

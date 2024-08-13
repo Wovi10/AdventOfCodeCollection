@@ -5,104 +5,70 @@ public class BrickPile
     public BrickPile(List<string> input)
     {
         Bricks = new List<Brick>();
-
-        foreach (var newBrick
-                 in input
-                     .Where(line => !string.IsNullOrWhiteSpace(line))
-                     .Select(line => new Brick(line.Trim())))
+        foreach (var inputLine in input.Where(line => !string.IsNullOrWhiteSpace(line)))
         {
-            if (newBrick.IsValid)
-                Bricks.Add(newBrick);
-        }
+            var brickToAdd = new Brick(inputLine);
 
-        OrderBricks();
+            if (brickToAdd.IsValid)
+                Bricks.Add(brickToAdd);
+        }
     }
 
-    public List<Brick> Bricks { get; set; }
+    public List<Brick> Bricks { get; private set; }
 
-
-    public void OrderBricks()
-        => Bricks = GetOrderedBricks();
-
-    private List<Brick> GetOrderedBricks()
-        => Bricks.OrderBy(b => b.HighestZ).ToList();
-
-    public void MoveBricksDown()
+    public BrickPile OrderBricks()
     {
-        var visitedBricks = new HashSet<Brick>();
-
-        foreach (var brick in Bricks)
-        {
-            if (visitedBricks.Contains(brick))
-                continue;
-
-            while (CanMoveDown(brick))
-            {
-                brick.MoveDown();
-                visitedBricks.Add(brick);
-            }
-        }
+        Bricks = Bricks.OrderBy(b => b.Lowest).ToList();
+        return this;
     }
 
-    private bool CanMoveDown(Brick brick) 
+    public bool CanMoveDown(Brick brick)
         => !brick.IsAtBottom && !HasBrickBelow(brick);
 
-    private bool HasBrickBelow(Brick inputBrick) 
+    private bool HasBrickBelow(Brick inputBrick)
         => Bricks
-            .Any(b => b.HighestZ == inputBrick.LowestZ - 1 && b.IntersectsXY(inputBrick));
+            .Any(otherBrick => (otherBrick.Highest == inputBrick.Lowest - 1) && otherBrick.IntersectsOnX_Y(inputBrick));
 
     public int CountDisintegrableBricks()
     {
-        var bricksToDisintegrate = new HashSet<Brick>();
-
-        var okayBricks = new HashSet<Brick>();
-        foreach (var inputBrick in Bricks)
+        var bricksToDisintegrate = new List<Brick>();
+        var okayBricks = new List<Brick>();
+        foreach (var brickInLoop in Bricks)
         {
-            inputBrick.BricksBelow = GetBrickBelow(inputBrick);
-            inputBrick.BricksAbove = GetBricksAbove(inputBrick);
+            SetBricksAbove(brickInLoop);
+            SetBrickBelow(brickInLoop);
 
-            if (!inputBrick.IsSupporting())
-                bricksToDisintegrate.Add(inputBrick);
+            if (!brickInLoop.BricksAbove.Any())
+                bricksToDisintegrate.Add(brickInLoop);
 
-            switch (inputBrick.BricksBelow.Count)
+            switch (brickInLoop.BricksBelow.Count)
             {
-                case 0 when inputBrick.LowestZ != 1:
-                    throw new Exception($"Brick has no bricks below: {inputBrick}");
-
-                case 1 when bricksToDisintegrate.Contains(inputBrick.BricksBelow.First()):
-                    bricksToDisintegrate.Remove(inputBrick.BricksBelow.First());
-                    okayBricks.Add(inputBrick.BricksBelow.First());
+                case 1:
+                    bricksToDisintegrate.Remove(brickInLoop.BricksBelow.First());
+                    okayBricks.Add(brickInLoop.BricksBelow.First());
                     break;
-
                 case > 1:
-                    bricksToDisintegrate.UnionWith(inputBrick.BricksBelow);
+                    bricksToDisintegrate.AddRange(brickInLoop.BricksBelow);
                     break;
             }
         }
 
-        foreach (var brickOkay in okayBricks)
-            bricksToDisintegrate.Remove(brickOkay);
+        bricksToDisintegrate.RemoveAll(brick => okayBricks.Contains(brick));
 
-        return bricksToDisintegrate.Count;
+        return bricksToDisintegrate.Distinct().Count();
     }
 
-    private List<Brick> GetBrickBelow(Brick brick) 
-        => Bricks
+    private void SetBrickBelow(Brick brickInLoop)
+        => brickInLoop.BricksBelow = Bricks
             .Where(otherBrick =>
-                otherBrick.HighestZ == brick.LowestZ - 1 &&
-                otherBrick.IntersectsXY(brick))
+                otherBrick.Highest == brickInLoop.Lowest - 1 &&
+                otherBrick.IntersectsOnX_Y(brickInLoop))
             .ToList();
 
-    private List<Brick> GetBricksAbove(Brick brick)
-        => Bricks
+    private void SetBricksAbove(Brick brick)
+        => brick.BricksAbove = Bricks
             .Where(otherBrick =>
-                otherBrick.LowestZ == brick.HighestZ + 1 &&
-                otherBrick.IntersectsXY(brick))
+                otherBrick.Lowest == brick.Highest + 1 &&
+                otherBrick.IntersectsOnX_Y(brick))
             .ToList();
-
-    public void Print()
-    {
-        foreach (var brick in Bricks)
-            Console.WriteLine(brick);
-    }
 }

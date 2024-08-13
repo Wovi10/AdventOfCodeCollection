@@ -2,6 +2,17 @@
 
 public static class BrickExtensions
 {
-    public static bool IntersectsWith(this Range a, Range b)
-        => a.Start.Value <= b.End.Value && b.Start.Value <= a.End.Value;
+    public static BrickPile CreateBrickPile(this List<string> input) 
+        => new(input);
+    
+    public static BrickPile MoveBricksDown(this BrickPile brickPile)
+    {
+        brickPile.Bricks
+            .ForEach(brick =>
+            {
+                while (brickPile.CanMoveDown(brick)) 
+                    brick.MoveDown();
+            });
+        return brickPile;
+    }
 }
