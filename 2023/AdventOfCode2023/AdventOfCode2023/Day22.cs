@@ -24,7 +24,6 @@ public class Day22() : DayBase("22", "Sand slabs")
             .OrderBricks()
             .MoveBricksDown()
             .FindDisintegrableBricks()
-            .OrderBricks(false)
             .CountChainReaction();
 
     private int GetNumberOfDisintegrableBricks() 

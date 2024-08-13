@@ -17,8 +17,8 @@ public class BrickPile
     }
 
     public List<Brick> Bricks { get; private set; }
-    public List<Brick> DisintegrableBricks { get; } = new();
-    private List<Brick> NonDisintegrableBricks { get; } = new();
+    private List<Brick> SafeToDelete { get; } = new();
+    private List<Brick> UnsafeToDelete { get; } = new();
 
     public BrickPile OrderBricks(bool ascending = true)
     {
@@ -45,27 +45,27 @@ public class BrickPile
             SetBrickBelow(brickInLoop);
 
             if (!brickInLoop.BricksAbove.Any())
-                DisintegrableBricks.Add(brickInLoop);
+                SafeToDelete.Add(brickInLoop);
 
             switch (brickInLoop.BricksBelow.Count)
             {
                 case 1:
-                    DisintegrableBricks.Remove(brickInLoop.BricksBelow.First());
-                    NonDisintegrableBricks.Add(brickInLoop.BricksBelow.First());
+                    SafeToDelete.Remove(brickInLoop.BricksBelow.First());
+                    UnsafeToDelete.Add(brickInLoop.BricksBelow.First());
                     break;
                 case > 1:
-                    DisintegrableBricks.AddRange(brickInLoop.BricksBelow);
+                    SafeToDelete.AddRange(brickInLoop.BricksBelow);
                     break;
             }
         }
 
-        DisintegrableBricks.RemoveAll(brick => NonDisintegrableBricks.Contains(brick));
+        SafeToDelete.RemoveAll(brick => UnsafeToDelete.Contains(brick));
 
         return this;
     }
 
     public int CountDisintegrableBricks()
-        => DisintegrableBricks.Distinct().Count();
+        => SafeToDelete.Distinct().Count();
 
     private void SetBrickBelow(Brick brickInLoop)
         => brickInLoop.BricksBelow = Bricks
@@ -81,17 +81,32 @@ public class BrickPile
                 otherBrick.IntersectsOnX_Y(brick))
             .ToList();
 
-    public int CountChainReaction()
+    public int CountChainReaction() 
+        => UnsafeToDelete
+            .Distinct()
+            .Select(DisintegrateBricksAbove)
+            .Sum();
+
+    private static int DisintegrateBricksAbove(Brick brick)
     {
-        var highestCount = 0;
-        var counts = new List<int>();
-        foreach (var brick in Bricks)
+        var bricksToDisintegrate = new HashSet<Brick>();
+        var stack = new Stack<Brick>();
+        stack.Push(brick);
+
+        while (stack.Count > 0)
         {
-            var count = brick.GetDisintegratedBricksCount();
-            counts.Add(count);
-            highestCount = Comparisons.GetHighest(count, highestCount);
+            var currentBrick = stack.Pop();
+            foreach (var brickAbove in currentBrick.BricksAbove)
+            {
+                if (brickAbove.BricksBelow.Count != 1 &&
+                    !brickAbove.BricksBelow.All(bricksToDisintegrate.Contains)) 
+                    continue;
+
+                if (bricksToDisintegrate.Add(brickAbove)) 
+                    stack.Push(brickAbove);
+            }
         }
 
-        return highestCount;
+        return bricksToDisintegrate.Count;
     }
 }
