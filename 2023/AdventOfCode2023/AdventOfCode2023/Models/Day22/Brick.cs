@@ -16,7 +16,7 @@ public class Brick
 
     public Cube StartCube { get; set; }
     public Cube EndCube { get; set; }
-    
+
     private Range WidthRange => new(StartCube.Width, EndCube.Width);
     private Range DepthRange => new(StartCube.Depth, EndCube.Depth);
 
@@ -39,9 +39,6 @@ public class Brick
     public bool IntersectsOnX_Y(Brick brick) =>
         WidthRange.IntersectsWith(brick.WidthRange) &&
         DepthRange.IntersectsWith(brick.DepthRange);
-
-    public bool IsSupporting()
-        => BricksAbove.Count > 0;
 
     public override string ToString()
         => $"{StartCube}~{EndCube}";

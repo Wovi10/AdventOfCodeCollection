@@ -13,13 +13,24 @@ public class Day22() : DayBase("22", "Sand slabs")
 
     protected override Task<object> PartTwo()
     {
-        throw new NotImplementedException();
+        var result = FindOptimalChainReactionCount();
+        
+        return Task.FromResult<object>(result);
     }
+
+    private int FindOptimalChainReactionCount()
+        => Input
+            .CreateBrickPile()
+            .OrderBricks()
+            .MoveBricksDown()
+            .FindDisintegrableBricks()
+            .CountChainReaction();
 
     private int GetNumberOfDisintegrableBricks() 
         => Input
             .CreateBrickPile()
             .OrderBricks()
             .MoveBricksDown()
+            .FindDisintegrableBricks()
             .CountDisintegrableBricks();
 }
