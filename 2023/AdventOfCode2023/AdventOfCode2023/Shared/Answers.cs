@@ -92,12 +92,14 @@ public static class Answers
         new(21, 1, Mock, 16),
         new(21, 1, Real, 3764),
         new(21, 2, Mock, 16733044),
-        new(21, 2, Real, NotYetFound),
+        new(21, 2, Real, 622926941971282),
+        new(22, 1, Mock, 5),
+        new(22, 1, Real, NotYetFound),
     };
 
-    public static object GetExpectedAnswer(string day, bool runningPartOne)
+    public static object GetExpectedAnswer(string day)
     {
-        var partInt = runningPartOne ? 1 : 2;
+        var partInt = Variables.RunningPartOne ? 1 : 2;
         var answer = AnswersList.FirstOrDefault(a =>
             a.Day == int.Parse(day) && a.Part == partInt && a.IsReal == DayBase.IsReal);
 

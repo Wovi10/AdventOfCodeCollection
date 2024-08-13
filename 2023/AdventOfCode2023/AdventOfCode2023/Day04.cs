@@ -3,7 +3,7 @@ using UtilsCSharp.Utils;
 
 namespace AdventOfCode2023_1;
 
-public class Day04 : DayBase
+public class Day04() : DayBase("04", "Scratchcards")
 {
     protected override Task<object> PartOne()
     {
@@ -44,7 +44,8 @@ public class Day04 : DayBase
             var scratchCard = new ScratchCard(gameId);
 
             var gameNumbers = gameLine.Last();
-            var taskWinningNumbers = scratchCard.SetWinningNumbers(gameNumbers.Split(Constants.Pipe).ToList().First().Trim());
+            var taskWinningNumbers =
+                scratchCard.SetWinningNumbers(gameNumbers.Split(Constants.Pipe).ToList().First().Trim());
             var taskCardNumbers = scratchCard.SetCardNumbers(gameNumbers.Split(Constants.Pipe).ToList().Last().Trim());
 
             Task.WhenAll(taskWinningNumbers, taskCardNumbers).Wait();

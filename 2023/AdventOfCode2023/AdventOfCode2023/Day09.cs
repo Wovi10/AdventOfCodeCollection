@@ -3,7 +3,7 @@ using UtilsCSharp.Utils;
 
 namespace AdventOfCode2023_1;
 
-public class Day09 : DayBase
+public class Day09() : DayBase("09", "Mirage Maintenance")
 {
     protected override Task<object> PartOne()
     {

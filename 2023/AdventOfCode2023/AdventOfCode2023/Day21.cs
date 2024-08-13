@@ -3,13 +3,13 @@ using AdventOfCode2023_1.Models.Day21;
 
 namespace AdventOfCode2023_1;
 
-public class Day21 : DayBase
+public class Day21() : DayBase("21", "Step counter")
 {
     protected override Task<object> PartOne()
     {
         const int numberOfSteps = IsReal ? 64 : 6;
         var result = CountReachableGardenPlots(numberOfSteps);
-        
+
         return Task.FromResult<object>(result);
     }
 
@@ -19,7 +19,7 @@ public class Day21 : DayBase
 
         // Input but all in 1 string (Add newline for each row)
         var input = string.Join("\n", Input);
-        
+
         var steps = Steps(ParseMap(input)).Take(328).ToArray();
 
         (decimal x0, decimal y0) = (65, steps[65]);
@@ -37,33 +37,40 @@ public class Day21 : DayBase
 
         return Task.FromResult<object>(solution);
     }
-    
-    IEnumerable<long> Steps(HashSet<Complex> map) {
-        var positions = new HashSet<Complex> { new Complex(65, 65) };
 
-        while(true) {
+    IEnumerable<long> Steps(HashSet<Complex> map)
+    {
+        var positions = new HashSet<Complex> {new Complex(65, 65)};
+
+        while (true)
+        {
             yield return positions.Count;
             positions = Step(map, positions);
         }
     }
-    
-    HashSet<Complex> Step(HashSet<Complex> map, HashSet<Complex> positions) {
+
+    HashSet<Complex> Step(HashSet<Complex> map, HashSet<Complex> positions)
+    {
         Complex[] dirs = [1, -1, Complex.ImaginaryOne, -Complex.ImaginaryOne];
 
         var res = new HashSet<Complex>();
-        foreach (var pos in positions) {
-            foreach (var dir in dirs) {
+        foreach (var pos in positions)
+        {
+            foreach (var dir in dirs)
+            {
                 var posT = pos + dir;
                 var tileCol = Mod(posT.Real, 131);
                 var tileRow = Mod(posT.Imaginary, 131);
-                if (map.Contains(new Complex(tileCol, tileRow))) {
+                if (map.Contains(new Complex(tileCol, tileRow)))
+                {
                     res.Add(posT);
                 }
             }
         }
+
         return res;
     }
-    
+
     double Mod(double n, int m) => ((n % m) + m) % m;
 
     HashSet<Complex> ParseMap(string input)

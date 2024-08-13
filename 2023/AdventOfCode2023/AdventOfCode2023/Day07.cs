@@ -3,7 +3,7 @@ using UtilsCSharp.Utils;
 
 namespace AdventOfCode2023_1;
 
-public class Day07 : DayBase
+public class Day07() : DayBase("07", "Camel Cards")
 {
     private List<Hand> _hands = new();
 

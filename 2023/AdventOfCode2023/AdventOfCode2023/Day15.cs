@@ -3,7 +3,7 @@ using UtilsCSharp.Utils;
 
 namespace AdventOfCode2023_1;
 
-public class Day15 : DayBase
+public class Day15() : DayBase("15", "Lens Library")
 {
     protected override async Task<object> PartOne()
     {

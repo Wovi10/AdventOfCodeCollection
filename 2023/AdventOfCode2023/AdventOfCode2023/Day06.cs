@@ -4,7 +4,7 @@ using Constants = UtilsCSharp.Utils.Constants;
 
 namespace AdventOfCode2023_1;
 
-public class Day06 : DayBase
+public class Day06() : DayBase("06", "Wait For It")
 {
     private readonly List<Race> _races = new();
 

@@ -4,7 +4,7 @@ using NUnit.Framework;
 
 namespace AdventOfCode2023_1;
 
-public class Day12 : DayBase
+public class Day12() : DayBase("12", "Hot Springs")
 {
     protected override async Task<object> PartOne()
     {
@@ -34,15 +34,17 @@ public class Day12 : DayBase
         });
 
         var tasks = springRows.Select(springRow => springRow.GetPossibleArrangementsAsync());
-        var results = IsDebug
-            ? await Task.WhenAll(tasks.Select(async task =>
-            {
-                var result = await task.ConfigureAwait(false);
-                Interlocked.Increment(ref completedTasks);
-                ((IProgress<long>) progress).Report(completedTasks);
-                return result;
-            })).ConfigureAwait(false)
-            : await Task.WhenAll(tasks).ConfigureAwait(false);
+#if DEBUG
+        var results = await Task.WhenAll(tasks.Select(async task =>
+        {
+            var result = await task.ConfigureAwait(false);
+            Interlocked.Increment(ref completedTasks);
+            ((IProgress<long>)progress).Report(completedTasks);
+            return result;
+        })).ConfigureAwait(false);
+#else
+        var results = await Task.WhenAll(tasks).ConfigureAwait(false);
+#endif
 
         return results.Sum();
     }

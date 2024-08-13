@@ -6,7 +6,7 @@ using UtilsCSharp.Enums;
 
 namespace AdventOfCode2023_1;
 
-public class Day16 : DayBase
+public class Day16() : DayBase("16", "The Floor Will Be Lava")
 {
     protected override async Task<object> PartOne()
     {

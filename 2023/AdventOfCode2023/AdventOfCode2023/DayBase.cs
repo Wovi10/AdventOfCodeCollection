@@ -1,26 +1,22 @@
 ﻿using System.Diagnostics;
 using AdventOfCode2023_1.Shared;
 using AdventOfCode2023_1.Shared.Enums;
-using NUnit.Framework;
 
 namespace AdventOfCode2023_1;
 
-public abstract class DayBase
+public abstract class DayBase(string day, string title)
 {
-    protected const bool IsDebug = true;
     public const bool IsReal = true;
     protected static List<string> Input = new();
-    private object _expectedAnswer = 0;
-    protected string Day = "01";
+    protected string Day { get; } = day;
 
-    public async Task Run(string day, string title, PartsToRun partToRun = PartsToRun.Both)
+    public async Task Run(PartsToRun partToRun = PartsToRun.Both)
     {
-        Day = day;
         WriteStopwatchStartText();
         var watch = new Stopwatch();
         watch.Start();
 
-        SharedMethods.WriteBeginText(day, title);
+        SharedMethods.WriteBeginText(Day, title);
         switch (partToRun)
         {
             case PartsToRun.Part1:
@@ -44,40 +40,39 @@ public abstract class DayBase
 
     private static void WriteStopwatchStartText()
     {
-        if (IsDebug)
-        {
+#if DEBUG
             Console.WriteLine($"Started at {DateTime.Now:HH:mm:ss}");
-        }
+#endif
     }
 
     private static void WriteStopwatchText(long watchElapsedMilliseconds)
     {
-        if (IsDebug)
-            Console.WriteLine($"Elapsed time: {watchElapsedMilliseconds} ms");
+#if DEBUG
+        Console.WriteLine($"Elapsed time: {watchElapsedMilliseconds} ms");
+#endif
     }
 
     private async Task RunPartOne() 
-        => await RunPart(true, PartOne);
+        => await RunPart(PartOne, true);
 
     private async Task RunPartTwo()
-        => await RunPart(false, PartTwo);
+        => await RunPart(PartTwo, false);
 
-    private async Task RunPart(bool runningPartOne, Func<Task<object>> partToRun)
+    private async Task RunPart(Func<Task<object>> partToRun, bool runningPartOne)
     {
         Variables.RunningPartOne = runningPartOne;
         Input = SharedMethods.GetInput(Day);
-        _expectedAnswer = GetExpectedAnswer(runningPartOne);
 
         var result = await partToRun();
         SharedMethods.PrintAnswer(result);
 
-        if (!IsDebug) Assert.That(result, Is.EqualTo(_expectedAnswer));
+#if !DEBUG
+        var expectedAnswer = Answers.GetExpectedAnswer(Day);
+        Assert.That(result, Is.EqualTo(expectedAnswer));
+#endif
     }
 
     protected abstract Task<object> PartOne();
 
     protected abstract Task<object> PartTwo();
-
-    private object GetExpectedAnswer(bool partOne)
-        => Answers.GetExpectedAnswer(Day, partOne);
 }
