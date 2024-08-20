@@ -1,11 +1,14 @@
-﻿namespace AdventOfCode2023_1.Models.Day23;
+﻿using AdventOfCode2023_1.Models.Day23.TileTypes;
+using UtilsCSharp;
+
+namespace AdventOfCode2023_1.Models.Day23;
 
 public class SnowIsland
 {
     public SnowIsland(List<string> input)
     {
         Tiles = new List<Tile>();
-        
+
         var y = 0;
         foreach (var inputLine in input)
         {
@@ -18,74 +21,63 @@ public class SnowIsland
 
             y++;
         }
-        
-        StartTile = Tiles.First(t => t.Type == TileType.Path);
-        EndTile = Tiles.Last(t => t.Type == TileType.Path);
+
+        StartTile = Tiles.First(t => t.Type is DefaultPath);
+        EndTile = Tiles.Last(t => t.Type is DefaultPath);
     }
 
-    public List<Tile> Tiles { get; set; }
-    public Tile StartTile { get; set; }
-    public Tile EndTile { get; set; }
-    public List<Hike> Hikes { get; set; } = new();
+    private List<Tile> Tiles { get; set; }
+    private Tile StartTile { get; set; }
+    private Tile EndTile { get; set; }
+    private int LongestHikeLength { get; set; }
 
     public int FindLongestHike()
     {
-        var initialHike = new Hike();
-        initialHike.AddTile(StartTile);
-        Hikes.Add(initialHike);
-        RunOverHikes(initialHike);
-        
-        return Hikes.Max(hike => hike.Length);
+        RunOverHikes();
+        return LongestHikeLength;
     }
 
-    public void RunOverHikes(Hike currentHike)
+    private void RunOverHikes()
     {
-        if (!currentHike.IsPossible)
-        {
-            Hikes.Remove(currentHike);
-            return;
-        }
+        var queue = SetupQueue();
 
-        var lastTile = currentHike.Tiles.Last();
-        var neighbourTiles = GetPossibleNeighbourTiles(lastTile);
-        
-        if (neighbourTiles.Count == 0)
+        while (queue.Count > 0)
         {
-            currentHike.IsPossible = false;
-            Hikes.Remove(currentHike);
-            return;
-        }
-        
-        foreach (var neighbourTile in neighbourTiles)
-        {
-            var newHike = new Hike();
-            newHike.Tiles.AddRange(currentHike.Tiles);
-            newHike.AddTile(neighbourTile);
+            var currentHike = queue.Dequeue();
 
-            Hikes.Add(newHike);
-            RunOverHikes(newHike);
+            var lastTile = currentHike.Tiles.Last();
+
+            if (lastTile == EndTile)
+            {
+                var isLonger = currentHike.Length > LongestHikeLength;
+                LongestHikeLength = isLonger ? currentHike.Length : LongestHikeLength;
+                if (isLonger)
+                {
+                    Console.WriteLine($"New longest hike found: {currentHike.Length}");
+                }
+                continue;
+            }
+
+            var neighbourTiles = lastTile.GetPossibleNeighbourTiles(Tiles, currentHike);
+
+            if (neighbourTiles.Count == 0)
+                continue;
+
+            neighbourTiles.ForEach(neighbourTile => EnqueueNewHike(currentHike, neighbourTile, queue));
         }
     }
+ 
+    private Queue<Hike> SetupQueue()
+    {
+        var queue = new Queue<Hike>();
+        queue.Enqueue(new Hike(StartTile));
+        return queue;
+    }
 
-    private List<Tile> GetPossibleNeighbourTiles(Tile currentTile) 
-        => currentTile.Type switch
-            {
-                TileType.SlopeToEast 
-                    => Tiles
-                        .Where(tile => tile.X == currentTile.X + 1 && tile.Y == currentTile.Y && tile.Type != TileType.Forest)
-                        .ToList(),
-                TileType.SlopeToSouth 
-                    => Tiles
-                        .Where(tile => tile.X == currentTile.X && tile.Y == currentTile.Y + 1 && tile.Type != TileType.Forest)
-                        .ToList(),
-                TileType.Path =>
-                    Tiles
-                        .Where(tile => tile.Type != TileType.Forest)
-                        .Where(tile => (tile.X == currentTile.X - 1 && tile.Y == currentTile.Y) ||
-                                                     (tile.X == currentTile.X + 1 && tile.Y == currentTile.Y) ||
-                                                     (tile.X == currentTile.X && tile.Y == currentTile.Y - 1) ||
-                                                     (tile.X == currentTile.X && tile.Y == currentTile.Y + 1))
-                        .ToList(),
-                _ => throw new ArgumentOutOfRangeException()
-            };
+    private static void EnqueueNewHike(Hike currentHike, Tile neighbourTile, Queue<Hike> queue)
+    {
+        var newHike = new Hike(currentHike.Tiles);
+        if (newHike.AddTile(neighbourTile))
+            queue.Enqueue(newHike);
+    }
 }

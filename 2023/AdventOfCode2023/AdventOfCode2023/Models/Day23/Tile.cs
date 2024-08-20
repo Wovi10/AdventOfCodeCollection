@@ -5,7 +5,10 @@ namespace AdventOfCode2023_1.Models.Day23;
 
 public class Tile(int internalX, int internalY, char type) : NodeBase<int>(internalX, internalY)
 {
-    public TileType Type { get; init; } = type.ToTileType();
+    public ITileType Type { get; init; } = type.ToTileType();
+
+    public List<Tile> GetPossibleNeighbourTiles(List<Tile> tiles, Hike currentHike)
+        => Type.GetPossibleNeighbourTiles(tiles, this, currentHike);
 
     public override (int, int) Move(Direction direction, int distance = 1) 
         => direction switch 

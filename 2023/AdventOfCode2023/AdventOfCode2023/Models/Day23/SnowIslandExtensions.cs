@@ -1,4 +1,6 @@
-﻿namespace AdventOfCode2023_1.Models.Day23;
+﻿using AdventOfCode2023_1.Models.Day23.TileTypes;
+
+namespace AdventOfCode2023_1.Models.Day23;
 
 public static class SnowIslandExtensions
 {
@@ -7,5 +9,17 @@ public static class SnowIslandExtensions
         var snowIsland = new SnowIsland(input);
 
         return snowIsland;
+    }
+
+    public static ITileType ToTileType(this char type)
+    {
+        return type switch
+        {
+            '#' => new Forest(),
+            '.' => new DefaultPath(),
+            'v' => new DownWardsSlope(),
+            '>' => new RightWardsSlope(),
+            _ => throw new ArgumentOutOfRangeException()
+        };
     }
 }

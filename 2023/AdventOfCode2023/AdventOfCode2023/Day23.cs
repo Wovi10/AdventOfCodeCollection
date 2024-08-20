@@ -13,14 +13,13 @@ public class Day23() : DayBase("23", "A long walk")
 
     protected override Task<object> PartTwo()
     {
-        throw new NotImplementedException();
+        var result = GetLongestHike();
+
+        return Task.FromResult<object>(result);
     }
 
-    private int GetLongestHike()
-    {
-        return 
-            Input
-                .CreateSnowIsland()
-                .FindLongestHike();
-    }
+    private static int GetLongestHike() 
+        => Input
+            .CreateSnowIsland()
+            .FindLongestHike();
 }

@@ -1,32 +1,16 @@
-﻿namespace AdventOfCode2023_1.Models.Day23;
+﻿using AdventOfCode2023_1.Shared;
 
-public enum TileType
+namespace AdventOfCode2023_1.Models.Day23;
+
+public interface ITileType
 {
-    Forest,
-    Path,
-    SlopeToSouth,
-    SlopeToEast
-}
+    public List<Tile> GetPossibleNeighbourTiles(List<Tile> tiles, Tile currentTile, Hike currentHike) 
+        => Variables.RunningPartOne
+            ? GetPossibleNeighbourTilesPart1(tiles, currentTile, currentHike)
+            : GetPossibleNeighbourTilesPart2(tiles, currentTile, currentHike);
 
-public static class TileTypeExtensions
-{
-    public static char ToChar(this TileType tileType)
-        => tileType switch
-        {
-            TileType.Forest => '#',
-            TileType.Path => '.',
-            TileType.SlopeToSouth => 'v',
-            TileType.SlopeToEast => '>',
-            _ => throw new ArgumentOutOfRangeException(nameof(tileType), tileType, null)
-        };
-
-    public static TileType ToTileType(this char tileType)
-        => tileType switch
-        {
-            '#' => TileType.Forest,
-            '.' => TileType.Path,
-            'v' => TileType.SlopeToSouth,
-            '>' => TileType.SlopeToEast,
-            _ => throw new ArgumentOutOfRangeException(nameof(tileType), tileType, null)
-        };
+    protected List<Tile> GetPossibleNeighbourTilesPart1(List<Tile> tiles, Tile currentTile, Hike currentHike);
+    
+    protected List<Tile> GetPossibleNeighbourTilesPart2(List<Tile> tiles, Tile currentTile, Hike currentHike);
+    
 }
