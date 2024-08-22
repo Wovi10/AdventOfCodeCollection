@@ -74,10 +74,10 @@ public class SnowIsland
         return queue;
     }
 
-    private static void EnqueueNewHike(Hike currentHike, Tile neighbourTile, Queue<Hike> queue)
+    private static void EnqueueNewHike(Hike currentHike, Tile tileToAdd, Queue<Hike> queue)
     {
         var newHike = new Hike(currentHike.Tiles);
-        if (newHike.AddTile(neighbourTile))
+        if (newHike.AddTile(tileToAdd))
             queue.Enqueue(newHike);
     }
 }
