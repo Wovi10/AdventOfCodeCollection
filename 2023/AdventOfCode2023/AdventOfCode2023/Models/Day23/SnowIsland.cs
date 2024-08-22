@@ -9,9 +9,11 @@ public class SnowIsland
     {
         Tiles = new List<Tile>();
 
+        Height = input.Count;
         var y = 0;
         foreach (var inputLine in input)
         {
+            Width = inputLine.Length;
             var x = 0;
             foreach (var tile in inputLine)
             {
@@ -30,6 +32,67 @@ public class SnowIsland
     private Tile StartTile { get; set; }
     private Tile EndTile { get; set; }
     private int LongestHikeLength { get; set; }
+    private int Height { get; set; }
+    private int Width { get; set; }
+
+    public int DoItAlternativeWay()
+    {
+        var corners = FindCorners();
+        var segments = FindSegmentsBetweenCorners(corners);
+
+        return 0;
+    }
+
+    private Dictionary<(int, int, int, int), int> FindSegmentsBetweenCorners(HashSet<(int, int)> corners)
+    {
+        var pathSegments = new Dictionary<(int, int, int, int), int>();
+
+        foreach (var (cornerX, cornerY) in corners.Except([(Height-1, Width-2)]))
+        {
+            
+        }
+    }
+
+    private HashSet<(int,int)> FindCorners()
+    {
+        var corners = new HashSet<(int, int)>();
+
+        for (var y = 0; y < Height; y++)
+        {
+            for (int x = 0; x < Width; x++)
+            {
+                var tile = Tiles.First(t => t.X == x && t.Y == y);
+
+                if (tile.Type is Forest || tile == StartTile || tile == EndTile)
+                    continue;
+
+                var count = 0;
+                var above = Tiles.First(t => t.X == x && t.Y == y - 1);
+                var left = Tiles.First(t => t.X == x - 1 && t.Y == y);
+                var right = Tiles.First(t => t.X == x + 1 && t.Y == y);
+                var below = Tiles.First(t => t.X == x && t.Y == y + 1);
+                
+                if (above.Type is not Forest && left.Type is not Forest)
+                    count++;
+                if (above.Type is not Forest && right.Type is not Forest)
+                    count++;
+                if (below.Type is not Forest && left.Type is not Forest)
+                    count++;
+                if (below.Type is not Forest && right.Type is not Forest)
+                    count++;
+
+                if (count > 1)
+                {
+                    corners.Add((tile.X, tile.Y));
+                }
+            }
+        }
+
+        corners.Add((StartTile.X, StartTile.Y));
+        corners.Add((EndTile.X, EndTile.Y));
+
+        return corners;
+    }
 
     public int FindLongestHike()
     {

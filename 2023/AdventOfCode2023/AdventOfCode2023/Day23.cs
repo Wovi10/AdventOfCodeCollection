@@ -21,5 +21,7 @@ public class Day23() : DayBase("23", "A long walk")
     private static int GetLongestHike() 
         => Input
             .CreateSnowIsland()
-            .FindLongestHike();
+            .DoItAlternativeWay()
+            // .FindLongestHike()
+        ;
 }
