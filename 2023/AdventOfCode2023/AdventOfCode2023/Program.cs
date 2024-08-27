@@ -23,4 +23,4 @@ using AdventOfCode2023_1.Shared.Enums;
 // await new Day20().Run();
 // await new Day21().Run();
 // await new Day22().Run();
-await new Day23().Run(PartsToRun.Part1);
+await new Day23().Run(PartsToRun.Part2);

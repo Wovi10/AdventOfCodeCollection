@@ -56,7 +56,8 @@ public class Day05() : DayBase("05", "If You Give A Seed A Fertilizer")
 
         return results.Min();
 #endif
-
+#if DEBUG
+        
         var total = StartSeeds.Count;
         var counter = 1;
         var results = StartSeeds.Select(pair =>
@@ -69,6 +70,7 @@ public class Day05() : DayBase("05", "If You Give A Seed A Fertilizer")
         });
 
         return results.Min();
+#endif
     }
 
     private long? SearchLowestLocation()
