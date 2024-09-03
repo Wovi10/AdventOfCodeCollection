@@ -1,4 +1,5 @@
 ﻿using AdventOfCode2023_1.Models.Day24;
+using AdventOfCode2023_1.Shared;
 
 namespace AdventOfCode2023_1;
 
@@ -16,10 +17,6 @@ public class Day24() : DayBase("24", "Never Tell Me The Odds")
         throw new NotImplementedException();
     }
 
-    private int GetNumberOfCrossingPaths()
-    {
-        var hailStorm = new HailStorm(Input);
-
-        return 0;
-    }
+    private static int GetNumberOfCrossingPaths() 
+        => new HailStorm(Input).GetNumberOfCrossingPaths();
 }
