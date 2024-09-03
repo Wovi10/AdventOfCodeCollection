@@ -14,9 +14,17 @@ public class Day24() : DayBase("24", "Never Tell Me The Odds")
 
     protected override Task<object> PartTwo()
     {
-        throw new NotImplementedException();
+        var result = GetInitialPointStoneSum();
+        
+        return Task.FromResult<object>(result);
     }
 
     private static int GetNumberOfCrossingPaths() 
         => new HailStorm(Input).GetNumberOfCrossingPaths();
+
+    private long GetInitialPointStoneSum()
+    {
+        var hailstorm = new HailStorm(Input.Take(3).ToList());
+        Hail rock = hailstorm.GetIntersection();
+    }
 }

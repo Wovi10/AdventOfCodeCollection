@@ -71,4 +71,7 @@ public class Hail
            (!XIsGoingDown && x > X) ||
            (YIsGoingDown && y < Y) ||
            (!YIsGoingDown && y > Y);
+
+    public (long, long, long) GetPositionAtTime(long time)
+        => (X + (long)(VelocityX * time), Y + (long)(VelocityY * time), Z + (long)(VelocityZ * time));
 }
