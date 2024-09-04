@@ -68,12 +68,15 @@ public class SpringRow
             _continuousDamagedSprings.AddRange(arrangementsFromInput.Split(Constants.Comma).Select(int.Parse));
     }
 
-    public async Task<long> GetPossibleArrangementsAsync()
+    public Task<long> GetPossibleArrangementsAsync() 
+        => Task.FromResult(GetPossibleArrangements());
+
+    public long GetPossibleArrangements()
     {
         if (_continuousDamagedWithSpaces != _springs.Count)
         {
             GetPossibleIndicesForLength();
-            await CountCombinationsHelper(_possibleArrangementsPerLength);
+            CountCombinationsHelper(_possibleArrangementsPerLength);
             return _possibleArrangements;
         }
 
@@ -124,23 +127,21 @@ public class SpringRow
 
             for (var i = usedContinuousDamagedWithSpaces; i < _springs.Count - minLengthNeeded + 1; i++)
             {
-                if (_springs[i].IsOperational())
-                    continue;
-
                 if (usedContinuousDamagedWithSpaces == 0 && i > firstDamagedSpring)
                     break;
 
-                if (counter + 1 == _continuousDamagedSprings.Count && i + lengthToCheck < lastDamagedSpring)
-                    continue;
+                var iPlusLengthToCheck = i + lengthToCheck;
 
-                if (i > 0 && _springs[i - 1].IsDamaged())
-                    continue;
+                if (_springs.Count < iPlusLengthToCheck)
+                    break;
 
-                if (_springs.Count > i + lengthToCheck && _springs[i + lengthToCheck].IsDamaged())
-                    continue;
-
-                var followingSprings = _springs[i..(lengthToCheck + i)];
-                if ((followingSprings.Count == 1 && _springs.Count > i + 1 && _springs[i + 1].IsDamaged()) ||
+                var followingSprings = _springs[i..iPlusLengthToCheck];
+                
+                if ((counter + 1 == _continuousDamagedSprings.Count && iPlusLengthToCheck < lastDamagedSpring) || 
+                    _springs[i].IsOperational() || 
+                    (i > 0 && _springs[i - 1].IsDamaged()) ||
+                    (_springs.Count > iPlusLengthToCheck && _springs[iPlusLengthToCheck].IsDamaged()) ||
+                    (followingSprings.Count == 1 && _springs.Count > i + 1 && _springs[i + 1].IsDamaged()) ||
                     followingSprings.Any(spring => spring.IsOperational()))
                     continue;
 
@@ -153,19 +154,19 @@ public class SpringRow
         }
     }
 
-    private async Task CountCombinationsHelper(List<List<int>> lists)
+    private void CountCombinationsHelper(List<List<int>> lists)
     {
-        var stack = new Stack<Tuple<int, List<int>>>();
-        stack.Push(new Tuple<int, List<int>>(0, new List<int>()));
         var springsCount = _springs.Count;
+        var stack = new Stack<Tuple<int, int[]>>();
+        stack.Push(new Tuple<int, int[]>(0, Array.Empty<int>()));
 
         while (stack.Count > 0)
         {
-            var (currentIndex, currentList) = stack.Pop();
+            var (currentIndex, currentArray) = stack.Pop();
 
             if (currentIndex == lists.Count)
             {
-                if (await CombinationIsPossibleAsync(currentList))
+                if (CombinationIsPossible(currentArray))
                     _possibleArrangements++;
 
                 continue;
@@ -173,13 +174,14 @@ public class SpringRow
 
             foreach (var number in lists[currentIndex])
             {
-                var currentListIsEmpty = currentList.Count == 0;
+                var currentArrayIsEmpty = currentArray.Length == 0;
 
-                if (currentListIsEmpty && springsCount - currentIndex < _continuousDamagedWithSpaces)
+                if (currentArrayIsEmpty && springsCount - currentIndex < _continuousDamagedWithSpaces)
                     break;
 
-                if (!currentListIsEmpty && (number <= currentList[^1] + 1 ||
-                                            number <= currentList[^1] + _continuousDamagedSprings[currentIndex - 1]))
+                if (!currentArrayIsEmpty &&
+                    (number <= currentArray[^1] + 1 ||
+                     number <= currentArray[^1] + _continuousDamagedSprings[currentIndex - 1]))
                     continue;
 
                 var indexAfterLength = number + _continuousDamagedSprings[currentIndex];
@@ -187,21 +189,20 @@ public class SpringRow
                 if (indexAfterLength < springsCount && _springs[indexAfterLength].IsDamaged())
                     continue;
 
-                var newList = new List<int>(currentList) {number};
-                stack.Push(new Tuple<int, List<int>>(currentIndex + 1, newList));
+                var newArray = new int[currentArray.Length + 1];
+                currentArray.CopyTo(newArray, 0);
+                newArray[^1] = number;
+                stack.Push(new Tuple<int, int[]>(currentIndex + 1, newArray));
             }
         }
     }
 
-    private async Task<bool> CombinationIsPossibleAsync(List<int> combination)
-        => await Task.Run(() => CombinationIsPossible(combination));
-
-    private async Task<bool> CombinationIsPossible(List<int> combination)
+    private bool CombinationIsPossible(int[] combination)
     {
-        if (!await ContainsAllContinuousDamagedSpringsAsync(combination))
+        if (!ContainsAllContinuousDamagedSprings(combination))
             return false;
 
-        for (var i = 0; i < combination.Count - 1; i++)
+        for (var i = 0; i < combination.Length - 1; i++)
         {
             if (combination[i] + _continuousDamagedSprings[i] >= combination[i + 1])
                 return false;
@@ -210,21 +211,13 @@ public class SpringRow
         return true;
     }
 
-    private async Task<bool> ContainsAllContinuousDamagedSpringsAsync(List<int> combination) 
-        => await Task.Run(() => ContainsAllContinuousDamagedSprings(combination));
+    private bool ContainsAllContinuousDamagedSprings(int[] combination)
+        => _damagedSpringsIndices
+            .Select(damagedSpringIndex =>
+                DamagedSpringIndexIsUsed(combination, damagedSpringIndex))
+            .All(result => result);
 
-    private async Task<bool> ContainsAllContinuousDamagedSprings(List<int> combination)
-    {
-        var tasks = _damagedSpringsIndices.Select(async damagedSpringsIndex =>
-            await DamagedSpringIndexIsUsedAsync(combination, damagedSpringsIndex));
-        var results = await Task.WhenAll(tasks);
-        return results.All(result => result);
-    }
-
-    private async Task<bool> DamagedSpringIndexIsUsedAsync(List<int> combination, int damagedSpringIndex) 
-        => await Task.Run(() => DamagedSpringIndexIsUsed(combination, damagedSpringIndex));
-
-    private bool DamagedSpringIndexIsUsed(List<int> combination, int damagedSpringIndex)
+    private bool DamagedSpringIndexIsUsed(int[] combination, int damagedSpringIndex)
     {
         var index = 0;
         foreach (var item in combination)

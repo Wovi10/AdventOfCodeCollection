@@ -8,16 +8,14 @@ public class Day12() : DayBase("12", "Hot Springs")
 {
     protected override async Task<object> PartOne()
     {
-        var result = await GetSumDifferentArrangementCount().ConfigureAwait(false);
+        var result = await GetSumDifferentArrangementCount();
 
         return result;
     }
 
     protected override async Task<object> PartTwo()
     {
-        return Answers.NotYetFound;
-        
-        var result = await GetSumDifferentArrangementCount().ConfigureAwait(false);
+        var result = await GetSumDifferentArrangementCount();
 
         return result;
     }
@@ -25,6 +23,28 @@ public class Day12() : DayBase("12", "Hot Springs")
     private static async Task<long> GetSumDifferentArrangementCount()
     {
         var springRows = GetSpringRows();
+        var results = await RunAsync(springRows);
+        // var results = RunSync(springRows);
+
+        return results.Sum();
+    }
+
+    private static long[] RunSync(List<SpringRow> springRows)
+    {
+        var results = new List<long>();
+        var counter = 0;
+        foreach (var springRow in springRows)
+        {
+            results.Add(springRow.GetPossibleArrangements());
+            SharedMethods.ClearCurrentConsoleLine();
+            Console.Write($"Finished {++counter} parts of {springRows.Count}");
+        }
+
+        return results.ToArray();
+    }
+
+    private static async Task<long[]> RunAsync(List<SpringRow> springRows)
+    {
         var totalTasks = springRows.Count;
         var completedTasks = 0;
         var progress = new Progress<long>(current =>
@@ -43,10 +63,9 @@ public class Day12() : DayBase("12", "Hot Springs")
             return result;
         })).ConfigureAwait(false);
 #else
-        var results = await Task.WhenAll(tasks).ConfigureAwait(false);
+        var results = @await Task.WhenAll(tasks).ConfigureAwait(false);
 #endif
-
-        return results.Sum();
+        return results;
     }
 
     private static List<SpringRow> GetSpringRows()
