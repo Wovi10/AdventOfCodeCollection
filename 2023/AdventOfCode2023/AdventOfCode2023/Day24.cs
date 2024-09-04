@@ -22,9 +22,10 @@ public class Day24() : DayBase("24", "Never Tell Me The Odds")
     private static int GetNumberOfCrossingPaths() 
         => new HailStorm(Input).GetNumberOfCrossingPaths();
 
-    private long GetInitialPointStoneSum()
-    {
-        var hailstorm = new HailStorm(Input.Take(3).ToList());
-        Hail rock = hailstorm.GetIntersection();
-    }
+    private static double GetInitialPointStoneSum() 
+        => Math
+            .Round(
+                new HailStorm(
+                    Input.Take(3).ToList())
+                    .GetIntersection());
 }

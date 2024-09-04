@@ -37,8 +37,8 @@ public class HailStorm
                     !y.IsBetween(Boundaries.LowerY, Boundaries.UpperY))
                     continue;
 
-                var smallerHail = outerHail.X < innerHail.X ? outerHail : innerHail;
-                var biggerHail = outerHail.X > innerHail.X ? outerHail : innerHail;
+                var smallerHail = outerHail.Coordinates.X < innerHail.Coordinates.X ? outerHail : innerHail;
+                var biggerHail = outerHail.Coordinates.X > innerHail.Coordinates.X ? outerHail : innerHail;
                 intersectingHails.Add((smallerHail, biggerHail));
             }
         }
@@ -46,53 +46,103 @@ public class HailStorm
         return intersectingHails.Distinct().ToList().Count;
     }
 
-    public Hail GetIntersection()
+    public double GetIntersection()
     {
-        // In this case only 3 hails are given. We need to find a line that intersects all 3 hails.
-        // Find three planes
-        // First plane is between the first two hails
+        var firstCoordinates = Hails[0].Coordinates;
+        var firstVelocities = Hails[0].Velocity;
+        var secondCoordinates = Hails[1].Coordinates;
+        var secondVelocities = Hails[1].Velocity;
+        var thirdCoordinates = Hails[2].Coordinates;
+        var thirdVelocities = Hails[2].Velocity;
 
-        var (vectorCrossProductFirstSecond, vectorDotProductFirstSecond) = FindPlane(Hails[0], Hails[1]);
-        var (vectorCrossProductSecondThird, vectorDotProductSecondThird) = FindPlane(Hails[1], Hails[2]);
-        var (vectorCrossProductFirstThird, vectorDotProductFirstThird) = FindPlane(Hails[0], Hails[2]);
-
-        var w = Line(vectorDotProductFirstSecond, VectorCrossProduct(vectorCrossProductSecondThird, vectorCrossProductFirstThird), vectorDotProductSecondThird, VectorCrossProduct(vectorCrossProductFirstSecond, vectorCrossProductFirstThird), vectorDotProductFirstThird, VectorCrossProduct(vectorCrossProductFirstSecond, vectorCrossProductSecondThird));
-        
+        var (rock, s) = FindRock(firstCoordinates, firstVelocities, secondCoordinates, secondVelocities,
+            thirdCoordinates, thirdVelocities);
+        return rock.Sum / s;
     }
 
-    private object Line(long similarityFirstSecond, (long, long, long) cross, long l1, (long, long, long) valueTuple, long l2,
-        (long, long, long) cross1)
+    private static (Vector3, double) FindRock(Vector3 position1, Vector3 velocity1, Vector3 position2, Vector3 velocity2, Vector3
+        position3, Vector3 velocity3)
     {
-        throw new NotImplementedException();
+        var (crossProductFirstSecond, vectorDotProductFirstSecond) =
+            FindPlane(position1, velocity1, position2, velocity2);
+        var (crossProductFirstThird, vectorDotProductFirstThird) =
+            FindPlane(position1, velocity1, position3, velocity3);
+        var (crossProductSecondThird, vectorDotProductSecondThird) =
+            FindPlane(position2, velocity2, position3, velocity3);
+
+        var linearCombination =
+            LinearCombination(
+                vectorDotProductFirstSecond,
+                VectorCrossProduct(crossProductFirstThird, crossProductSecondThird),
+                vectorDotProductFirstThird,
+                VectorCrossProduct(crossProductSecondThird, crossProductFirstSecond),
+                vectorDotProductSecondThird,
+                VectorCrossProduct(crossProductFirstSecond, crossProductFirstThird));
+        var dotProcuctCrossProducts = 
+            VectorDotProduct(
+                crossProductFirstSecond,
+                VectorCrossProduct(crossProductFirstThird, crossProductSecondThird));
+
+        linearCombination = (Math.Round(linearCombination.X / dotProcuctCrossProducts),
+            Math.Round(linearCombination.Y / dotProcuctCrossProducts),
+            Math.Round(linearCombination.Z / dotProcuctCrossProducts));
+
+        Console.WriteLine(linearCombination);
+
+        var intersection23 = SubtractVectors(velocity1, linearCombination);
+        var intersection13 = SubtractVectors(velocity2, linearCombination);
+        var crossProductIntersections = VectorCrossProduct(intersection23, intersection13);
+        var E = VectorDotProduct(crossProductIntersections, VectorCrossProduct(position2, intersection13));
+        var F = VectorDotProduct(crossProductIntersections, VectorCrossProduct(position1, intersection23));
+        var G = VectorDotProduct(position1, crossProductIntersections);
+        var S = VectorDotProduct(crossProductIntersections, crossProductIntersections);
+        var rock = LinearCombination(E, intersection23, -F, intersection13, G, crossProductIntersections);
+
+        return (rock, S);
     }
 
-    private ((long, long, long) vectorCrossProduct, long vectorDotProduct) FindPlane(Hail first, Hail second)
+    private static Vector3 LinearCombination(double dotProduct12, Vector3 crossProduct12,
+        double dotProduct23, Vector3 crossProduct23,
+        double dotProduct13, Vector3 crossProduct13)
     {
-        var positionFirst = (first.X, first.Y, first.Z);
-        var positionSecond = (second.X, second.Y, second.Z);
-        var positionFirstSecond = Sub(positionFirst, positionSecond);
-        var velocityFirstSecond = Sub(positionFirst, positionSecond);
-        var vv = VectorCrossProduct(positionFirst, positionSecond);
+        var x = dotProduct12 * crossProduct12.X + dotProduct23 * crossProduct23.X + dotProduct13 * crossProduct13.X;
+        var y = dotProduct12 * crossProduct12.Y + dotProduct23 * crossProduct23.Y + dotProduct13 * crossProduct13.Y;
+        var z = dotProduct12 * crossProduct12.Z + dotProduct23 * crossProduct23.Z + dotProduct13 * crossProduct13.Z;
 
-        return (VectorCrossProduct(positionFirstSecond, velocityFirstSecond), VectorDotProduct(positionFirstSecond, vv));
+        return (x, y, z);
     }
 
-    // This will give a number showing how similar two vectors are. The closer to 1 the more similar they are. -1 is opposite.
-    private long VectorDotProduct((long, long, long) positionFirstSecond, (long, long, long) vv)
+    /// <summary>
+    /// Finds the plane between two lines defined by (x,y,z) coordinates and their velocities
+    /// </summary>
+    private static (Vector3, double) FindPlane(Vector3 position1, Vector3
+        velocity1, Vector3 position2, Vector3 velocity2)
     {
-        return positionFirstSecond.Item1 * vv.Item1 + positionFirstSecond.Item2 * vv.Item2 +
-               positionFirstSecond.Item3 * vv.Item3;
+        var positionFirstSecond = SubtractVectors(position1, position2);
+        var velocityFirstSecond = SubtractVectors(velocity1, velocity2);
+        var crossProductVelocities = VectorCrossProduct(velocity1, velocity2);
+
+        return (VectorCrossProduct(positionFirstSecond, velocityFirstSecond),
+            VectorDotProduct(positionFirstSecond, crossProductVelocities));
     }
 
-    private (long, long, long) Sub((long, long, long) first, (long, long, long) second)
-    {
-        return (first.Item1 - second.Item1, first.Item2 - second.Item2, first.Item3 - second.Item3);
-    }
+    /// <summary>
+    /// Calculates the dot product of two vectors.
+    /// The dot product is the perpendicular projection of one vector onto the other.
+    /// </summary>
+    /// <param name="first"></param>
+    /// <param name="second"></param>
+    /// <returns></returns>
+    private static double VectorDotProduct(Vector3 first, Vector3 second)
+        => first.X * second.X + first.Y * second.Y + first.Z * second.Z;
 
-    private (long, long, long) VectorCrossProduct((long, long, long) first, (long, long, long) second)
+    private static Vector3 SubtractVectors(Vector3 first, Vector3 second) 
+        => (first.X - second.X, first.Y - second.Y, first.Z - second.Z);
+
+    private static Vector3 VectorCrossProduct(Vector3 first, Vector3 second)
     {
-        return (first.Item2 * second.Item3 - first.Item3 * second.Item2,
-            first.Item3 * second.Item1 - first.Item1 * second.Item3,
-            first.Item1 * second.Item2 - first.Item2 * second.Item1);
+        return (first.Y * second.Z - first.Z * second.Y,
+            first.Z * second.X - first.X * second.Z,
+            first.X * second.Y - first.Y * second.X);
     }
 }
