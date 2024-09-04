@@ -1,6 +1,9 @@
 ﻿using AdventOfCode2023_1;
 using AdventOfCode2023_1.Shared.Enums;
 
+
+// The exercises are always fully mentioned in /Input/DayXX/Exercise.txt
+
 // await new Day01().Run();
 // await new Day02().Run();
 // await new Day03().Run();
@@ -24,4 +27,5 @@ using AdventOfCode2023_1.Shared.Enums;
 // await new Day21().Run();
 // await new Day22().Run();
 // await new Day23().Run();
-await new Day24().Run(PartsToRun.Part2);
+// await new Day24().Run();
+await new Day25().Run(PartsToRun.Part1);
