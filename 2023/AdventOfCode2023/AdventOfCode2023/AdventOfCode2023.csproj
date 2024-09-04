@@ -20,4 +20,8 @@
       <PackageReference Include="NUnit" Version="4.1.0" />
       <PackageReference Include="Wovi10.UtilsCSharp" Version="2.2.3" />
     </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Models\Day25\" />
+    </ItemGroup>
 </Project>
