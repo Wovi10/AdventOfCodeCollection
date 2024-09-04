@@ -10,40 +10,38 @@ public class Hail
         var positionParts = parts[0].Split(", ");
         var velocityParts = parts[1].Split(", ");
 
-        X = long.Parse(positionParts[0]);
-        Y = long.Parse(positionParts[1]);
-        Z = long.Parse(positionParts[2]);
-        VelocityX = long.Parse(velocityParts[0]);
-        VelocityY = long.Parse(velocityParts[1]);
-        VelocityZ = long.Parse(velocityParts[2]);
+        Coordinates = new(double.Parse(positionParts[0]), double.Parse(positionParts[1]), double.Parse(positionParts[2]));
+        Velocity = new(double.Parse(velocityParts[0]), double.Parse(velocityParts[1]), double.Parse(velocityParts[2]));
     }
 
-    public long X { get; set; }
-    public long Y { get; set; }
-    public long Z { get; set; }
-    public double VelocityX { get; set; }
-    public double VelocityY { get; set; }
-    public double VelocityZ { get; set; }
+    public Hail(Vector3 coordinates, Vector3 velocity)
+    {
+        Coordinates = coordinates;
+        Velocity = velocity;
+    }
 
-    public double Slope => VelocityY / VelocityX;
-    public double YAxisIntercept => Y - Slope * X;
+    public Vector3 Coordinates { get; set; }
+    public Vector3 Velocity { get; set; }
 
-    private bool XIsGoingDown => VelocityX < 0;
-    private bool YIsGoingDown => VelocityY < 0;
+    public double Slope => Velocity.Y / Velocity.X;
+    public double YAxisIntercept => Coordinates.Y - Slope * Coordinates.X;
+
+    private bool XIsGoingDown => Velocity.X < 0;
+    private bool YIsGoingDown => Velocity.Y < 0;
 
     public bool WillIntersectZone => CheckZoneIntersection();
 
     private bool CheckZoneIntersection()
     {
         var xWillIntersect =
-            X.IsBetween(Boundaries.LowerX, Boundaries.UpperX) ||
-            (X < Boundaries.LowerX && !XIsGoingDown) ||
-            (X > Boundaries.UpperX && XIsGoingDown);
+            Coordinates.X.IsBetween(Boundaries.LowerX, Boundaries.UpperX) ||
+            (Coordinates.X < Boundaries.LowerX && !XIsGoingDown) ||
+            (Coordinates.X > Boundaries.UpperX && XIsGoingDown);
 
         var yWillIntersect =
-            Y.IsBetween(Boundaries.LowerY, Boundaries.UpperY) ||
-            (Y < Boundaries.LowerY && !YIsGoingDown) ||
-            (Y > Boundaries.UpperY && YIsGoingDown);
+            Coordinates.Y.IsBetween(Boundaries.LowerY, Boundaries.UpperY) ||
+            (Coordinates.Y < Boundaries.LowerY && !YIsGoingDown) ||
+            (Coordinates.Y > Boundaries.UpperY && YIsGoingDown);
 
         return xWillIntersect && yWillIntersect;
     }
@@ -67,8 +65,11 @@ public class Hail
     }
 
     private bool WillCrossInTheFuture(double x, double y)
-        => (XIsGoingDown && x < X) ||
-           (!XIsGoingDown && x > X) ||
-           (YIsGoingDown && y < Y) ||
-           (!YIsGoingDown && y > Y);
+        => (XIsGoingDown && x < Coordinates.X) ||
+           (!XIsGoingDown && x > Coordinates.X) ||
+           (YIsGoingDown && y < Coordinates.Y) ||
+           (!YIsGoingDown && y > Coordinates.Y);
+
+    public Vector3 GetPositionAtTime(long time)
+        => (Coordinates.X + (long)(Velocity.X * time), Coordinates.Y + (long)(Velocity.Y * time), Coordinates.Z + (long)(Velocity.Z * time));
 }
