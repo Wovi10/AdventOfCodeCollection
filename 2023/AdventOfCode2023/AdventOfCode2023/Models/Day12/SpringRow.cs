@@ -13,7 +13,7 @@ public class SpringRow
 
         var springsFromInput = splitInput.First();
         SetSprings(springsFromInput);
-        SetDamagedSpringsIndices();
+        _damagedSpringsIndices = GetDamagedSpringsIndices();
 
         var arrangementsFromInput = splitInput.Last();
         SetContinuousArrangements(arrangementsFromInput);
@@ -21,7 +21,7 @@ public class SpringRow
     }
 
     private readonly List<SpringType> _springs = new();
-    private readonly List<int> _damagedSpringsIndices = new();
+    private readonly int[] _damagedSpringsIndices;
     private readonly List<int> _continuousDamagedSprings = new();
     private long _possibleArrangements;
     private readonly List<List<int>> _possibleArrangementsPerLength = new();
@@ -46,13 +46,16 @@ public class SpringRow
         _springs.RemoveAt(_springs.Count - 1);
     }
 
-    private void SetDamagedSpringsIndices()
+    private int[] GetDamagedSpringsIndices()
     {
+        var damagedSpringsIndices = new List<int>();
         for (var i = 0; i < _springs.Count; i++)
         {
-            if (_springs[i].IsDamaged())
-                _damagedSpringsIndices.Add(i);
+            if (_springs[i].IsDamaged()) 
+                damagedSpringsIndices.Add(i);
+
         }
+        return damagedSpringsIndices.ToArray();
     }
 
     private void SetContinuousArrangements(string arrangementsFromInput)
@@ -118,13 +121,14 @@ public class SpringRow
     {
         var usedContinuousDamagedWithSpaces = 0;
         var counter = 0;
-        int? firstDamagedSpring = _damagedSpringsIndices.Count > 0 ? _damagedSpringsIndices.First() : null;
-        int? lastDamagedSpring = _damagedSpringsIndices.Count > 0 ? _damagedSpringsIndices.Last() : null;
+        int? firstDamagedSpring = _damagedSpringsIndices.Length > 0 ? _damagedSpringsIndices.First() : null;
+        int? lastDamagedSpring = _damagedSpringsIndices.Length > 0 ? _damagedSpringsIndices.Last() : null;
         foreach (var lengthToCheck in _continuousDamagedSprings)
         {
             var minLengthNeeded = _continuousDamagedWithSpaces - usedContinuousDamagedWithSpaces;
-            var possibility = new List<int>();
-
+            var maxLength = _springs.Count-minLengthNeeded + 1 - usedContinuousDamagedWithSpaces;
+            var possibilityArray = new int[maxLength];
+            var arrayCounter = 0;
             for (var i = usedContinuousDamagedWithSpaces; i < _springs.Count - minLengthNeeded + 1; i++)
             {
                 if (usedContinuousDamagedWithSpaces == 0 && i > firstDamagedSpring)
@@ -145,10 +149,13 @@ public class SpringRow
                     followingSprings.Any(spring => spring.IsOperational()))
                     continue;
 
-                possibility.Add(i);
+                possibilityArray[arrayCounter] = i;
+                arrayCounter++;
             }
 
-            _possibleArrangementsPerLength.Add(possibility);
+            var possibilityList = possibilityArray.Take(arrayCounter).ToList();
+
+            _possibleArrangementsPerLength.Add(possibilityList);
             usedContinuousDamagedWithSpaces += lengthToCheck + 1;
             counter++;
         }
