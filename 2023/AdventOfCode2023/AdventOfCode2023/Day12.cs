@@ -1,6 +1,7 @@
 ﻿using AdventOfCode2023_1.Models.Day12;
 using AdventOfCode2023_1.Shared;
 using NUnit.Framework;
+using Constants = UtilsCSharp.Utils.Constants;
 
 namespace AdventOfCode2023_1;
 
@@ -8,23 +9,28 @@ public class Day12() : DayBase("12", "Hot Springs")
 {
     protected override async Task<object> PartOne()
     {
-        var result = await GetSumDifferentArrangementCount().ConfigureAwait(false);
+        var result = await GetSumDifferentArrangementCount();
 
         return result;
     }
 
-    protected override async Task<object> PartTwo()
+    protected override Task<object> PartTwo()
     {
-        return Answers.NotYetFound;
-        
-        var result = await GetSumDifferentArrangementCount().ConfigureAwait(false);
+        var result = SpringField.Solve(Input);
 
-        return result;
+        return Task.FromResult<object>(result);
     }
 
     private static async Task<long> GetSumDifferentArrangementCount()
     {
         var springRows = GetSpringRows();
+        var results = await RunAsync(springRows);
+
+        return results.Sum();
+    }
+
+    private static async Task<long[]> RunAsync(List<SpringRow> springRows)
+    {
         var totalTasks = springRows.Count;
         var completedTasks = 0;
         var progress = new Progress<long>(current =>
@@ -43,12 +49,11 @@ public class Day12() : DayBase("12", "Hot Springs")
             return result;
         })).ConfigureAwait(false);
 #else
-        var results = await Task.WhenAll(tasks).ConfigureAwait(false);
+        var results = @await Task.WhenAll(tasks).ConfigureAwait(false);
 #endif
-
-        return results.Sum();
+        return results;
     }
 
     private static List<SpringRow> GetSpringRows()
-        => Input.Select((line, index) => new SpringRow(line)).ToList();
+        => Input.Select((line, _) => new SpringRow(line)).ToList();
 }
