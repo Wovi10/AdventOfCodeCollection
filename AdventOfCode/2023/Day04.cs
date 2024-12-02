@@ -1,5 +1,6 @@
 using _2023.Models.Day04;
-using UtilsCSharp.Utils;
+using AOC.Utils;
+using Constants = UtilsCSharp.Utils.Constants;
 
 namespace _2023;
 

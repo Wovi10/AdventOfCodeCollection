@@ -100,7 +100,11 @@ public static class SharedMethods
         
         basePath += $"Day{day}";
 
-        var differentMockDays = new List<string> {"01", "08", "10", "13", "20"};
+        var differentMockDays =
+            Constants.RunningYear == 2023
+                ? new List<string> {"01", "08", "10", "13", "20"}
+                : new List<string> {};
+
         if (!Constants.IsRealExercise && Variables.RunningPartOne && differentMockDays.Contains(day))
             basePath += "Part01";
 
