@@ -1,4 +1,5 @@
 ﻿using _2023.Models.Day16;
+using AOC.Utils;
 using UtilsCSharp.Enums;
 
 namespace _2023;

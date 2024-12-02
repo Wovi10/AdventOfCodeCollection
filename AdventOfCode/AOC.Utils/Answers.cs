@@ -9,7 +9,7 @@ public static class Answers
     public const string NotYetFound = "NOT YET FOUND";
     private const string NotApplicable = "N/A";
 
-    private static readonly List<Answer> AnswersList = new()
+    private static readonly List<Answer> AnswersList2023 = new()
     {
         new(1, 1, Mock, 142),
         new(1, 1, Real, 55971),
@@ -113,10 +113,19 @@ public static class Answers
         new(25, 2, Real, NotApplicable)
     };
 
+    private static readonly List<Answer> AnswersList2024 = new()
+    {
+        new(1, 1, Mock, 11),
+        new(1, 1, Real, 2344935),
+        new(1, 2, Mock, 31),
+    };
+
     public static object GetExpectedAnswer(string day)
     {
+        var listToUse = Constants.RunningYear == 2023 ? AnswersList2023 : AnswersList2024;
+
         var partInt = Variables.RunningPartOne ? 1 : 2;
-        var answer = AnswersList.FirstOrDefault(a =>
+        var answer = listToUse.FirstOrDefault(a =>
             a.Day == int.Parse(day) && a.Part == partInt && a.IsReal == Constants.IsRealExercise);
 
         return answer?.Result ?? NotYetFound;

@@ -1,3 +1,4 @@
-﻿// See https://aka.ms/new-console-template for more information
+﻿using _2024;
+using AOC.Utils.Enums;
 
-Console.WriteLine("Hello, World!");
+await new Day01().Run(PartsToRun.Part1);

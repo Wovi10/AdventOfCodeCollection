@@ -1,8 +1,7 @@
 ﻿using System.Diagnostics;
-using AOC.Utils;
 using AOC.Utils.Enums;
 
-namespace _2023;
+namespace AOC.Utils;
 
 public abstract class DayBase(string day, string title)
 {

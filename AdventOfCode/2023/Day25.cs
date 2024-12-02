@@ -1,4 +1,5 @@
 ﻿using _2023.Models.Day25;
+using AOC.Utils;
 
 namespace _2023;
 
