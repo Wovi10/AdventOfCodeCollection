@@ -13,7 +13,7 @@ public class Day25() : DayBase("25", "Snowverload")
 
     protected override Task<object> PartTwo()
     {
-        throw new NotImplementedException();
+        return new Task<object>(() => "Merry Christmas!");
     }
 
     private long GetGroupSizeProduct()
