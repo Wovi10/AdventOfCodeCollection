@@ -16,7 +16,9 @@ public class Day01() : DayBase("01", "Historian Hysteria")
 
     protected override Task<object> PartTwo()
     {
-        throw new NotImplementedException();
+        var result = GetSimilarityScore();
+
+        return Task.FromResult<object>(result);
     }
 
     private long GetSumDistances()
@@ -26,5 +28,14 @@ public class Day01() : DayBase("01", "Historian Hysteria")
             .GetIdLists()
             .Sort()
             .GetDistances()
+            .Sum();
+
+    private long GetSimilarityScore()
+        => SharedMethods
+            .GetInput(Day)
+            .GetPairs()
+            .GetIdLists()
+            .GetAppearanceCountList()
+            .GetSimilarityList()
             .Sum();
 }

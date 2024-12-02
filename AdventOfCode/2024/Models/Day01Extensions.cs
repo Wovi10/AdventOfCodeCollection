@@ -5,7 +5,6 @@ namespace _2024.Models;
 
 public static class Day01Extensions
 {
-
     public static List<(int, int)> GetPairs(this List<string> input)
         => input
             .Select(line => line.Split(Constants.Space))
@@ -35,4 +34,14 @@ public static class Day01Extensions
 
     public static List<int> GetDistances(this Tuple<List<int>,List<int>> sortedIdLists)
         => sortedIdLists.Item1.Select((id1, i) => (sortedIdLists.Item2[i] - id1).Abs()).ToList();
+
+    public static List<(int, int)> GetAppearanceCountList(this Tuple<List<int>, List<int>> idLists)
+        => idLists.Item1
+            .Select(id1 => (id1, idLists.Item2.Count(id2 => id2 == id1)))
+            .ToList();
+
+    public static List<int> GetSimilarityList(this List<(int, int)> appearanceCountList)
+        => appearanceCountList
+            .Select(pair => pair.Item1 * pair.Item2)
+            .ToList();
 }
