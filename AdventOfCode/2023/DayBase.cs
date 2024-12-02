@@ -1,12 +1,11 @@
 ﻿using System.Diagnostics;
-using AdventOfCode2023_1.Shared;
-using AdventOfCode2023_1.Shared.Enums;
+using AOC.Utils;
+using AOC.Utils.Enums;
 
-namespace AdventOfCode2023_1;
+namespace _2023;
 
 public abstract class DayBase(string day, string title)
 {
-    public const bool IsReal = true;
     protected static List<string> Input = new();
     protected string Day { get; } = day;
 
