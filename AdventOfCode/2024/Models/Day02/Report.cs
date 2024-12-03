@@ -12,7 +12,7 @@ public class Report
         Parts = parts.Select(part => part.Trim()).Select(int.Parse).ToArray();
     }
 
-    public Report(int[] parts)
+    private Report(int[] parts)
     {
         Parts = parts;
     }
