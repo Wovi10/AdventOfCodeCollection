@@ -1,4 +1,5 @@
-﻿using UtilsCSharp;
+﻿using System.Collections;
+using UtilsCSharp;
 
 namespace _2024.Models.Day02;
 
@@ -9,6 +10,11 @@ public class Report
     public Report(string[] parts)
     {
         Parts = parts.Select(part => part.Trim()).Select(int.Parse).ToArray();
+    }
+
+    public Report(int[] parts)
+    {
+        Parts = parts;
     }
 
     public bool IsSafe()
@@ -35,4 +41,10 @@ public class Report
 
     private bool IsAllAscending()
         => Parts.Order().ToArray().SequenceEqual(Parts);
+
+    public bool IsSafeWithTolerance()
+        => IsSafe() ||
+           Parts
+               .Select((_, i) => new Report(Parts.Where((_, index) => index != i).ToArray()))
+               .Any(report => report.IsSafe());
 }
