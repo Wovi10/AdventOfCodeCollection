@@ -12,4 +12,8 @@
       <ProjectReference Include="..\AOC.Utils\AOC.Utils.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="Wovi10.UtilsCSharp" Version="2.2.3" />
+    </ItemGroup>
+
 </Project>
