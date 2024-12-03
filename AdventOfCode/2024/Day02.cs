@@ -14,7 +14,9 @@ public class Day02():DayBase("02", "Red-Nosed Reports")
 
     protected override Task<object> PartTwo()
     {
-        throw new NotImplementedException();
+        var result = GetSafeReportCountWithTolerance();
+
+        return Task.FromResult<object>(result);
     }
 
     private long GetSafeReportCount()
@@ -22,4 +24,10 @@ public class Day02():DayBase("02", "Red-Nosed Reports")
             .GetInput(Day)
             .ToReports()
             .Count(report => report.IsSafe());
+
+    private long GetSafeReportCountWithTolerance()
+        => SharedMethods
+            .GetInput(Day)
+            .ToReports()
+            .Count(report => report.IsSafeWithTolerance());
 }
