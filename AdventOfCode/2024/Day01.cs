@@ -1,4 +1,4 @@
-﻿using _2024.Models;
+﻿using _2024.Models.Day01;
 using AOC.Utils;
 using UtilsCSharp;
 using Constants = UtilsCSharp.Utils.Constants;
@@ -25,7 +25,7 @@ public class Day01() : DayBase("01", "Historian Hysteria")
         => SharedMethods
             .GetInput(Day)
             .GetPairs()
-            .GetIdLists()
+            .GetIds()
             .Sort()
             .GetDistances()
             .Sum();
@@ -34,8 +34,8 @@ public class Day01() : DayBase("01", "Historian Hysteria")
         => SharedMethods
             .GetInput(Day)
             .GetPairs()
-            .GetIdLists()
-            .GetAppearanceCountList()
-            .GetSimilarityList()
+            .GetIds()
+            .GetAppearanceCounts()
+            .GetSimilarities()
             .Sum();
 }

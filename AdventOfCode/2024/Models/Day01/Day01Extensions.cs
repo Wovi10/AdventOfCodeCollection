@@ -1,17 +1,16 @@
 ﻿using UtilsCSharp;
 using UtilsCSharp.Utils;
 
-namespace _2024.Models;
+namespace _2024.Models.Day01;
 
 public static class Day01Extensions
 {
-    public static List<(int, int)> GetPairs(this List<string> input)
+    public static IEnumerable<(int, int)> GetPairs(this IEnumerable<string> input)
         => input
             .Select(line => line.Split(Constants.Space))
-            .Select(ids => (int.Parse(ids.First()), int.Parse(ids.Last())))
-            .ToList();
+            .Select(ids => (int.Parse(ids.First()), int.Parse(ids.Last())));
 
-    public static Tuple<List<int>,List<int>> GetIdLists(this List<(int, int)> pairs)
+    public static Tuple<List<int>,List<int>> GetIds(this IEnumerable<(int, int)> pairs)
     {
         var distanceList1 = new List<int>();
         var distanceList2 = new List<int>();
@@ -35,13 +34,11 @@ public static class Day01Extensions
     public static List<int> GetDistances(this Tuple<List<int>,List<int>> sortedIdLists)
         => sortedIdLists.Item1.Select((id1, i) => (sortedIdLists.Item2[i] - id1).Abs()).ToList();
 
-    public static List<(int, int)> GetAppearanceCountList(this Tuple<List<int>, List<int>> idLists)
+    public static IEnumerable<(int, int)> GetAppearanceCounts(this Tuple<List<int>, List<int>> idLists)
         => idLists.Item1
-            .Select(id1 => (id1, idLists.Item2.Count(id2 => id2 == id1)))
-            .ToList();
+            .Select(id1 => (id1, idLists.Item2.Count(id2 => id2 == id1)));
 
-    public static List<int> GetSimilarityList(this List<(int, int)> appearanceCountList)
+    public static IEnumerable<int> GetSimilarities(this IEnumerable<(int, int)> appearanceCountList)
         => appearanceCountList
-            .Select(pair => pair.Item1 * pair.Item2)
-            .ToList();
+            .Select(pair => pair.Item1 * pair.Item2);
 }
