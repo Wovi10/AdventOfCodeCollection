@@ -1,4 +1,5 @@
 ﻿using _2023;
+using AOC.Utils;
 using AOC.Utils.Enums;
 
 
@@ -29,3 +30,6 @@ using AOC.Utils.Enums;
     // await new Day23().Run();
 // await new Day24().Run();
 await new Day25().Run();
+
+
+SharedMethods.ForceExitProgram();

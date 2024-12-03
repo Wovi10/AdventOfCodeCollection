@@ -113,4 +113,11 @@ public static class SharedMethods
 
     public static void ClearCurrentConsoleLine() 
         => Console.Write("\r" + new string(' ', Console.WindowWidth) + "\r");
+
+    public static void ForceExitProgram()
+    {
+        Console.WriteLine("Press any key to exit...");
+        Console.ReadKey();
+        Environment.Exit(0);
+    }
 }
