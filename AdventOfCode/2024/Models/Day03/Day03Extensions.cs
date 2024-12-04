@@ -13,6 +13,7 @@ public static class Day03Extensions
     {
         const string doString = "do()";
         const string dontString = "don't()";
+        const string mulString = "mul(";
 
         var instructionsEnabled = true;
 
@@ -20,36 +21,30 @@ public static class Day03Extensions
         {
             if (!Variables.RunningPartOne)
             {
-                if (!instructionsEnabled && input.Skip(i).Take(doString.Length).SequenceEqual(doString))
+                switch (instructionsEnabled)
                 {
-                    instructionsEnabled = true;
-                    i += doString.Length;
-                    continue;
+                    case false when input.Skip(i).Take(doString.Length).SequenceEqual(doString):
+                        instructionsEnabled = true;
+                        i += doString.Length-1;
+                        continue;
+                    case true when input.Skip(i).Take(dontString.Length).SequenceEqual(dontString):
+                        instructionsEnabled = false;
+                        i += dontString.Length-1;
+                        continue;
+                    case false:
+                        continue;
                 }
-
-                if (instructionsEnabled && input.Skip(i).Take(dontString.Length).SequenceEqual(dontString))
-                {
-                    instructionsEnabled = false;
-                    i += dontString.Length;
-                    continue;
-                }
-
-                if (!instructionsEnabled)
-                    continue;
             }
 
-            var nextFourChars = string.Join(string.Empty, input.Skip(i).Take(4));
-            if (nextFourChars != "mul(")
+            var nextFourChars = string.Join(string.Empty, input.Skip(i).Take(mulString.Length));
+            if (nextFourChars != mulString)
                 continue;
 
-            i += 4;
+            i += mulString.Length; // not -1 because of )
 
             var nextClosingBracketIndex = input.IndexOf(')', i);
             if (nextClosingBracketIndex == -1)
                 break;
-
-            if (nextClosingBracketIndex - i > 7)
-                continue;
 
             var possibleNumbers = input[i..nextClosingBracketIndex].Split(Constants.Comma);
 
@@ -59,7 +54,7 @@ public static class Day03Extensions
         }
     }
 
-    public static IEnumerable<(int, int)> ToNumberPairs(this IEnumerable<string> input)
+    public static IEnumerable<(int, int)> AsNumberPairs(this IEnumerable<string> input)
         => input
             .Select(multiplication => multiplication.Split(Constants.Comma))
             .Select(numbers => (int.Parse(numbers.First()), int.Parse(numbers.Last())));

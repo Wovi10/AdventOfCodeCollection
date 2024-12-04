@@ -24,7 +24,7 @@ public class Day03() : DayBase("03", "Mull It Over")
             .GetInput(Day)
             .ToSingleString()
             .FindAllMultiplicationStrings()
-            .ToNumberPairs()
+            .AsNumberPairs()
             .MultiplyAll()
             .Sum();
 }
