@@ -14,11 +14,18 @@ public class Day04() : DayBase("04", "Ceres Search")
 
     protected override Task<object> PartTwo()
     {
-        throw new NotImplementedException();
+        var result = GetXMasCount();
+
+        return Task.FromResult<object>(result);
     }
 
     private long GetXmasCount()
         => SharedMethods
             .GetInput(Day)
             .SearchXmas();
+
+    private long GetXMasCount()
+        => SharedMethods
+            .GetInput(Day)
+            .SearchXMas();
 }
