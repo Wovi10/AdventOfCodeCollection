@@ -53,6 +53,45 @@ public static class Day04Extensions
         return xmasCount;
     }
 
+    public static long SearchXMas(this List<string> input)
+    {
+        var height = input.Count;
+        var width = input.First().Length;
+
+        var xmasCount = 0;
+        const char M = 'M';
+        const char A = 'A';
+        const char S = 'S';
+
+        for (var y = 1; y < width-1; y++)
+        {
+            var currentLine = input[y];
+            var nextLine = input.Skip(y+1).Take(1).FirstOrDefault();
+            var hasNext = nextLine is not null;
+            var previousLine = input.Skip(Math.Max(y - 1, 0)).Take(1).FirstOrDefault();
+            var hasPrevious = previousLine is not null;
+
+            for (var x = 1; x < height-1; x++)
+            {
+                if (currentLine[x] != A || !hasNext || !hasPrevious)
+                    continue;
+
+                var hasLeftToRightDownDiagonal = previousLine![x - 1] == M && nextLine![x + 1] == S;
+                var hasLeftToRightUpDiagonal = nextLine![x - 1] == M && previousLine[x + 1] == S;
+                var hasRightToLeftDownDiagonal = previousLine[x + 1] == M && nextLine[x - 1] == S;
+                var hasRightToLeftUpDiagonal = nextLine[x + 1] == M && previousLine[x - 1] == S;
+
+                if (hasLeftToRightDownDiagonal && (hasLeftToRightUpDiagonal || hasRightToLeftDownDiagonal) ||
+                    (hasLeftToRightUpDiagonal && (hasLeftToRightDownDiagonal || hasRightToLeftUpDiagonal)) ||
+                    (hasRightToLeftDownDiagonal && (hasLeftToRightDownDiagonal || hasRightToLeftUpDiagonal)) ||
+                    (hasRightToLeftUpDiagonal && (hasLeftToRightUpDiagonal || hasRightToLeftDownDiagonal)))
+                    xmasCount++;
+            }
+        }
+
+        return xmasCount;
+    }
+
     private static bool HasBackwardsXmas(string currentLine, int x)
         => $"{currentLine[x]}{currentLine[x - 1]}{currentLine[x - 2]}{currentLine[x - 3]}"
             .SequenceEqual(XmasString);
