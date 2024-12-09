@@ -131,6 +131,10 @@ public static class Answers
         new(4, 1, Real, 2406),
         new(4, 2, Mock, 9),
         new(4, 2, Real, 1807),
+        new(5, 1, Mock, 143),
+        new(5, 1, Real, 4569),
+        new(5, 2, Mock, NotYetFound),
+        new(5, 2, Real, NotYetFound),
     };
 
     public static object GetExpectedAnswer(string day)
