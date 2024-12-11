@@ -5,10 +5,12 @@ namespace _2024.Models.Day06;
 
 public class Map
 {
+    private readonly HashSet<Coordinate> _obstacles = new();
+    private readonly Dictionary<Coordinate, Position> _positionLookup = new();
+
     public Map(List<string> input)
     {
         Height = input.Count;
-        var positions = new List<Position>();
 
         for (var y = 0; y < input.Count; y++)
         {
@@ -20,62 +22,95 @@ public class Map
                 var character = row[x];
                 var position = new Position(coordinate, character);
 
+                _positionLookup.Add(coordinate, position);
+
                 if (position.IsGuard)
                 {
-                    GuardPosition = position.Coordinate;
-                    position.SetVisited();
+                    GuardCoordinate = position.Coordinate;
+                    position.SetVisited(true);
                 }
 
-                positions.Add(position);
+                if (position.IsObstacle)
+                    _obstacles.Add(coordinate);
+
+                Positions.Add(position);
             }
         }
-
-        Positions = positions.ToArray();
-        Obstacles = Positions.Where(p => p.IsObstacle).Select(p => p.Coordinate).ToArray();
     }
 
     private int Height { get; }
     private int Width { get; }
     private Direction GuardDirection { get; set; } = Direction.Up;
-    private Position[] Positions { get; }
-    private Coordinate GuardPosition { get; } = new Coordinate(-1, -1);
-    private Coordinate[] Obstacles { get; }
+    private List<Position> Positions { get; } = new();
+    private Coordinate GuardCoordinate { get; } = new(-1, -1);
 
-    public void StartRunning()
+    public List<Position> GetOriginalPath()
     {
-        var current = GuardPosition;
-        var next = current.Move(GuardDirection).ToCoordinate();
-        SetCoordinateVisited(next);
+        Run(out _);
+        return Positions.Where(p => p.IsVisited).ToList();
+    }
 
-        while (IsOnMap(next))
+    public void Run(out bool looped)
+    {
+        looped = false;
+        var current = GuardCoordinate;
+
+        while (true)
         {
-            if (Obstacles.Contains(next))
+            var currentAsPosition = _positionLookup[current];
+            if (currentAsPosition.IsVisitedTwice)
             {
-                GuardDirection = GuardDirection switch
-                {
-                    Direction.Up => Direction.Right,
-                    Direction.Right => Direction.Down,
-                    Direction.Down => Direction.Left,
-                    Direction.Left => Direction.Up,
-                    _ => throw new ArgumentOutOfRangeException()
-                };
-            }
-            else
-            {
-                current = next;
-                SetCoordinateVisited(current);
+                looped = true;
+                return;
             }
 
-            next = current.Move(GuardDirection).ToCoordinate();
+            var next = current.Move(GuardDirection).ToCoordinate();
+            if (!IsOnMap(next))
+                break;
+
+            var nextAsPosition = _positionLookup[next];
+            if (_obstacles.Contains(next))
+                RotateGuardDirection();
+            else
+                current = MarkAsVisited(next, nextAsPosition, out currentAsPosition);
         }
     }
+
+    private Coordinate MarkAsVisited(Coordinate next, Position nextAsPosition, out Position currentAsPosition)
+    {
+        currentAsPosition = nextAsPosition;
+
+        SetCoordinateVisited(next);
+        return next;
+    }
+
+    private void RotateGuardDirection()
+        => GuardDirection = (Direction)(((int)GuardDirection + 1) % 4);
 
     public long CountVisited()
         => Positions.Count(p => p.IsVisited);
 
-    private bool IsOnMap(Coordinate next)
-        => next.X >= 0 && next.X < Width && (next.Y >= 0 && next.Y < Height);
+    public void Reset()
+    {
+        GuardDirection = Direction.Up;
+
+        foreach (var position in Positions)
+            position.Reset();
+    }
+
+    private bool IsOnMap(Coordinate coordinate)
+        => coordinate.X >= 0 && coordinate.X < Width && coordinate.Y >= 0 && coordinate.Y < Height;
 
     private void SetCoordinateVisited(Coordinate coordinate)
-        => Positions.First(p => p.Coordinate == coordinate).SetVisited();
+    {
+        var position = _positionLookup[coordinate];
+        position.SetVisited(true);
+        position.SetWayVisited(GuardDirection);
+    }
+
+    public void AddObstacle(Coordinate positionCoordinate)
+        => _obstacles.Add(positionCoordinate);
+
+    public void RemoveObstacle(Coordinate positionCoordinate)
+        => _obstacles.Remove(positionCoordinate);
 }
