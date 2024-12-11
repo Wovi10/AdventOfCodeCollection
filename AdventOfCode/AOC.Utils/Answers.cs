@@ -137,7 +137,7 @@ public static class Answers
         new(5, 2, Real, 6456),
         new(6, 1, Mock, 41),
         new(6, 1, Real, 5534),
-        new(6, 2, Mock, NotYetFound),
+        new(6, 2, Mock, 6),
         new(6, 2, Real, NotYetFound),
     };
 

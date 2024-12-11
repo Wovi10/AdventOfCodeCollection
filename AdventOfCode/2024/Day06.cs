@@ -14,15 +14,21 @@ public class Day06(): DayBase("06", "Guard Gallivant")
 
     protected override Task<object> PartTwo()
     {
-        throw new NotImplementedException();
+        var result = GetObstaclePositionsForLoop();
+
+        return Task.FromResult<object>(result);
     }
 
     private long GetDistinctGuardPositions()
-    {
-        var input = SharedMethods.GetInput(Day);
-        var map = new Map(input);
-        map.StartRunning();
+        => SharedMethods
+            .GetInput(Day)
+            .ToMap()
+            .StartRunning()
+            .CountVisited();
 
-        return map.CountVisited();
-    }
+    private long GetObstaclePositionsForLoop()
+        => SharedMethods
+            .GetInput(Day)
+            .ToMap()
+            .GetNumWorkingPositions();
 }
