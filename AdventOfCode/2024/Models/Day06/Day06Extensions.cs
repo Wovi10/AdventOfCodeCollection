@@ -18,7 +18,6 @@ public static class Day06Extensions
     {
         var positionsToTry = originalMap.GetOriginalPath();
         var numWorkingPositions = 0;
-        var counter = 0;
 
         foreach (var position in positionsToTry.Where(p => !p.IsGuard))
         {
@@ -31,7 +30,6 @@ public static class Day06Extensions
             originalMap.RemoveObstacle(position.Coordinate);
             position.SetObstacle(false);
             originalMap.Reset();
-            counter++;
         }
 
         return numWorkingPositions;
