@@ -18,20 +18,9 @@ public class Day07(): DayBase("07", "Bridge repair")
     }
 
     private long GetTotalCalibration()
-    {
-        return SharedMethods
+        => SharedMethods
             .GetInput(Day)
             .ToEquations()
             .SolveEquations()
             .Sum();
-
-        var input = SharedMethods.GetInput(Day);
-        var calibration = 0;
-        foreach (var line in input)
-        {
-            calibration += int.Parse(line);
-        }
-
-        return calibration;
-    }
 }

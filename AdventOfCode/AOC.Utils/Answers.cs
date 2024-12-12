@@ -140,7 +140,7 @@ public static class Answers
         new(6, 2, Mock, 6),
         new(6, 2, Real, 2262),
         new(7, 1, Mock, 3749),
-        new(7, 1, Real, NotYetFound),
+        new(7, 1, Real, 4555081946288),
         new(7, 2, Mock, NotYetFound),
         new(7, 2, Real, NotYetFound),
     };
