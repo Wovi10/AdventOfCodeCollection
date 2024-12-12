@@ -14,7 +14,9 @@ public class Day07(): DayBase("07", "Bridge repair")
 
     protected override Task<object> PartTwo()
     {
-        throw new NotImplementedException();
+        var result = GetTotalCalibration();
+
+        return Task.FromResult<object>(result);
     }
 
     private long GetTotalCalibration()
