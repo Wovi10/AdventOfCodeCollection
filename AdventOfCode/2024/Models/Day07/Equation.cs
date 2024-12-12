@@ -1,5 +1,6 @@
 ﻿using System.Globalization;
-using UtilsCSharp.Utils;
+using AOC.Utils;
+using Constants = UtilsCSharp.Utils.Constants;
 
 namespace _2024.Models.Day07;
 
@@ -22,5 +23,9 @@ public class Equation
         => index > Numbers.Length - 1
             ? currentResult == Result
             : Evaluate(currentResult + Numbers[index], index + 1) ||
-              Evaluate(currentResult * Numbers[index], index + 1);
+              Evaluate(currentResult * Numbers[index], index + 1) ||
+              (!Variables.RunningPartOne && Evaluate(Concat(currentResult, Numbers[index]), index +1));
+
+    private static long Concat(long a, long b)
+        => long.Parse($"{a}{b}");
 }
