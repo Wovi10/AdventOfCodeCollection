@@ -5,10 +5,9 @@ namespace _2024.Models.Day09;
 
 public class Disk
 {
-    public readonly record struct File(int Min, int Length);
-    public List<File> Files { get; } = new();
+    private List<File> Files { get; }
     private int?[] Blocks { get; }
-    public List<Range<int>> Free { get; set; }
+    private List<Range<int>> Free { get; }
 
     private Disk(int?[] blocks, List<File> files, List<Range<int>> free)
     {
