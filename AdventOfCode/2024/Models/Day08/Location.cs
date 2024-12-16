@@ -10,6 +10,6 @@ public class Location
     public (int, int) DistanceTo(Location other)
         => Coordinate.DistanceTo(other.Coordinate);
 
-    public (int, int) Move((int, int) distance)
+    public Coordinate Move((int, int) distance)
         => Coordinate.Move(distance);
 }

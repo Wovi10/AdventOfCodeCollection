@@ -110,7 +110,7 @@ public static class Answers
         new(25, 1, Mock, 54),
         new(25, 1, Real, 568214),
         new(25, 2, Mock, NotApplicable),
-        new(25, 2, Real, NotApplicable)
+        new(25, 2, Real, NotApplicable),
     };
 
     private static readonly List<Answer> AnswersList2024 = new()
@@ -144,9 +144,9 @@ public static class Answers
         new(7, 2, Mock, 11387),
         new(7, 2, Real, 227921760109726),
         new(8, 1, Mock, 14),
-        new(8, 1, Real, NotYetFound),
-        new(8, 2, Mock, NotYetFound),
-        new(8, 2, Real, NotYetFound),
+        new(8, 1, Real, 327),
+        new(8, 2, Mock, 34),
+        new(8, 2, Real, 1233),
     };
 
     public static object GetExpectedAnswer(string day)
@@ -155,7 +155,7 @@ public static class Answers
 
         var partInt = Variables.RunningPartOne ? 1 : 2;
         var answer = listToUse.FirstOrDefault(a =>
-            a.Day == int.Parse(day) && a.Part == partInt && a.IsReal == Constants.IsRealExercise);
+            a.IsReal == Constants.IsRealExercise && a.Day == int.Parse(day) && a.Part == partInt);
 
         return answer?.Result ?? NotYetFound;
     }
