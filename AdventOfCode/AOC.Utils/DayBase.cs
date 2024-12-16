@@ -63,10 +63,10 @@ public abstract class DayBase(string day, string title)
         Input = SharedMethods.GetInput(Day);
 
         var result = await partToRun();
-        var expectedAnswer = Answers.GetExpectedAnswer(Day);
 
-        Assert.That(result, Is.EqualTo(expectedAnswer));
 #if !DEBUG
+        var expectedAnswer = Answers.GetExpectedAnswer(Day);
+        Assert.That(result, Is.EqualTo(expectedAnswer));
 #endif
 
         SharedMethods.PrintAnswer(result);
