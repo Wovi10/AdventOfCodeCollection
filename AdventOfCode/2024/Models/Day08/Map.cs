@@ -7,15 +7,19 @@ public class Map
     public List<Location> Locations { get; set; } = new();
     public IDictionary<char, List<int>> AntennasOfFrequency { get; set; }
     public List<Coordinate> AntinodeCoordinates { get; set; } = new();
+    public int Width { get; set; }
+    public int Height { get; set; }
 
     public Map(List<string> input)
     {
         AntennasOfFrequency = new Dictionary<char, List<int>>();
         var numAntennas = 0;
+        Height = input.Count;
 
         for (var y = 0; y < input.Count; y++)
         {
             var line = input[y];
+            Width = line.Length;
 
             for (var x = 0; x < line.Length; x++)
             {
@@ -55,7 +59,26 @@ public class Map
     {
         foreach (var antennaId in antennaIds)
         {
-            var antenna = Locations.First(l => l.Id == antennaId)
+            var antenna = Locations.First(l => l.Id == antennaId);
+            foreach (var otherAntennaId in antennaIds.Where(ai => ai != antennaId))
+            {
+                var otherAntenna = Locations.First(l => l.Id == otherAntennaId);
+                var distance = antenna.DistanceTo(otherAntenna);
+                var locationOtherDirection = antenna.Move(otherAntenna);
+                if (locationOtherDirection.Item1 < 0 || locationOtherDirection.Item2 < 0 ||
+                    locationOtherDirection.Item1 >= Width || locationOtherDirection.Item2 >= Height)
+                    continue;
+
+                var locationOfAntinode = Locations.FirstOrDefault(l => l.Coordinate.X == locationOtherDirection.Item1 && l.Coordinate.Y == locationOtherDirection.Item2);
+                if (locationOfAntinode == null)
+                {
+                    locationOfAntinode = new Location
+                    {
+                        Coordinate = new Coordinate(locationOtherDirection.Item1, locationOtherDirection.Item2)
+                    };
+                    Locations.Add(locationOfAntinode);
+                }
+            }
         }
     }
 }
