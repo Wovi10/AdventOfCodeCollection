@@ -61,7 +61,7 @@ public class TopoMap
         var lastCoordinate = trail.Path.Last();
         if (TryGetValueAtCoordinate(lastCoordinate, out var value) && value == 9)
         {
-            if (trailHead.TrailEnds.Contains(lastCoordinate))
+            if (Variables.RunningPartOne && trailHead.TrailEnds.Contains(lastCoordinate))
                 return;
 
             trailHead.TrailEnds.Add(lastCoordinate);
