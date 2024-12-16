@@ -16,8 +16,4 @@
       <PackageReference Include="Wovi10.UtilsCSharp" Version="2.2.3" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Models\Day09\" />
-    </ItemGroup>
-
 </Project>
