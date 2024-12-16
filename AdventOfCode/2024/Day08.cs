@@ -21,6 +21,6 @@ public class Day08(): DayBase("08", "Resonant Collinearity")
     {
         var input = SharedMethods.GetInput(Day);
         var map = new Map(input);
-        return 0;
+        return map.GetAntinodeCoordinates().Count;
     }
 }

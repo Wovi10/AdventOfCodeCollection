@@ -49,13 +49,13 @@ public class Map
 
     public List<Coordinate> GetAntinodeCoordinates()
     {
-        foreach (var keyValuePair in AntennasOfFrequency)
-        {
-            FindAntinodesForFrequency(keyValuePair.Key, keyValuePair.Value);
-        }
+        foreach (var (_, list) in AntennasOfFrequency)
+            FindAntinodesForFrequency(list);
+
+        return AntinodeCoordinates.Distinct().ToList();
     }
 
-    private void FindAntinodesForFrequency(char freq, List<int> antennaIds)
+    private void FindAntinodesForFrequency(List<int> antennaIds)
     {
         foreach (var antennaId in antennaIds)
         {
@@ -64,20 +64,13 @@ public class Map
             {
                 var otherAntenna = Locations.First(l => l.Id == otherAntennaId);
                 var distance = antenna.DistanceTo(otherAntenna);
-                var locationOtherDirection = antenna.Move(otherAntenna);
+                var locationOtherDirection = otherAntenna.Move(distance);
                 if (locationOtherDirection.Item1 < 0 || locationOtherDirection.Item2 < 0 ||
                     locationOtherDirection.Item1 >= Width || locationOtherDirection.Item2 >= Height)
                     continue;
 
-                var locationOfAntinode = Locations.FirstOrDefault(l => l.Coordinate.X == locationOtherDirection.Item1 && l.Coordinate.Y == locationOtherDirection.Item2);
-                if (locationOfAntinode == null)
-                {
-                    locationOfAntinode = new Location
-                    {
-                        Coordinate = new Coordinate(locationOtherDirection.Item1, locationOtherDirection.Item2)
-                    };
-                    Locations.Add(locationOfAntinode);
-                }
+                var locationOfAntinode = Locations.First(l => l.Coordinate.X == locationOtherDirection.Item1 && l.Coordinate.Y == locationOtherDirection.Item2);
+                AntinodeCoordinates.Add(locationOfAntinode.Coordinate);
             }
         }
     }
