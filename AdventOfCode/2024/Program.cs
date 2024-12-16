@@ -16,15 +16,15 @@ await new Day09().Run(PartsToRun.Part1);
 // AddNewDay(9);
 return;
 
-void AddNewDay(int day)
-{
-    var dayString = day.ToString().PadLeft(2, '0');
-    var dayFolder = Path.Combine(Constants.RootInputPath, $"Day{dayString}");
-    Directory.CreateDirectory(dayFolder);
-
-    var dayFile = Path.Combine(dayFolder, $"Day{dayString}.in");
-    File.WriteAllText(dayFile, "");
-
-    var mockDayFile = Path.Combine(dayFolder, $"MockDay{dayString}.in");
-    File.WriteAllText(mockDayFile, "");
-}
+// void AddNewDay(int day)
+// {
+//     var dayString = day.ToString().PadLeft(2, '0');
+//     var dayFolder = Path.Combine(Constants.RootInputPath, $"Day{dayString}");
+//     Directory.CreateDirectory(dayFolder);
+//
+//     var dayFile = Path.Combine(dayFolder, $"Day{dayString}.in");
+//     File.WriteAllText(dayFile, "");
+//
+//     var mockDayFile = Path.Combine(dayFolder, $"MockDay{dayString}.in");
+//     File.WriteAllText(mockDayFile, "");
+// }

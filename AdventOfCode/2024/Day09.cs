@@ -18,10 +18,5 @@ public class Day09():DayBase("09", "Disk Fragmenter")
     }
 
     private long GetFileSystemChecksum()
-    {
-        var fileSystem = SharedMethods.GetInput(Day).First().ToFileSystem();
-        var filestring = fileSystem.FileString;
-
-        return 0;
-    }
+        => SharedMethods.GetInput(Day).First().ToFileSystem().DefragmentBlocks().CheckSum();
 }
