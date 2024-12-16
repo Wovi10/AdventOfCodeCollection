@@ -51,7 +51,7 @@ public class Disk
         return new Disk(blocks, files, free);
     }
 
-    public Disk DefragmentBlocks()
+    public void DefragmentBlocks()
     {
         var head = 0;
         var tail = Blocks.Length - 1;
@@ -70,8 +70,6 @@ public class Disk
             Blocks[head++] = Blocks[tail];
             Blocks[tail--] = null;
         }
-
-        return this;
     }
 
     public long CheckSum()
