@@ -148,9 +148,9 @@ public static class Answers
         new(8, 2, Mock, 34),
         new(8, 2, Real, 1233),
         new(9, 1, Mock, 1928),
-        new(9, 1, Real, NotYetFound),
-        new(9, 2, Mock, NotYetFound),
-        new(9, 2, Real, NotYetFound),
+        new(9, 1, Real, 6283170117911),
+        new(9, 2, Mock, 2858),
+        new(9, 2, Real, 6307653242596),
     };
 
     public static object GetExpectedAnswer(string day)
