@@ -10,9 +10,7 @@ public static class Day11Extensions
     public static long StartBlinking(this List<long> stones, int timesBlinked)
     {
         for (var i = 0; i < timesBlinked; i++)
-        {
             stones = stones.Blink();
-        }
 
         return stones.Count;
     }
