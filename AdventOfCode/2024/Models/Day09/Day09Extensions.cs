@@ -1,4 +1,6 @@
-﻿namespace _2024.Models.Day09;
+﻿using AOC.Utils;
+
+namespace _2024.Models.Day09;
 
 public static class Day09Extensions
 {
@@ -7,7 +9,10 @@ public static class Day09Extensions
 
     public static Disk Defragment(this Disk disk)
     {
-        disk.DefragmentBlocks();
+        if (Variables.RunningPartOne)
+            disk.DefragmentBlocks();
+        else
+            disk.DefragmentFiles();
 
         return disk;
     }

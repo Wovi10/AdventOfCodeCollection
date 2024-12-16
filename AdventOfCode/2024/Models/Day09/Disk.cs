@@ -5,10 +5,9 @@ namespace _2024.Models.Day09;
 
 public class Disk
 {
-    public readonly record struct File(int Min, int Length);
-    public List<File> Files { get; } = new();
+    private List<File> Files { get; }
     private int?[] Blocks { get; }
-    public List<Range<int>> Free { get; set; }
+    private List<Range<int>> Free { get; }
 
     private Disk(int?[] blocks, List<File> files, List<Range<int>> free)
     {
@@ -30,9 +29,9 @@ public class Disk
         for (var i = 0; i < input.Length; i++)
         {
             var count = input[i].AsDigit();
-            var isFile = i % 2 == 1;
+            var isFile = i % 2 == 0;
 
-            if (!isFile)
+            if (isFile)
             {
                 file++;
                 files.Add(new File(Min: head, Length: count));
@@ -43,8 +42,8 @@ public class Disk
             for (var j = 0; j < count; j++)
             {
                 blocks[head++] = isFile
-                    ? null
-                    : file;
+                    ? file
+                    : null;
             }
         }
 
@@ -69,6 +68,37 @@ public class Disk
 
             Blocks[head++] = Blocks[tail];
             Blocks[tail--] = null;
+        }
+    }
+
+    public void DefragmentFiles()
+    {
+        for (var fileId = Files.Count - 1; fileId >= 0; fileId--)
+        {
+            var currentFile = Files[fileId];
+
+            for (var j = 0; j < Free.Count; j++)
+            {
+                var currentFree = Free[j];
+                if (currentFree.Min >= currentFile.Min) // First free is after the file
+                    break;
+
+                if (currentFree.Length < currentFile.Length) // Not enough space
+                    continue;
+
+                for (var k = 0; k < currentFile.Length; k++)
+                {
+                    Blocks[currentFree.Min + k] = fileId; // Move file
+                    Blocks[currentFile.Min + k] = null; // Clear old position
+                }
+
+                Free.RemoveAt(j);
+
+                if (currentFree.Length > currentFile.Length)
+                    Free.Insert(j, new Range<int>(currentFree.Min + currentFile.Length, currentFree.Max));
+
+                break; // File has been moved
+            }
         }
     }
 

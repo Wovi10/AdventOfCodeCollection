@@ -14,7 +14,9 @@ public class Day09():DayBase("09", "Disk Fragmenter")
 
     protected override Task<object> PartTwo()
     {
-        throw new NotImplementedException();
+        var result = GetFileSystemChecksum();
+
+        return Task.FromResult<object>(result);
     }
 
     private long GetFileSystemChecksum()
