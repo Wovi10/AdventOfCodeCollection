@@ -2,7 +2,7 @@
 
 public class Trail(List<Coordinate> path)
 {
-    public List<Coordinate> Path { get; set; } = path;
+    public List<Coordinate> Path { get; } = path;
 
     public Trail(Trail trail) : this(new List<Coordinate>(trail.Path))
     {
