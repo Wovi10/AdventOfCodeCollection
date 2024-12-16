@@ -9,4 +9,7 @@ public class Coordinate(int x, int y): NodeBase<int>(x, y)
     {
         throw new NotImplementedException();
     }
+
+    public int DistanceTo(Coordinate other)
+        => (X - other.X) + (Y - other.Y);
 }

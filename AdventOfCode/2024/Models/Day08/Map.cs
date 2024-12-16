@@ -4,9 +4,12 @@ namespace _2024.Models.Day08;
 
 public class Map
 {
+    public List<Location> Locations { get; set; } = new();
+    public IDictionary<char, List<int>> AntennasOfFrequency { get; set; }
+    public List<Coordinate> AntinodeCoordinates { get; set; } = new();
+
     public Map(List<string> input)
     {
-        Locations = new List<Location>();
         AntennasOfFrequency = new Dictionary<char, List<int>>();
         var numAntennas = 0;
 
@@ -40,6 +43,19 @@ public class Map
         }
     }
 
-    public List<Location> Locations { get; set; }
-    public IDictionary<char, List<int>> AntennasOfFrequency { get; set; }
+    public List<Coordinate> GetAntinodeCoordinates()
+    {
+        foreach (var keyValuePair in AntennasOfFrequency)
+        {
+            FindAntinodesForFrequency(keyValuePair.Key, keyValuePair.Value);
+        }
+    }
+
+    private void FindAntinodesForFrequency(char freq, List<int> antennaIds)
+    {
+        foreach (var antennaId in antennaIds)
+        {
+            var antenna = Locations.First(l => l.Id == antennaId)
+        }
+    }
 }
