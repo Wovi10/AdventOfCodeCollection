@@ -14,7 +14,9 @@ public class Day10(): DayBase("10", "Hoof It")
 
     protected override Task<object> PartTwo()
     {
-        throw new NotImplementedException();
+        var result = GetTrailHeadScoresSum();
+
+        return Task.FromResult<object>(result);
     }
 
     private long GetTrailHeadScoresSum()

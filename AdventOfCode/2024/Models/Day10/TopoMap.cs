@@ -5,21 +5,17 @@ namespace _2024.Models.Day10;
 
 public class TopoMap
 {
-    public List<Trail> Trails { get; set; } = new();
-    public List<TrailHead> TrailHeads { get; set; } = new();
-    private IDictionary<Coordinate, int> HeightsLookup { get; set; }
-    public int Height { get; set; }
-    public int Width { get; set; }
+    private List<Trail> Trails { get; } = new();
+    private List<TrailHead> TrailHeads { get; } = new();
+    private Dictionary<Coordinate, int> HeightsLookup { get; }
 
     public TopoMap(List<string> input)
     {
-        Height = input.Count;
         HeightsLookup = new Dictionary<Coordinate, int>();
 
         for (var y = 0; y < input.Count; y++)
         {
             var currentLine = input[y];
-            Width = currentLine.Length;
 
             for (var x = 0; x < currentLine.Length; x++)
             {
@@ -61,7 +57,7 @@ public class TopoMap
         var lastCoordinate = trail.Path.Last();
         if (TryGetValueAtCoordinate(lastCoordinate, out var value) && value == 9)
         {
-            if (trailHead.TrailEnds.Contains(lastCoordinate))
+            if (Variables.RunningPartOne && trailHead.TrailEnds.Contains(lastCoordinate))
                 return;
 
             trailHead.TrailEnds.Add(lastCoordinate);
