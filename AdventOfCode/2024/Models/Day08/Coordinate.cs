@@ -13,6 +13,6 @@ public class Coordinate(int x, int y): NodeBase<int>(x, y)
     public (int, int) DistanceTo(Coordinate other)
         => (other.X - X, other.Y - Y);
 
-    public (int, int) Move((int x, int y) distance)
-        => (X + distance.x, Y + distance.y);
+    public Coordinate Move((int x, int y) distance)
+        => new(X + distance.x, Y + distance.y);
 }

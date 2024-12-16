@@ -14,13 +14,11 @@ public class Day08(): DayBase("08", "Resonant Collinearity")
 
     protected override Task<object> PartTwo()
     {
-        throw new NotImplementedException();
+        var result = CalculateUniqueAntinodeLocations();
+
+        return Task.FromResult<object>(result);
     }
 
     private int CalculateUniqueAntinodeLocations()
-    {
-        var input = SharedMethods.GetInput(Day);
-        var map = new Map(input);
-        return map.GetAntinodeCoordinates().Count;
-    }
+        => new Map(SharedMethods.GetInput(Day)).GetAntinodeCoordinates().Count;
 }

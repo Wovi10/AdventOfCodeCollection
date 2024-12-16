@@ -1,20 +1,24 @@
-﻿using UtilsCSharp.Utils;
+﻿using AOC.Utils;
+using Constants = UtilsCSharp.Utils.Constants;
 
 namespace _2024.Models.Day08;
 
 public class Map
 {
-    public List<Location> Locations { get; set; } = new();
-    public IDictionary<char, List<int>> AntennasOfFrequency { get; set; }
-    public List<Coordinate> AntinodeCoordinates { get; set; } = new();
-    public int Width { get; set; }
-    public int Height { get; set; }
+    private IDictionary<int, Location> AntennaLookup { get; }
+    private IDictionary<(int, int), Location> LocationLookup { get; }
+    private Dictionary<char, List<int>> AntennasOfFrequency { get; }
+    private List<Coordinate> AntinodeCoordinates { get; } = new();
+    private int Width { get; }
+    private int Height { get; }
 
     public Map(List<string> input)
     {
         AntennasOfFrequency = new Dictionary<char, List<int>>();
         var numAntennas = 0;
         Height = input.Count;
+        LocationLookup ??= new Dictionary<(int, int), Location>();
+        AntennaLookup ??= new Dictionary<int, Location>();
 
         for (var y = 0; y < input.Count; y++)
         {
@@ -34,7 +38,7 @@ public class Map
                     Frequency = isAntenna ? locationChar : null
                 };
 
-                Locations.Add(location);
+                LocationLookup[(x, y)] = location;
 
                 if (!location.IsAntenna)
                     continue;
@@ -43,35 +47,62 @@ public class Map
                     AntennasOfFrequency[location.Frequency.Value] = new List<int>();
 
                 AntennasOfFrequency[location.Frequency.Value].Add(location.Id!.Value);
+                AntennaLookup[location.Id!.Value] = location;
             }
         }
     }
 
     public List<Coordinate> GetAntinodeCoordinates()
     {
-        foreach (var (_, list) in AntennasOfFrequency)
+        foreach (var list in AntennasOfFrequency.Select(aof => aof.Value))
             FindAntinodesForFrequency(list);
 
-        return AntinodeCoordinates.Distinct().ToList();
+        return AntinodeCoordinates.Distinct().OrderBy(c => c.X).ThenBy(c => c.Y).ToList();
     }
 
     private void FindAntinodesForFrequency(List<int> antennaIds)
     {
         foreach (var antennaId in antennaIds)
         {
-            var antenna = Locations.First(l => l.Id == antennaId);
+            var antenna = GetAntennaLocation(antennaId);
             foreach (var otherAntennaId in antennaIds.Where(ai => ai != antennaId))
             {
-                var otherAntenna = Locations.First(l => l.Id == otherAntennaId);
+                var otherAntenna = GetAntennaLocation(otherAntennaId);
                 var distance = antenna.DistanceTo(otherAntenna);
-                var locationOtherDirection = otherAntenna.Move(distance);
-                if (locationOtherDirection.Item1 < 0 || locationOtherDirection.Item2 < 0 ||
-                    locationOtherDirection.Item1 >= Width || locationOtherDirection.Item2 >= Height)
-                    continue;
 
-                var locationOfAntinode = Locations.First(l => l.Coordinate.X == locationOtherDirection.Item1 && l.Coordinate.Y == locationOtherDirection.Item2);
-                AntinodeCoordinates.Add(locationOfAntinode.Coordinate);
+                var locationsOtherDirection = GetLocationsOtherDirection(otherAntenna, distance);
+
+                foreach (var locationOfAntinode
+                         in from coordOtherDirection
+                             in locationsOtherDirection
+                         where coordOtherDirection is {X: >= 0, Y: >= 0} &&
+                               coordOtherDirection.X < Width && coordOtherDirection.Y < Height
+                         select GetLocation(coordOtherDirection))
+                    AntinodeCoordinates.Add(locationOfAntinode.Coordinate);
             }
         }
     }
+
+    private List<Coordinate> GetLocationsOtherDirection(Location otherAntenna, (int, int) distance)
+    {
+        if (Variables.RunningPartOne)
+            return new List<Coordinate>{otherAntenna.Move(distance)};
+
+        var locations = new List<Coordinate> {otherAntenna.Coordinate};
+        var nextLocation = otherAntenna.Move(distance);
+
+        while (nextLocation is {X: >= 0, Y: >= 0} && nextLocation.X < Width && nextLocation.Y < Height)
+        {
+            locations.Add(nextLocation);
+            nextLocation = nextLocation.Move(distance);
+        }
+
+        return locations;
+    }
+
+    private Location GetLocation(Coordinate coordinate)
+        => LocationLookup[(coordinate.X, coordinate.Y)];
+
+    private Location GetAntennaLocation(int antennaId)
+        => AntennaLookup[antennaId];
 }
