@@ -7,7 +7,7 @@ public static class Answers
     private const bool Mock = false;
     private const bool Real = true;
     public const string NotYetFound = "NOT YET FOUND";
-    private const string NotApplicable = "N/A";
+    public const string NotApplicable = "N/A";
 
     private static readonly List<Answer> AnswersList2023 = new()
     {
@@ -156,8 +156,8 @@ public static class Answers
         new(10, 2, Mock, 81),
         new(10, 2, Real, 1324),
         new(11, 1, Mock, 55312),
-        new(11, 1, Real, NotYetFound),
-        new(11, 2, Mock, NotYetFound),
+        new(11, 1, Real, 187738),
+        new(11, 2, Mock, NotApplicable),
         new(11, 2, Real, NotYetFound),
     };
 

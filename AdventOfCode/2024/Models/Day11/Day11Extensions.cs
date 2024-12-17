@@ -7,60 +7,58 @@ public static class Day11Extensions
     public static List<long> ToListOfLongs(this string input)
         => input.Split(Constants.Space).Select(long.Parse).ToList();
 
-    public static async Task<long> StartBlinking(this List<long> stones, int timesBlinked)
+    public static long StartBlinking(this List<long> stones, int timesBlinked)
     {
-        var result = 0L;
-
-        stones.ForEach(async stone => result += await stone.BlinkStone(timesBlinked));
-
-        // foreach (var stone in stones)
-        //     result += await stone.BlinkStone(timesBlinked);
-
-        return result;
-    }
-
-    private static List<long> Blink(this List<long> stones)
-    {
-        var newStones = new List<long>();
-
-        foreach (var stone in stones)
+        var stoneCounts = stones.GroupBy(x => x).ToDictionary(x => x.Key, x => (long)x.Count());
+        for (var i = 0; i < timesBlinked; i++)
         {
-            if (stone == 0)
+            var nextCounts = new Dictionary<long, long>();
+
+            foreach (var (stone, count) in stoneCounts)
             {
-                newStones.Add(1);
-                continue;
+                if (stone == 0)
+                {
+                    nextCounts.TryAdd(1, 0);
+                    nextCounts[1] += count;
+                    continue;
+                }
+
+                var numberOfDigits = stone.NumberOfDigits();
+                if (numberOfDigits % 2 == 0)
+                {
+                    var divider = GetDivider(numberOfDigits);
+                    var rightHalf = stone.GetRightHalf(divider);
+                    var leftHalf = stone.GetLeftHalf(rightHalf, divider);
+
+                    nextCounts.TryAdd(leftHalf, 0);
+                    nextCounts.TryAdd(rightHalf, 0);
+
+                    nextCounts[leftHalf] += count;
+                    nextCounts[rightHalf] += count;
+                    continue;
+                }
+
+                var newStone = stone * 2024;
+
+                nextCounts.TryAdd(newStone, 0);
+                nextCounts[newStone] += count;
             }
 
-            if (stone.NumberOfDigits() % 2 == 0)
-            {
-                var leftHalfOfDigits = stone.ToString()[..(stone.NumberOfDigits() / 2)];
-                var rightHalfOfDigits = stone.ToString()[(stone.NumberOfDigits() / 2)..];
-                newStones.Add(long.Parse(leftHalfOfDigits));
-                newStones.Add(long.Parse(rightHalfOfDigits));
-                continue;
-            }
-
-            newStones.Add(stone * 2024);
+            stoneCounts = nextCounts;
         }
 
-        return newStones;
+        return stoneCounts.Values.Sum();
     }
 
     private static int NumberOfDigits(this long number)
-        => number.ToString().Length;
+        => (int)Math.Floor(Math.Log10(number) + 1);
 
-    private static Task<long> BlinkStone(this long number, int timesBlinked)
-    {
-        var result = 0L;
-        var numberAsList = new List<long> { number };
+    private static int GetDivider(int numberOfDigits)
+        => (int) Math.Pow(10, numberOfDigits / 2);
 
-        for (var i = 0; i < timesBlinked; i++)
-        {
-            numberAsList = numberAsList.Blink();
-        }
+    private static long GetRightHalf(this long number, int divider)
+        => number % divider;
 
-        result += numberAsList.Count;
-
-        return Task.FromResult(result);
-    }
+    private static long GetLeftHalf(this long number, long rightHalf, long divider)
+        => (number - rightHalf) / divider;
 }
