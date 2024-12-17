@@ -7,12 +7,16 @@ public static class Day11Extensions
     public static List<long> ToListOfLongs(this string input)
         => input.Split(Constants.Space).Select(long.Parse).ToList();
 
-    public static long StartBlinking(this List<long> stones, int timesBlinked)
+    public static async Task<long> StartBlinking(this List<long> stones, int timesBlinked)
     {
-        for (var i = 0; i < timesBlinked; i++)
-            stones = stones.Blink();
+        var result = 0L;
 
-        return stones.Count;
+        stones.ForEach(async stone => result += await stone.BlinkStone(timesBlinked));
+
+        // foreach (var stone in stones)
+        //     result += await stone.BlinkStone(timesBlinked);
+
+        return result;
     }
 
     private static List<long> Blink(this List<long> stones)
@@ -44,4 +48,19 @@ public static class Day11Extensions
 
     private static int NumberOfDigits(this long number)
         => number.ToString().Length;
+
+    private static Task<long> BlinkStone(this long number, int timesBlinked)
+    {
+        var result = 0L;
+        var numberAsList = new List<long> { number };
+
+        for (var i = 0; i < timesBlinked; i++)
+        {
+            numberAsList = numberAsList.Blink();
+        }
+
+        result += numberAsList.Count;
+
+        return Task.FromResult(result);
+    }
 }

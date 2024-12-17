@@ -5,22 +5,22 @@ namespace _2024;
 
 public class Day11(): DayBase("11", "Plutonian Pebbles")
 {
-    protected override Task<object> PartOne()
+    protected override async Task<object> PartOne()
     {
-        var result = CountStonesAfterBlinking(25);
+        var result = await CountStonesAfterBlinking(25);
 
-        return Task.FromResult<object>(result);
+        return result;
     }
 
-    protected override Task<object> PartTwo()
+    protected override async Task<object> PartTwo()
     {
-        var result = 0;
+        var result = await CountStonesAfterBlinking(75);
 
-        return Task.FromResult<object>(result);
+        return result;
     }
 
-    private long CountStonesAfterBlinking(int timesBlinked)
+    private async Task<long> CountStonesAfterBlinking(int timesBlinked)
     {
-        return SharedMethods.GetInput(Day).First().ToListOfLongs().StartBlinking(timesBlinked);
+        return await SharedMethods.GetInput(Day).First().ToListOfLongs().StartBlinking(timesBlinked);
     }
 }
