@@ -9,39 +9,56 @@ public static class Day11Extensions
 
     public static long StartBlinking(this List<long> stones, int timesBlinked)
     {
+        var stoneCounts = stones.GroupBy(x => x).ToDictionary(x => x.Key, x => (long)x.Count());
         for (var i = 0; i < timesBlinked; i++)
-            stones = stones.Blink();
-
-        return stones.Count;
-    }
-
-    private static List<long> Blink(this List<long> stones)
-    {
-        var newStones = new List<long>();
-
-        foreach (var stone in stones)
         {
-            if (stone == 0)
+            var nextCounts = new Dictionary<long, long>();
+
+            foreach (var (stone, count) in stoneCounts)
             {
-                newStones.Add(1);
-                continue;
+                if (stone == 0)
+                {
+                    nextCounts.TryAdd(1, 0);
+                    nextCounts[1] += count;
+                    continue;
+                }
+
+                var numberOfDigits = stone.NumberOfDigits();
+                if (numberOfDigits % 2 == 0)
+                {
+                    var divider = GetDivider(numberOfDigits);
+                    var rightHalf = stone.GetRightHalf(divider);
+                    var leftHalf = stone.GetLeftHalf(rightHalf, divider);
+
+                    nextCounts.TryAdd(leftHalf, 0);
+                    nextCounts.TryAdd(rightHalf, 0);
+
+                    nextCounts[leftHalf] += count;
+                    nextCounts[rightHalf] += count;
+                    continue;
+                }
+
+                var newStone = stone * 2024;
+
+                nextCounts.TryAdd(newStone, 0);
+                nextCounts[newStone] += count;
             }
 
-            if (stone.NumberOfDigits() % 2 == 0)
-            {
-                var leftHalfOfDigits = stone.ToString()[..(stone.NumberOfDigits() / 2)];
-                var rightHalfOfDigits = stone.ToString()[(stone.NumberOfDigits() / 2)..];
-                newStones.Add(long.Parse(leftHalfOfDigits));
-                newStones.Add(long.Parse(rightHalfOfDigits));
-                continue;
-            }
-
-            newStones.Add(stone * 2024);
+            stoneCounts = nextCounts;
         }
 
-        return newStones;
+        return stoneCounts.Values.Sum();
     }
 
     private static int NumberOfDigits(this long number)
-        => number.ToString().Length;
+        => (int)Math.Floor(Math.Log10(number) + 1);
+
+    private static int GetDivider(int numberOfDigits)
+        => (int) Math.Pow(10, numberOfDigits / 2);
+
+    private static long GetRightHalf(this long number, int divider)
+        => number % divider;
+
+    private static long GetLeftHalf(this long number, long rightHalf, long divider)
+        => (number - rightHalf) / divider;
 }

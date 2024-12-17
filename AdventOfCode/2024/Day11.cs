@@ -14,13 +14,11 @@ public class Day11(): DayBase("11", "Plutonian Pebbles")
 
     protected override Task<object> PartTwo()
     {
-        var result = 0;
+        var result = CountStonesAfterBlinking(75);
 
         return Task.FromResult<object>(result);
     }
 
     private long CountStonesAfterBlinking(int timesBlinked)
-    {
-        return SharedMethods.GetInput(Day).First().ToListOfLongs().StartBlinking(timesBlinked);
-    }
+        => SharedMethods.GetInput(Day).First().ToListOfLongs().StartBlinking(timesBlinked);
 }
