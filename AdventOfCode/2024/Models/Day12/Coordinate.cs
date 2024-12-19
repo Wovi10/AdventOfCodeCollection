@@ -5,7 +5,7 @@ namespace _2024.Models.Day12;
 
 public class Coordinate(int x, int y):NodeBase<int>(x, y)
 {
-    public Coordinate((int, int) coordinates) : this(coordinates.Item1, coordinates.Item2)
+    private Coordinate((int, int) coordinates) : this(coordinates.Item1, coordinates.Item2)
     {
     }
 
@@ -23,6 +23,6 @@ public class Coordinate(int x, int y):NodeBase<int>(x, y)
 
     private static readonly Direction[] Directions = {Direction.Up, Direction.Right, Direction.Down, Direction.Left};
 
-    public List<Coordinate> GetNeighbours()
-        => Directions.Select(direction => Move(direction)).Select(neighbour => new Coordinate(neighbour)).ToList();
+    public IEnumerable<Coordinate> GetNeighbours()
+        => Directions.Select(direction => new Coordinate(Move(direction)));
 }
