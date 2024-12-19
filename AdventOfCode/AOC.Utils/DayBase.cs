@@ -37,6 +37,9 @@ public abstract class DayBase(string day, string title)
         Console.WriteLine();
     }
 
+    protected IEnumerable<string> GetInput()
+        => SharedMethods.GetInput(Day);
+
     private static void WriteStopwatchStartText()
     {
 #if DEBUG
@@ -72,6 +75,7 @@ public abstract class DayBase(string day, string title)
 
         SharedMethods.PrintAnswer(result);
     }
+
 
     protected abstract Task<object> PartOne();
 

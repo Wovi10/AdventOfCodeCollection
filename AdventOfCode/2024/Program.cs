@@ -12,10 +12,11 @@ using AOC.Utils.Enums;
 // await new Day08().Run();
 // await new Day09().Run();
 // await new Day10().Run();
-await new Day11().Run(PartsToRun.Part2);
+// await new Day11().Run();
+await new Day12().Run(PartsToRun.Part1);
 
 
-// AddNewDay(11);
+// AddNewDay(12);
 return;
 
 void AddNewDay(int day)
