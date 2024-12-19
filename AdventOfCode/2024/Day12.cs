@@ -14,7 +14,9 @@ public class Day12(): DayBase("12", "Garden Groups")
 
     protected override Task<object> PartTwo()
     {
-        throw new NotImplementedException();
+        var result = GetSumFencingPrices();
+
+        return Task.FromResult<object>(result);
     }
 
     private long GetSumFencingPrices()

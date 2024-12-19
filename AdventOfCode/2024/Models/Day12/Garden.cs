@@ -1,16 +1,22 @@
-﻿namespace _2024.Models.Day12;
+﻿using AOC.Utils;
+
+namespace _2024.Models.Day12;
 
 public class Garden
 {
     public List<Region> Regions { get; set; } = new();
     private Dictionary<Coordinate, char> CheckedCoordinates { get; set; } = new();
     private Dictionary<Coordinate, char> GardenMap { get; set; } = new();
+    public int Height { get; init; }
+    public int Width { get; init; }
 
     public Garden(List<string> input)
     {
+        Height = input.Count;
         for (var y = 0; y < input.Count; y++)
         {
             var currentLine = input[y];
+            Width = currentLine.Length;
 
             for (var x = 0; x < currentLine.Length; x++)
             {
@@ -56,10 +62,9 @@ public class Garden
 
     public long GetFencingPrice()
     {
-        var totalFencingPrice = 0L;
-        foreach (var region in Regions)
-            totalFencingPrice += region.Coordinates.Count * region.PerimeterCount;
+        if (Variables.RunningPartOne)
+            return Regions.Sum(region => region.Coordinates.Count * region.PerimeterCount);
 
-        return totalFencingPrice;
+        return Regions.Sum(region => region.SidesCount * region.Coordinates.Count);
     }
 }
