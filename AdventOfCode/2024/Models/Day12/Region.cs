@@ -2,30 +2,24 @@
 
 public class Region
 {
-    public char PlantType { get; init; }
-    public List<Coordinate> Coordinates { get; set; } = new();
+    public char PlantType { get; }
+    // public Dictionary<Coordinate, char> CoordinateLookup { get; } = new();
+    public HashSet<Coordinate> CoordinateLookup { get; } = new();
 
-    public List<Coordinate> Perimeter => GetPerimeter();
+    private List<Coordinate> Perimeter => GetPerimeter();
     public int PerimeterCount => GetPerimeterCount();
-
     public int SidesCount => GetSidesCount();
 
     public Region(char plantType, Coordinate firstCoordinate)
     {
         PlantType = plantType;
-        Coordinates.Add(firstCoordinate);
-    }
-
-    public void AddToCoordinates(Coordinate coordinate)
-    {
-        if (!Coordinates.Contains(coordinate))
-            Coordinates.Add(coordinate);
+        CoordinateLookup.Add(firstCoordinate);
     }
 
     private int GetPerimeterCount()
-        => Coordinates
+        => CoordinateLookup
             .Select(coordinate => coordinate.GetNeighbours())
-            .Select(neighbours => neighbours.Count(n => !Coordinates.Contains(n)))
+            .Select(neighbours => neighbours.Count(n => !CoordinateLookup.Contains(n)))
             .Sum();
 
     private int GetSidesCount()
@@ -41,35 +35,44 @@ public class Region
     private int CountYSides()
     {
         var sides = 0;
-        var numDifferentY = Coordinates.Select(c => c.Y).Distinct().Count();
-        var lowestY = Coordinates.Min(c => c.Y);
+        var lowestY = CoordinateLookup.Min(c => c.Y);
+        var highestY = CoordinateLookup.Max(c => c.Y);
+        var numDifferentY = highestY - lowestY + 1;
 
-        // Run over the perimeter coordinates per Y coordinate
+        if (numDifferentY == 1)
+            return 2;
+
+
         for (var y = 0; y < numDifferentY; y++)
         {
             var coordinatesWithSameY = Perimeter
                 .Where(c => c.Y == lowestY + y)
+                .Where(c => c.GetNeighbours().Any(n => (n.Y == c.Y - 1 || n.Y == c.Y + 1) && !CoordinateLookup.Contains(n)))
+                .OrderBy(c => c.X)
                 .ToList();
 
-            // Filter the coordinates that have a neighbour at Y-1 or Y+1 that is not in the region
+            if (coordinatesWithSameY.Count == 0)
+                continue;
+
             var coordinatesWithNeighbourAbove = coordinatesWithSameY
-                .Where(c => c.GetNeighbours().Any(n => n.Y == c.Y - 1 && !Coordinates.Contains(n)))
-                .OrderBy(c => c.X)
+                .Where(c => c.GetNeighbours().Any(n => n.Y == c.Y - 1 && !CoordinateLookup.Contains(n)))
                 .ToList();
 
             var coordinatesWithNeighbourBelow = coordinatesWithSameY
-                .Where(c => c.GetNeighbours().Any(n => n.Y == c.Y + 1 && !Coordinates.Contains(n)))
-                .OrderBy(c => c.X)
+                .Where(c => c.GetNeighbours().Any(n => n.Y == c.Y + 1 && !CoordinateLookup.Contains(n)))
                 .ToList();
 
-            Sides(coordinatesWithNeighbourAbove);
-            Sides(coordinatesWithNeighbourBelow);
+            AddSidesFor(coordinatesWithNeighbourAbove);
+            AddSidesFor(coordinatesWithNeighbourBelow);
         }
 
         return sides;
 
-        void Sides(List<Coordinate> coordinatesWithNeighbour)
+        void AddSidesFor(List<Coordinate> coordinatesWithNeighbour)
         {
+            if (coordinatesWithNeighbour.Count == 0)
+                return;
+
             int? lastX = null;
             foreach (var coordinate in coordinatesWithNeighbour)
             {
@@ -95,35 +98,42 @@ public class Region
     private int CountXSides()
     {
         var sides = 0;
-        var numDifferentX = Coordinates.Select(c => c.X).Distinct().Count();
-        var lowestX = Coordinates.Min(c => c.X);
+        var lowestX = CoordinateLookup.Min(c => c.X);
+        var highestX = CoordinateLookup.Max(c => c.X);
+        var numDifferentX = highestX - lowestX + 1;
+        if (numDifferentX == 1)
+            return 2;
 
-        // Run over the perimeter coordinates per Y coordinate
         for (var x = 0; x < numDifferentX; x++)
         {
             var coordinatesWithSameX = Perimeter
                 .Where(c => c.X == lowestX + x)
+                .Where(c => c.GetNeighbours().Any(n => (n.X == c.X - 1 || n.X == c.X + 1) && !CoordinateLookup.Contains(n)))
+                .OrderBy(c => c.Y)
                 .ToList();
 
-            // Filter the coordinates that have a neighbour at Y-1 or Y+1 that is not in the region
+            if (coordinatesWithSameX.Count == 0)
+                continue;
+
             var coordinatesWithNeighbourLeft = coordinatesWithSameX
-                .Where(c => c.GetNeighbours().Any(n => n.X == c.X - 1 && !Coordinates.Contains(n)))
-                .OrderBy(c => c.Y)
+                .Where(c => c.GetNeighbours().Any(n => n.X == c.X - 1 && !CoordinateLookup.Contains(n)))
                 .ToList();
 
             var coordinatesWithNeighbourRight = coordinatesWithSameX
-                .Where(c => c.GetNeighbours().Any(n => n.X == c.X + 1 && !Coordinates.Contains(n)))
-                .OrderBy(c => c.Y)
+                .Where(c => c.GetNeighbours().Any(n => n.X == c.X + 1 && !CoordinateLookup.Contains(n)))
                 .ToList();
 
-            Sides(coordinatesWithNeighbourLeft);
-            Sides(coordinatesWithNeighbourRight);
+            AddSidesFor(coordinatesWithNeighbourLeft);
+            AddSidesFor(coordinatesWithNeighbourRight);
         }
 
         return sides;
 
-        void Sides(List<Coordinate> coordinatesWithNeighbour)
+        void AddSidesFor(List<Coordinate> coordinatesWithNeighbour)
         {
+            if (coordinatesWithNeighbour.Count == 0)
+                return;
+
             int? lastY = null;
             foreach (var coordinate in coordinatesWithNeighbour)
             {
@@ -146,22 +156,20 @@ public class Region
         }
     }
 
-    public List<Coordinate> GetPerimeter()
+    private List<Coordinate> GetPerimeter()
     {
-        var perimeter = new List<Coordinate>();
-
-        foreach (var coordinate in Coordinates)
-        {
-            var neighbours = coordinate
-                .GetNeighbours()
-                .Where(n => !Coordinates.Contains(n))
-                .ToList();
-            if (neighbours.Count == 0)
-                continue;
-
-            perimeter.Add(coordinate);
-        }
-
-        return perimeter;
+        return
+            (
+                from coordinate in CoordinateLookup
+                let neighbours = coordinate
+                                    .GetNeighbours()
+                                    .Where(n => !CoordinateLookup.Contains(n))
+                                    .ToList()
+                where neighbours.Count != 0
+                select coordinate
+            ).ToList();
     }
+
+    public void AddCoordinate(Coordinate neighbour)
+        => CoordinateLookup.Add(neighbour);
 }
