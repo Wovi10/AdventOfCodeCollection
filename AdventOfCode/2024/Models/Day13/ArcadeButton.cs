@@ -1,9 +1,11 @@
-﻿namespace _2024.Models.Day13;
+﻿using AOC.Utils;
+
+namespace _2024.Models.Day13;
 
 public class ArcadeButton
 {
-    public int X { get; set; }
-    public int Y { get; set; }
+    public long X { get; set; }
+    public long Y { get; set; }
 
     public ArcadeButton(string line)
     {
@@ -11,8 +13,8 @@ public class ArcadeButton
         var xPart = useful.First().Split("+").Last().Trim();
         var yPart = useful.Last().Split("+").Last().Trim();
 
-        X = int.Parse(xPart);
-        Y = int.Parse(yPart);
+        X = long.Parse(xPart);
+        Y = long.Parse(yPart);
     }
 
     public override string ToString() => $"({X}, {Y})";

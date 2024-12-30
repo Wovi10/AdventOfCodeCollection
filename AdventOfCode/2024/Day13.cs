@@ -14,19 +14,23 @@ public class Day13(): DayBase("13", "Claw Contraption")
 
     protected override Task<object> PartTwo()
     {
-        throw new NotImplementedException();
+        var result = GetFewestTokensToWin();
+
+        return Task.FromResult<object>(result);
     }
 
     private long GetFewestTokensToWin()
     {
-        var possibleMachines =
-            GetInput()
-                .CreateArcadeMachines()
-                .Where(x => x.CanWin)
-                .ToList();
+        var arcadeMachines = GetInput().CreateArcadeMachines();
+        var allPossible = arcadeMachines.Where(x => x.IsPossible).ToList();
+        var allSolutions = allPossible.Select(x => x.Solution).ToList();
+        return allSolutions.Sum();
 
-        var thingy = possibleMachines.First().Solution;
-
-        return 0;
+        return GetInput()
+            .CreateArcadeMachines()
+            .Where(x => x.IsPossible)
+            .Select(x => x.Solution)
+            .ToList()
+            .Sum();
     }
 }

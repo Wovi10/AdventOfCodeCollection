@@ -2,83 +2,107 @@
 
 namespace _2024.Models.Day13;
 
-public class ArcadeMachine(string[] input, int arcadeCounter)
+public class ArcadeMachine
 {
-    public int Id { get; set; } = arcadeCounter;
-    public ArcadeButton ButtonA { get; set; } = new(input[0]);
-    public ArcadeButton ButtonB { get; set; } = new(input[1]);
-    public ArcadePrize Prize { get; set; } = new(input[2]);
-
-    public int LcmAX => Prize.X.Lcm(ButtonA.X);
-    public int LcmBX => Prize.X.Lcm(ButtonB.X);
-    public int LcmAY => Prize.Y.Lcm(ButtonA.Y);
-    public int LcmBY => Prize.Y.Lcm(ButtonB.Y);
-    public int GcdX => LcmAX.GcdWith(LcmBX);
-    public int GcdY => LcmAY.GcdWith(LcmBY);
-    public bool XIsPossible => Prize.X % GcdX == 0;
-    public bool YIsPossible => Prize.Y % GcdY == 0;
-    public bool CanWin => XIsPossible && YIsPossible;
-
-    public int[,] Coefficients => new [,]
+    public ArcadeMachine(string[] input)
     {
-        {ButtonA.X, ButtonA.Y},
-        {ButtonB.X, ButtonB.Y}
-    };
+        ButtonA = new ArcadeButton(input[0]);
+        ButtonB = new ArcadeButton(input[1]);
+        Prize = new ArcadePrize(input[2]);
 
-    public long[] Constants => new long[]{Prize.X, Prize.Y};
-    public long[] Solution => SolveLinearEquation();
-
-    public long[,] AugmentedMatrix => new long[,]
-    {
-        {ButtonA.X, ButtonB.X, Prize.X},
-        {ButtonA.Y, ButtonB.Y, Prize.Y}
-    };
-
-
-    private long[] SolveLinearEquation()
-    {
-        var size = 2;
-        var result = new long[size];
-
-        var rowEchelonForm = GetRowEchelonForm();
-
-        for (var i = 0; i < size; i++)
-        {
-            result[i] = rowEchelonForm[i, size];
-        }
-
-        return result;
+        SolveLinearEquation();
     }
 
-    private long[,] GetRowEchelonForm()
+    private ArcadeButton ButtonA { get; }
+    private ArcadeButton ButtonB { get; }
+    private ArcadePrize Prize { get; }
+
+    private decimal[] ButtonPresses { get; set; } = new decimal[2];
+
+    private long[,] Coefficients => new [,]
+    {
+        {ButtonA.X, ButtonB.X},
+        {ButtonA.Y, ButtonB.Y}
+    };
+    private long[] Constants => new[]{Prize.X, Prize.Y};
+    public long Solution => (long)(3 * ButtonPresses[0] + ButtonPresses[1]);
+    public bool IsPossible => ButtonPresses.All(IsValid);
+
+    private void SolveLinearEquation()
     {
         const int size = 2;
-        var result = new long[3, 3];
+        var result = new decimal[size];
+
+        var augmentedMatrix = GetAugmentedMatrix();
+        var rowEchelonForm = GetRowEchelonForm(augmentedMatrix);
+        PrintMatrix(rowEchelonForm);
+
+        for (var i = 0; i < size; i++)
+            result[i] = rowEchelonForm[i, size];
+
+        ButtonPresses = result;
+    }
+
+    private void PrintMatrix(decimal[,] matrix)
+    {
+        var firstRowFirstColumn = matrix[0, 0]/1==0 ? 0 : matrix[0, 0];
+        var firstRowSecondColumn = matrix[0, 1]/1==0 ? 0 : matrix[0, 1];
+        var firstRowThirdColumn = matrix[0, 2]/1==0 ? 0 : matrix[0, 2];
+        var secondRowFirstColumn = matrix[1, 0]/1==0 ? 0 : matrix[1, 0];
+        var secondRowSecondColumn = matrix[1, 1]/1==0 ? 0 : matrix[1, 1];
+        var secondRowThirdColumn = matrix[1, 2]/1==0 ? 0 : matrix[1, 2];
+        Console.WriteLine($"{firstRowFirstColumn}\t{firstRowSecondColumn}\t{firstRowThirdColumn}");
+        Console.WriteLine($"{secondRowFirstColumn}\t{secondRowSecondColumn}\t{secondRowThirdColumn}");
+        Console.WriteLine();
+    }
+
+    private decimal[,] GetAugmentedMatrix(int size = 2)
+    {
+        var augmentedMatrix = new decimal[size, size + 1];
         for (var i = 0; i < size; i++)
         {
-            var diagonal = AugmentedMatrix[i, i];
-            for (var j = 0; j < size+1; j++)
-            {
-                result[i, j] = AugmentedMatrix[i, j] / diagonal;
-            }
-
             for (var j = 0; j < size; j++)
+                augmentedMatrix[i, j] = Coefficients[i, j];
+            augmentedMatrix[i, size] = Constants[i];
+        }
+
+        return augmentedMatrix;
+    }
+
+    private decimal[,] GetRowEchelonForm(decimal[,] augmentedMatrix, int size = 2)
+    {
+        for (var i = 0; i < size; i++)
+        {
+            var diagonal = augmentedMatrix[i, i];
+            for (var j = 0; j < size+1; j++)
+                augmentedMatrix[i, j] /= diagonal;
+
+            for (var k = 0; k < size; k++)
             {
-                if (i == j)
+                if (k == i)
                     continue;
 
-                var factor = AugmentedMatrix[j, i];
-                for (var k = 0; k < size + 1; k++)
-                {
-                    result[j, k] = AugmentedMatrix[j, k] - factor * AugmentedMatrix[i, k];
-                }
+                var factor = augmentedMatrix[k, i];
+                for (var j = 0; j < size + 1; j++)
+                    augmentedMatrix[k, j] -= factor * augmentedMatrix[i, j];
             }
         }
 
-        return result;
+        return augmentedMatrix;
+    }
+
+    private bool IsValid(decimal value)
+    {
+        if (value < 0)
+            return false;
+
+        const decimal tolerance = (decimal)1e-5;
+        var roundedValue = Math.Round(value);
+        return Math.Abs(value - roundedValue) <= tolerance;
     }
 
     public override string ToString()
-        => $"{Id} - A:{ButtonA} - B:{ButtonB} - Prize:{Prize}";
+        => $"{ButtonPresses[0]} {ButtonPresses[1]}";
+        // => $"{Id} - A:{ButtonA} - B:{ButtonB} - Prize:{Prize}";
 
 }

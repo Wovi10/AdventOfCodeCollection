@@ -7,14 +7,12 @@ public static class Day13Extensions
         var arcadeMachines = new List<ArcadeMachine>();
         var arcadeInput = new string[3];
         var lineCounter = 0;
-        var arcadeCounter = 1;
         foreach (var line in input)
         {
             if (string.IsNullOrWhiteSpace(line))
             {
                 lineCounter = 0;
-                arcadeMachines.Add(new ArcadeMachine(arcadeInput, arcadeCounter));
-                arcadeCounter++;
+                arcadeMachines.Add(new ArcadeMachine(arcadeInput));
                 continue;
             }
 
@@ -22,7 +20,7 @@ public static class Day13Extensions
             lineCounter++;
         }
 
-        arcadeMachines.Add(new ArcadeMachine(arcadeInput, arcadeCounter));
+        arcadeMachines.Add(new ArcadeMachine(arcadeInput));
 
         return arcadeMachines.ToArray();
     }

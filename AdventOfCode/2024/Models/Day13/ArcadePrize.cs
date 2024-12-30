@@ -1,9 +1,11 @@
-﻿namespace _2024.Models.Day13;
+﻿using AOC.Utils;
+
+namespace _2024.Models.Day13;
 
 public class ArcadePrize
 {
-    public int X { get; set; }
-    public int Y { get; set; }
+    public long X { get; set; }
+    public long Y { get; set; }
 
     public ArcadePrize(string line)
     {
@@ -12,8 +14,8 @@ public class ArcadePrize
         var xPart = parts.First().Split("=").Last();
         var yPart = parts.Last().Split("=").Last();
 
-        X = int.Parse(xPart);
-        Y = int.Parse(yPart);
+        X = long.Parse(xPart);
+        Y = long.Parse(yPart);
     }
 
     public override string ToString() => $"({X}, {Y})";
