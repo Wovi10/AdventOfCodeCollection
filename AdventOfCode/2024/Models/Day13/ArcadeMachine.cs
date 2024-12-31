@@ -25,7 +25,7 @@ public class ArcadeMachine
         {ButtonA.Y, ButtonB.Y}
     };
     private long[] Constants => new[]{Prize.X, Prize.Y};
-    public long Solution => (long)(3 * ButtonPresses[0] + ButtonPresses[1]);
+    public long Solution => (long)(3 * Math.Floor(ButtonPresses[0]) + Math.Floor(ButtonPresses[1]));
     public bool IsPossible => ButtonPresses.All(IsValid);
 
     private void SolveLinearEquation()

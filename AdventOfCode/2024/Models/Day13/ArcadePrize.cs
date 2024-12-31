@@ -14,8 +14,10 @@ public class ArcadePrize
         var xPart = parts.First().Split("=").Last();
         var yPart = parts.Last().Split("=").Last();
 
-        X = long.Parse(xPart);
-        Y = long.Parse(yPart);
+        var modifier = Constants.IsRealExercise && !Variables.RunningPartOne ? 10000000000000 : 0;
+
+        X = long.Parse(xPart) + modifier;
+        Y = long.Parse(yPart) + modifier;
     }
 
     public override string ToString() => $"({X}, {Y})";
