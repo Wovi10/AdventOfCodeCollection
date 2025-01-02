@@ -1,6 +1,4 @@
-﻿using UtilsCSharp;
-
-namespace _2024.Models.Day13;
+﻿namespace _2024.Models.Day13;
 
 public class ArcadeMachine
 {
@@ -25,7 +23,7 @@ public class ArcadeMachine
         {ButtonA.Y, ButtonB.Y}
     };
     private long[] Constants => new[]{Prize.X, Prize.Y};
-    public long Solution => (long)(3 * Math.Floor(ButtonPresses[0]) + Math.Floor(ButtonPresses[1]));
+    public long Solution => (long)(3 * Math.Round(ButtonPresses[0]) + Math.Round(ButtonPresses[1])); // Round so that .99999 will be 1 instead of 0
     public bool IsPossible => ButtonPresses.All(IsValid);
 
     private void SolveLinearEquation()
@@ -35,25 +33,11 @@ public class ArcadeMachine
 
         var augmentedMatrix = GetAugmentedMatrix();
         var rowEchelonForm = GetRowEchelonForm(augmentedMatrix);
-        PrintMatrix(rowEchelonForm);
 
         for (var i = 0; i < size; i++)
             result[i] = rowEchelonForm[i, size];
 
         ButtonPresses = result;
-    }
-
-    private void PrintMatrix(decimal[,] matrix)
-    {
-        var firstRowFirstColumn = matrix[0, 0]/1==0 ? 0 : matrix[0, 0];
-        var firstRowSecondColumn = matrix[0, 1]/1==0 ? 0 : matrix[0, 1];
-        var firstRowThirdColumn = matrix[0, 2]/1==0 ? 0 : matrix[0, 2];
-        var secondRowFirstColumn = matrix[1, 0]/1==0 ? 0 : matrix[1, 0];
-        var secondRowSecondColumn = matrix[1, 1]/1==0 ? 0 : matrix[1, 1];
-        var secondRowThirdColumn = matrix[1, 2]/1==0 ? 0 : matrix[1, 2];
-        Console.WriteLine($"{firstRowFirstColumn}\t{firstRowSecondColumn}\t{firstRowThirdColumn}");
-        Console.WriteLine($"{secondRowFirstColumn}\t{secondRowSecondColumn}\t{secondRowThirdColumn}");
-        Console.WriteLine();
     }
 
     private decimal[,] GetAugmentedMatrix(int size = 2)
@@ -69,7 +53,7 @@ public class ArcadeMachine
         return augmentedMatrix;
     }
 
-    private decimal[,] GetRowEchelonForm(decimal[,] augmentedMatrix, int size = 2)
+    private static decimal[,] GetRowEchelonForm(decimal[,] augmentedMatrix, int size = 2)
     {
         for (var i = 0; i < size; i++)
         {
@@ -91,18 +75,14 @@ public class ArcadeMachine
         return augmentedMatrix;
     }
 
-    private bool IsValid(decimal value)
+    private static bool IsValid(decimal value)
     {
         if (value < 0)
             return false;
 
         const decimal tolerance = (decimal)1e-5;
         var roundedValue = Math.Round(value);
+
         return Math.Abs(value - roundedValue) <= tolerance;
     }
-
-    public override string ToString()
-        => $"{ButtonPresses[0]} {ButtonPresses[1]}";
-        // => $"{Id} - A:{ButtonA} - B:{ButtonB} - Prize:{Prize}";
-
 }

@@ -1,11 +1,9 @@
-﻿using AOC.Utils;
-
-namespace _2024.Models.Day13;
+﻿namespace _2024.Models.Day13;
 
 public class ArcadeButton
 {
-    public long X { get; set; }
-    public long Y { get; set; }
+    public long X { get; }
+    public long Y { get; }
 
     public ArcadeButton(string line)
     {

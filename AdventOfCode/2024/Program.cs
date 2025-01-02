@@ -14,7 +14,7 @@ using AOC.Utils.Enums;
 // await new Day10().Run();
 // await new Day11().Run();
 // await new Day12().Run();
-await new Day13().Run(PartsToRun.Part2);
+await new Day13().Run();
 
 
 // AddNewDay(13);

@@ -4,8 +4,8 @@ namespace _2024.Models.Day13;
 
 public class ArcadePrize
 {
-    public long X { get; set; }
-    public long Y { get; set; }
+    public long X { get; }
+    public long Y { get; }
 
     public ArcadePrize(string line)
     {
@@ -14,7 +14,7 @@ public class ArcadePrize
         var xPart = parts.First().Split("=").Last();
         var yPart = parts.Last().Split("=").Last();
 
-        var modifier = Constants.IsRealExercise && !Variables.RunningPartOne ? 10000000000000 : 0;
+        var modifier = Variables.RunningPartOne ? 0 : 10000000000000;
 
         X = long.Parse(xPart) + modifier;
         Y = long.Parse(yPart) + modifier;

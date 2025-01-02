@@ -7,6 +7,7 @@ public static class Day13Extensions
         var arcadeMachines = new List<ArcadeMachine>();
         var arcadeInput = new string[3];
         var lineCounter = 0;
+
         foreach (var line in input)
         {
             if (string.IsNullOrWhiteSpace(line))

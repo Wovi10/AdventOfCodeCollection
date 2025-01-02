@@ -20,17 +20,12 @@ public class Day13(): DayBase("13", "Claw Contraption")
     }
 
     private long GetFewestTokensToWin()
-    {
-        var arcadeMachines = GetInput().CreateArcadeMachines();
-        var allPossible = arcadeMachines.Where(x => x.IsPossible).ToList();
-        var allSolutions = allPossible.Select(x => x.Solution).ToList();
-        return allSolutions.Sum();
-
-        return GetInput()
-            .CreateArcadeMachines()
-            .Where(x => x.IsPossible)
-            .Select(x => x.Solution)
-            .ToList()
-            .Sum();
-    }
+        =>
+            GetInput()
+                .CreateArcadeMachines()
+                .Where(x => x.IsPossible)
+                .ToList()
+                .Select(x => x.Solution)
+                .ToList()
+                .Sum();
 }
