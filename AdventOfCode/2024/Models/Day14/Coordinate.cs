@@ -6,7 +6,7 @@ namespace _2024.Models.Day14;
 
 public class Coordinate:NodeBase<int>
 {
-    private Coordinate(int internalX, int internalY) : base(internalX, internalY)
+    internal Coordinate(int internalX, int internalY) : base(internalX, internalY)
     {
     }
 

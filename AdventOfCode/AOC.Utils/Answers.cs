@@ -9,6 +9,77 @@ public static class Answers
     public const string NotYetFound = "NOT YET FOUND";
     public const string NotApplicable = "N/A";
 
+    public static object GetExpectedAnswer(string day)
+    {
+        var listToUse = Constants.RunningYear == 2023 ? AnswersList2023 : AnswersList2024;
+
+        var partInt = Variables.RunningPartOne ? 1 : 2;
+        var answer = listToUse.FirstOrDefault(a =>
+            a.IsReal == Constants.IsRealExercise && a.Day == int.Parse(day) && a.Part == partInt);
+
+        return answer?.Result ?? NotYetFound;
+    }
+
+    private static readonly List<Answer> AnswersList2024 = new()
+    {
+        new(1, 1, Mock, 11),
+        new(1, 1, Real, 2344935),
+        new(1, 2, Mock, 31),
+        new(1, 2, Real, 27647262),
+        new(2, 1, Mock, 2),
+        new(2, 1, Real, 224),
+        new(2, 2, Mock, 4),
+        new(2, 2, Real, 293),
+        new(3, 1, Mock, 161),
+        new(3, 1, Real, 185797128),
+        new(3, 2, Mock, 161),
+        new(3, 2, Real, 89798695),
+        new(4, 1, Mock, 18),
+        new(4, 1, Real, 2406),
+        new(4, 2, Mock, 9),
+        new(4, 2, Real, 1807),
+        new(5, 1, Mock, 143),
+        new(5, 1, Real, 4569),
+        new(5, 2, Mock, 123),
+        new(5, 2, Real, 6456),
+        new(6, 1, Mock, 41),
+        new(6, 1, Real, 5534),
+        new(6, 2, Mock, 6),
+        new(6, 2, Real, 2262),
+        new(7, 1, Mock, 3749),
+        new(7, 1, Real, 4555081946288),
+        new(7, 2, Mock, 11387),
+        new(7, 2, Real, 227921760109726),
+        new(8, 1, Mock, 14),
+        new(8, 1, Real, 327),
+        new(8, 2, Mock, 34),
+        new(8, 2, Real, 1233),
+        new(9, 1, Mock, 1928),
+        new(9, 1, Real, 6283170117911),
+        new(9, 2, Mock, 2858),
+        new(9, 2, Real, 6307653242596),
+        new(10, 1, Mock, 36),
+        new(10, 1, Real, 566),
+        new(10, 2, Mock, 81),
+        new(10, 2, Real, 1324),
+        new(11, 1, Mock, 55312),
+        new(11, 1, Real, 187738),
+        new(11, 2, Mock, NotApplicable),
+        new(11, 2, Real, 223767210249237),
+        new(12, 1, Mock, 1930),
+        new(12, 1, Real, 1319878),
+        new(12, 2, Mock, 1206),
+        new(12, 2, Real, 784982),
+        new(13, 1, Mock, 480),
+        new(13, 1, Real, 32067),
+        new(13, 2, Mock, NotApplicable),
+        new(13, 2, Real, 92871736253789),
+        new(14, 1, Mock, 12),
+        new(14, 1, Real, 229421808),
+        new(14, 2, Mock, NotYetFound),
+        new(14, 2, Real, NotYetFound),
+    };
+
     private static readonly List<Answer> AnswersList2023 = new()
     {
         new(1, 1, Mock, 142),
@@ -112,71 +183,4 @@ public static class Answers
         new(25, 2, Mock, NotApplicable),
         new(25, 2, Real, NotApplicable),
     };
-
-    private static readonly List<Answer> AnswersList2024 = new()
-    {
-        new(1, 1, Mock, 11),
-        new(1, 1, Real, 2344935),
-        new(1, 2, Mock, 31),
-        new(1, 2, Real, 27647262),
-        new(2, 1, Mock, 2),
-        new(2, 1, Real, 224),
-        new(2, 2, Mock, 4),
-        new(2, 2, Real, 293),
-        new(3, 1, Mock, 161),
-        new(3, 1, Real, 185797128),
-        new(3, 2, Mock, 161),
-        new(3, 2, Real, 89798695),
-        new(4, 1, Mock, 18),
-        new(4, 1, Real, 2406),
-        new(4, 2, Mock, 9),
-        new(4, 2, Real, 1807),
-        new(5, 1, Mock, 143),
-        new(5, 1, Real, 4569),
-        new(5, 2, Mock, 123),
-        new(5, 2, Real, 6456),
-        new(6, 1, Mock, 41),
-        new(6, 1, Real, 5534),
-        new(6, 2, Mock, 6),
-        new(6, 2, Real, 2262),
-        new(7, 1, Mock, 3749),
-        new(7, 1, Real, 4555081946288),
-        new(7, 2, Mock, 11387),
-        new(7, 2, Real, 227921760109726),
-        new(8, 1, Mock, 14),
-        new(8, 1, Real, 327),
-        new(8, 2, Mock, 34),
-        new(8, 2, Real, 1233),
-        new(9, 1, Mock, 1928),
-        new(9, 1, Real, 6283170117911),
-        new(9, 2, Mock, 2858),
-        new(9, 2, Real, 6307653242596),
-        new(10, 1, Mock, 36),
-        new(10, 1, Real, 566),
-        new(10, 2, Mock, 81),
-        new(10, 2, Real, 1324),
-        new(11, 1, Mock, 55312),
-        new(11, 1, Real, 187738),
-        new(11, 2, Mock, NotApplicable),
-        new(11, 2, Real, 223767210249237),
-        new(12, 1, Mock, 1930),
-        new(12, 1, Real, 1319878),
-        new(12, 2, Mock, 1206),
-        new(12, 2, Real, 784982),
-        new(13, 1, Mock, 480),
-        new(13, 1, Real, 32067),
-        new(13, 2, Mock, NotApplicable),
-        new(13, 2, Real, 92871736253789),
-    };
-
-    public static object GetExpectedAnswer(string day)
-    {
-        var listToUse = Constants.RunningYear == 2023 ? AnswersList2023 : AnswersList2024;
-
-        var partInt = Variables.RunningPartOne ? 1 : 2;
-        var answer = listToUse.FirstOrDefault(a =>
-            a.IsReal == Constants.IsRealExercise && a.Day == int.Parse(day) && a.Part == partInt);
-
-        return answer?.Result ?? NotYetFound;
-    }
 }

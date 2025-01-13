@@ -21,11 +21,11 @@ public class Day14() : DayBase("14", "Restroom Redoubt")
     }
 
     private long GetSafetyFactor(int secondsToWait, int width, int height)
-    {
-        var robots = GetInput().CreateRobots().ToArray();
-        var robotsAfterRunning = robots.RunAll(secondsToWait, width, height);
-
-
-        return 0;
-    }
+        => GetInput()
+            .CreateRobots()
+            .RunAll(secondsToWait, width, height)
+            .FilterCenterRobots(width, height)
+            .GroupByQuadrant(width, height)
+            .Select(g => g.Count())
+            .Aggregate(1L, (acc, count) => acc * count);
 }
