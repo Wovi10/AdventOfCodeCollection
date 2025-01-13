@@ -17,7 +17,12 @@ public class Day14() : DayBase("14", "Restroom Redoubt")
 
     protected override Task<object> PartTwo()
     {
-        throw new NotImplementedException();
+        const int secondsToWait = 100;
+        const int width = Constants.IsRealExercise ? 101 : 11;
+        const int height = Constants.IsRealExercise ? 103 : 7;
+        var result = FindChristmasTree(secondsToWait, width, height);
+
+        return Task.FromResult<object>(result);
     }
 
     private long GetSafetyFactor(int secondsToWait, int width, int height)
@@ -28,4 +33,9 @@ public class Day14() : DayBase("14", "Restroom Redoubt")
             .GroupByQuadrant(width, height)
             .Select(g => g.Count())
             .Aggregate(1L, (acc, count) => acc * count);
+
+    private int FindChristmasTree(int secondsToWait, int width, int height)
+        => GetInput()
+            .CreateRobots()
+            .FindEasterEgg(secondsToWait, width, height);
 }
