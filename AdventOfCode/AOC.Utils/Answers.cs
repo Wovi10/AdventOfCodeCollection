@@ -78,6 +78,10 @@ public static class Answers
         new(14, 1, Real, 229421808),
         new(14, 2, Mock, NotApplicable),
         new(14, 2, Real, 6577),
+        new(15, 1, Mock, 2028),
+        new(15, 1, Real, NotYetFound),
+        new(15, 2, Mock, NotYetFound),
+        new(15, 2, Real, NotYetFound),
     };
 
     private static readonly List<Answer> AnswersList2023 = new()
