@@ -76,8 +76,8 @@ public static class Answers
         new(13, 2, Real, 92871736253789),
         new(14, 1, Mock, 12),
         new(14, 1, Real, 229421808),
-        new(14, 2, Mock, NotYetFound),
-        new(14, 2, Real, NotYetFound),
+        new(14, 2, Mock, NotApplicable),
+        new(14, 2, Real, 6577),
     };
 
     private static readonly List<Answer> AnswersList2023 = new()
