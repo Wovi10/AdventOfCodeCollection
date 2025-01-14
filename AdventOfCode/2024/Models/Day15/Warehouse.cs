@@ -5,7 +5,7 @@ namespace _2024.Models.Day15;
 
 public class Warehouse
 {
-    private IDictionary<Coordinate, ObjectType> WarehouseLookup { get; set; } = new Dictionary<Coordinate, ObjectType>();
+    private Dictionary<Coordinate, ObjectType> WarehouseLookup { get; } = new();
 
     public Warehouse(IEnumerable<string> input)
     {
@@ -46,7 +46,7 @@ public class Warehouse
             for (var x = 0; x <= maxX; x++)
             {
                 var coordinate = new Coordinate(x, y);
-                var objectType = WarehouseLookup.TryGetValue(coordinate, out var value) ? value : ObjectType.Empty;
+                var objectType = WarehouseLookup.GetValueOrDefault(coordinate, ObjectType.Empty);
                 sb.Append(objectType.ToChar());
             }
 
@@ -58,6 +58,47 @@ public class Warehouse
 
     public void RunInstruction(Direction instruction)
     {
+        var robotLocation = WarehouseLookup.First(kvp => kvp.Value == ObjectType.Robot).Key;
+        var newLocation = robotLocation.Move(instruction).ToCoordinate();
+        var objectTypeOfLocation = WarehouseLookup[newLocation];
 
+        switch (objectTypeOfLocation)
+        {
+            case ObjectType.Wall:
+            case ObjectType.Robot:
+                return;
+            case ObjectType.Empty:
+                SwitchLocations(robotLocation, newLocation);
+                break;
+            case ObjectType.Box:
+                MoveBoxes(robotLocation, newLocation, instruction);
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
+    }
+
+    private void SwitchLocations(Coordinate robotLocation, Coordinate newLocation)
+        => (WarehouseLookup[robotLocation], WarehouseLookup[newLocation]) = (WarehouseLookup[newLocation], WarehouseLookup[robotLocation]);
+
+    private void MoveBoxes(Coordinate robotLocation, Coordinate newLocation, Direction instruction)
+    {
+        var nextLocation = newLocation.Move(instruction).ToCoordinate();
+
+        while (WarehouseLookup[nextLocation] == ObjectType.Box)
+            nextLocation = nextLocation.Move(instruction).ToCoordinate();
+
+        switch (WarehouseLookup[nextLocation])
+        {
+            case ObjectType.Wall:
+            case ObjectType.Robot:
+                return;
+            case ObjectType.Box:
+                throw new InvalidOperationException("Cannot move box to box");
+            case ObjectType.Empty:
+                SwitchLocations(newLocation, nextLocation);
+                SwitchLocations(robotLocation, newLocation);
+                break;
+        }
     }
 }

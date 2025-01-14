@@ -16,4 +16,7 @@ public static class Day15Extensions
             '<' => Direction.Left,
             _ => null
         };
+
+    public static Coordinate ToCoordinate(this (int, int) coordinate)
+        => new(coordinate.Item1, coordinate.Item2);
 }
