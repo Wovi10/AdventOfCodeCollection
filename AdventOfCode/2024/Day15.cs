@@ -14,12 +14,22 @@ public class Day15():DayBase("15", "Warehouse Woes")
 
     protected override Task<object> PartTwo()
     {
-        throw new NotImplementedException();
+        var result = GetSumBoxesGpsCoordinatesAfterRunningPart2();
+
+        return Task.FromResult<object>(result);
     }
 
     private long GetSumBoxesGpsCoordinatesAfterRunning()
         => GetInput()
             .ToWarehouseWithInstructions()
+            .RunInstructions()
+            .Warehouse
+            .GetGpsLocationBoxes()
+            .Sum();
+
+    private long GetSumBoxesGpsCoordinatesAfterRunningPart2()
+        => GetInput()
+            .ToWarehouseWithInstructionsPart2()
             .RunInstructions()
             .Warehouse
             .GetGpsLocationBoxes()
