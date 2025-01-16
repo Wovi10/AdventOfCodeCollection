@@ -7,7 +7,7 @@ namespace _2024.Models.Day15;
 
 public class WarehousePart2
 {
-    private Dictionary<Coordinate, ObjectType> WarehouseLookup { get; } = new();
+    private Dictionary<Coordinate, ObjectType2> WarehouseLookup { get; } = new();
 
     public WarehousePart2(IEnumerable<string> input)
     {
@@ -27,7 +27,7 @@ public class WarehousePart2
             for (var x = 0; x < line.Length; x++)
             {
                 var coordinate = new Coordinate(x, y);
-                var objectType = line[x].FromChar();
+                var objectType = line[x].ToObjectType2();
                 WarehouseLookup[coordinate] = objectType;
             }
         }
@@ -35,7 +35,7 @@ public class WarehousePart2
 
     public long[] GetGpsLocationBoxes()
         => WarehouseLookup
-            .Where(kvp => kvp.Value == ObjectType.Box)
+            .Where(kvp => kvp.Value == ObjectType2.BoxLeft)
             .Select(kvp => kvp.Key)
             .Select(GetGpsLocation)
             .ToArray();
@@ -54,7 +54,7 @@ public class WarehousePart2
             for (var x = 0; x <= maxX; x++)
             {
                 var coordinate = new Coordinate(x, y);
-                var objectType = WarehouseLookup.GetValueOrDefault(coordinate, ObjectType.Empty);
+                var objectType = WarehouseLookup.GetValueOrDefault(coordinate, ObjectType2.Empty);
                 sb.Append(objectType.ToChar());
             }
 
@@ -66,19 +66,20 @@ public class WarehousePart2
 
     public void RunInstruction(Direction instruction)
     {
-        var robotLocation = WarehouseLookup.First(kvp => kvp.Value == ObjectType.Robot).Key;
+        var robotLocation = WarehouseLookup.First(kvp => kvp.Value == ObjectType2.Robot).Key;
         var newLocation = robotLocation.Move(instruction).ToCoordinate();
         var objectTypeOfLocation = WarehouseLookup[newLocation];
 
         switch (objectTypeOfLocation)
         {
-            case ObjectType.Wall:
-            case ObjectType.Robot:
+            case ObjectType2.Wall:
+            case ObjectType2.Robot:
                 return;
-            case ObjectType.Empty:
+            case ObjectType2.Empty:
                 SwitchLocations(robotLocation, newLocation);
                 break;
-            case ObjectType.Box:
+            case ObjectType2.BoxLeft:
+            case ObjectType2.BoxRight:
                 MoveBoxes(robotLocation, newLocation, instruction);
                 break;
             default:
@@ -91,22 +92,106 @@ public class WarehousePart2
 
     private void MoveBoxes(Coordinate robotLocation, Coordinate newLocation, Direction instruction)
     {
-        var nextLocation = newLocation.Move(instruction).ToCoordinate();
+        switch (instruction)
+        {
+            case Direction.Up:
+            case Direction.Down:
+                MoveBoxesVertical(robotLocation, newLocation, instruction);
+                break;
+            case Direction.Right or Direction.Left:
+                MoveBoxesHorizontal(robotLocation, newLocation, instruction);
+                MoveBoxesHorizontal(robotLocation, newLocation, instruction);
+                break;
+            case Direction.None:
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(instruction), instruction, null);
+        }
+    }
 
-        while (WarehouseLookup[nextLocation] == ObjectType.Box)
-            nextLocation = nextLocation.Move(instruction).ToCoordinate();
+    private void MoveBoxesVertical(Coordinate robotLocation, Coordinate boxLocation, Direction direction)
+    {
+        if (!BoxCanMove(boxLocation, direction))
+            return;
+
+        MoveBox(boxLocation, direction);
+        SwitchLocations(robotLocation, boxLocation);
+    }
+
+    private void MoveBox(Coordinate nextLocation, Direction direction)
+    {
+        var leftPart = WarehouseLookup[nextLocation] == ObjectType2.BoxLeft ? nextLocation : nextLocation.Move(Direction.Left).ToCoordinate();
+        var rightPart = WarehouseLookup[nextLocation] == ObjectType2.BoxRight ? nextLocation : nextLocation.Move(Direction.Right).ToCoordinate();
+
+        MoveHalfBox(leftPart, direction);
+        MoveHalfBox(rightPart, direction);
+    }
+
+    private void MoveHalfBox(Coordinate leftPart, Direction direction)
+    {
+        var nextLocation = leftPart.Move(direction).ToCoordinate();
+
+        if (WarehouseLookup[nextLocation] == ObjectType2.Empty)
+            SwitchLocations(leftPart, nextLocation);
+        else
+            MoveBox(nextLocation, direction);
+    }
+
+    private bool BoxCanMove(Coordinate boxLocation, Direction direction)
+    {
+        var leftPart = WarehouseLookup[boxLocation] == ObjectType2.BoxLeft ? boxLocation : boxLocation.Move(Direction.Left).ToCoordinate();
+        var rightPart = WarehouseLookup[boxLocation] == ObjectType2.BoxRight ? boxLocation : boxLocation.Move(Direction.Right).ToCoordinate();
+
+        return CanMove(leftPart, direction) && CanMove(rightPart, direction);
+    }
+
+    private bool CanMove(Coordinate leftCoordinate, Direction direction)
+    {
+        var nextLocation = leftCoordinate.Move(direction).ToCoordinate();
+        return WarehouseLookup[nextLocation] switch
+        {
+            ObjectType2.Wall or ObjectType2.Robot => false,
+            ObjectType2.BoxLeft or ObjectType2.BoxRight => BoxCanMove(leftCoordinate, direction),
+            ObjectType2.Empty => true,
+            _ => throw new ArgumentOutOfRangeException()
+        };
+    }
+
+    private void MoveBoxesDown(Coordinate robotLocation, Coordinate newLocation, Direction direction)
+    {
+        throw new NotImplementedException();
+    }
+
+    private void MoveBoxesHorizontal(Coordinate robotLocation, Coordinate boxLocation, Direction direction)
+    {
+        var nextLocation = boxLocation.Move(direction).ToCoordinate();
+
+        while (WarehouseLookup[nextLocation] is ObjectType2.BoxLeft or ObjectType2.BoxRight)
+            nextLocation = nextLocation.Move(direction).ToCoordinate();
 
         switch (WarehouseLookup[nextLocation])
         {
-            case ObjectType.Wall:
-            case ObjectType.Robot:
+            case ObjectType2.Wall:
+            case ObjectType2.Robot:
                 return;
-            case ObjectType.Box:
+            case ObjectType2.BoxLeft:
+            case ObjectType2.BoxRight:
                 throw new InvalidOperationException("Cannot move box to box");
-            case ObjectType.Empty:
-                SwitchLocations(newLocation, nextLocation);
-                SwitchLocations(robotLocation, newLocation);
+            case ObjectType2.Empty:
+                SwitchBoxLocations(robotLocation, nextLocation, direction);
                 break;
         }
+    }
+
+    private void SwitchBoxLocations(Coordinate robotLocation, Coordinate lastLocation, Direction direction)
+    {
+        var nextLocation = lastLocation.Move(direction).ToCoordinate();
+
+        do
+        {
+            SwitchLocations(lastLocation, nextLocation);
+            lastLocation = nextLocation;
+            nextLocation = lastLocation.Move(direction).ToCoordinate();
+        } while (nextLocation != robotLocation);
     }
 }
