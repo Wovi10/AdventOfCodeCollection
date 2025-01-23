@@ -43,25 +43,12 @@ public class WarehousePart2
     private static long GetGpsLocation(Coordinate coordinate)
         => 100 * coordinate.Y + coordinate.X;
 
-    public override string ToString()
+    public void Print()
     {
-        var maxX = WarehouseLookup.Keys.Max(c => c.X);
         var maxY = WarehouseLookup.Keys.Max(c => c.Y);
 
-        var sb = new StringBuilder();
         for (var y = 0; y <= maxY; y++)
-        {
-            for (var x = 0; x <= maxX; x++)
-            {
-                var coordinate = new Coordinate(x, y);
-                var objectType = WarehouseLookup.GetValueOrDefault(coordinate, ObjectType2.Empty);
-                sb.Append(objectType.ToChar());
-            }
-
-            sb.AppendLine();
-        }
-
-        return sb.ToString();
+            PrintHorizontalLine(new Coordinate(0, y));
     }
 
     public void RunInstruction(Direction instruction)
@@ -100,13 +87,37 @@ public class WarehousePart2
                 break;
             case Direction.Right or Direction.Left:
                 MoveBoxesHorizontal(robotLocation, newLocation, instruction);
-                MoveBoxesHorizontal(robotLocation, newLocation, instruction);
                 break;
             case Direction.None:
                 break;
             default:
                 throw new ArgumentOutOfRangeException(nameof(instruction), instruction, null);
         }
+    }
+
+    private void PrintVerticalLine(Coordinate robotLocation)
+    {
+        var maxY = WarehouseLookup.Keys.Max(c => c.Y);
+        for (var y = 0; y <= maxY; y++)
+        {
+            var coordinate = new Coordinate(robotLocation.X, y);
+            var objectType = WarehouseLookup.GetValueOrDefault(coordinate, ObjectType2.Empty);
+            Console.WriteLine(objectType.ToChar());
+        }
+    }
+
+    private void PrintHorizontalLine(Coordinate robotLocation)
+    {
+        var maxX = WarehouseLookup.Keys.Max(c => c.X);
+        var sb = new StringBuilder();
+        for (var x = 0; x <= maxX; x++)
+        {
+            var coordinate = new Coordinate(x, robotLocation.Y);
+            var objectType = WarehouseLookup.GetValueOrDefault(coordinate, ObjectType2.Empty);
+            sb.Append(objectType.ToChar());
+        }
+
+        Console.WriteLine(sb.ToString());
     }
 
     private void MoveBoxesVertical(Coordinate robotLocation, Coordinate boxLocation, Direction direction)
@@ -127,14 +138,19 @@ public class WarehousePart2
         MoveHalfBox(rightPart, direction);
     }
 
-    private void MoveHalfBox(Coordinate leftPart, Direction direction)
+    private void MoveHalfBox(Coordinate boxPart, Direction direction)
     {
-        var nextLocation = leftPart.Move(direction).ToCoordinate();
+        var nextLocation = boxPart.Move(direction).ToCoordinate();
+
+        // var currentObjectType = WarehouseLookup[boxPart];
 
         if (WarehouseLookup[nextLocation] == ObjectType2.Empty)
-            SwitchLocations(leftPart, nextLocation);
+            SwitchLocations(boxPart, nextLocation);
         else
+        {
             MoveBox(nextLocation, direction);
+            SwitchLocations(boxPart, nextLocation);
+        }
     }
 
     private bool BoxCanMove(Coordinate boxLocation, Direction direction)
@@ -151,7 +167,7 @@ public class WarehousePart2
         return WarehouseLookup[nextLocation] switch
         {
             ObjectType2.Wall or ObjectType2.Robot => false,
-            ObjectType2.BoxLeft or ObjectType2.BoxRight => BoxCanMove(leftCoordinate, direction),
+            ObjectType2.BoxLeft or ObjectType2.BoxRight => BoxCanMove(nextLocation, direction),
             ObjectType2.Empty => true,
             _ => throw new ArgumentOutOfRangeException()
         };
@@ -185,6 +201,7 @@ public class WarehousePart2
 
     private void SwitchBoxLocations(Coordinate robotLocation, Coordinate lastLocation, Direction direction)
     {
+        direction = GetOppositeDirection(direction);
         var nextLocation = lastLocation.Move(direction).ToCoordinate();
 
         do
@@ -193,5 +210,18 @@ public class WarehousePart2
             lastLocation = nextLocation;
             nextLocation = lastLocation.Move(direction).ToCoordinate();
         } while (nextLocation != robotLocation);
+        SwitchLocations(robotLocation, lastLocation);
+    }
+
+    private Direction GetOppositeDirection(Direction direction)
+    {
+        return direction switch
+        {
+            Direction.Up => Direction.Down,
+            Direction.Down => Direction.Up,
+            Direction.Left => Direction.Right,
+            Direction.Right => Direction.Left,
+            _ => throw new ArgumentOutOfRangeException(nameof(direction), direction, null)
+        };
     }
 }
