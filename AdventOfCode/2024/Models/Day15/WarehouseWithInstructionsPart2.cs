@@ -23,16 +23,7 @@ public class WarehouseWithInstructionsPart2
 
     public WarehouseWithInstructionsPart2 RunInstructions()
     {
-        var counter = 1;
-        foreach (var instruction in Instructions)
-        {
-            Warehouse.RunInstruction(instruction);
-            counter++;
-        }
-
-        Warehouse.Print();
-
-        // Instructions.ForEach(instruction => Warehouse.RunInstruction(instruction));
+        Instructions.ForEach(instruction => Warehouse.RunInstruction(instruction));
 
         return this;
     }
