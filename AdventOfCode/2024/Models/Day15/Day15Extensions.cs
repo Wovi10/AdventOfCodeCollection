@@ -7,6 +7,9 @@ public static class Day15Extensions
     public static WarehouseWithInstructions ToWarehouseWithInstructions(this IEnumerable<string> input)
         => new(input);
 
+    public static WarehouseWithInstructionsPart2 ToWarehouseWithInstructionsPart2(this IEnumerable<string> input)
+        => new(input);
+
     public static Direction? ToDirection(this char c)
         => c switch
         {
