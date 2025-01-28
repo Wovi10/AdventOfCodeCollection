@@ -16,4 +16,10 @@ public static class Day16Extensions
         maze.Run();
         return maze.MinimumScore;
     }
+
+    public static int CountAllBestPathsDistinctCount(this Maze maze)
+    {
+        maze.Run();
+        return maze.GetBestPathsDistinctLength();
+    }
 }

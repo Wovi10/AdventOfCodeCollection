@@ -8,8 +8,9 @@ public class Maze
     private readonly ReindeerPositioning _reindeerPositioning;
     private readonly Dictionary<Coordinate, long> _coordinateWeights = new();
 
-    public long MinimumScore => _coordinateWeights[EndCoordinate];
-    private Coordinate EndCoordinate => _maze.First(x => x.Value == ObjectType.End).Key;
+    public long MinimumScore => _coordinateWeights[_endCoordinate];
+    private readonly Coordinate _endCoordinate;
+    private readonly Coordinate _startCoordinate;
 
     public Maze(string[] input)
     {
@@ -27,6 +28,9 @@ public class Maze
                     _reindeerPositioning = new(coordinate);
             }
         }
+
+        _endCoordinate = _maze.First(x => x.Value == ObjectType.End).Key;
+        _startCoordinate = _maze.First(x => x.Value == ObjectType.Start).Key;
     }
 
     public void Run()
@@ -41,8 +45,7 @@ public class Maze
     public void DoMovement(ReindeerPositioning current)
     {
         var neighbours = current.GetNeighbouringCoordinatesWithDirection()
-            .Where(n => GetObjectType(n.Position) != ObjectType.Wall && n.Facing != current.OppositeDirection())
-            .ToArray();
+            .Where(n => GetObjectType(n.Position) != ObjectType.Wall && !n.IsOppositeDirection(current.Facing));
 
         foreach (var neighbour in neighbours)
         {
@@ -64,9 +67,6 @@ public class Maze
     private ObjectType GetObjectType(Coordinate coordinate)
         => _maze[coordinate];
 
-    private ObjectType GetCurrentObjectType()
-        => _maze[_reindeerPositioning.Position];
-
     private long GetWeight(Coordinate coordinate)
         => _coordinateWeights[coordinate];
 
@@ -86,5 +86,66 @@ public class Maze
 
             Console.WriteLine();
         }
+    }
+
+    public int GetBestPathsDistinctLength()
+    {
+        FindAllBestPaths();
+
+        return _bestPaths
+                .SelectMany(p => p)
+                .Select(p => p.Position)
+                .Distinct()
+                .Count();
+    }
+
+    private readonly List<ReindeerPositioning[]> _bestPaths = new();
+    private void FindAllBestPaths()
+    {
+        // Start at the StartPoint
+        var startingReindeerPositioning = new ReindeerPositioning(_startCoordinate, Direction.Right);
+        GetAllPaths([startingReindeerPositioning]);
+    }
+
+    private void GetAllPaths(ReindeerPositioning[] positionings)
+    {
+        var current = positionings.Last();
+        var neighbours =
+            current
+                .GetNeighbouringCoordinatesWithDirection()
+                .Where(neighbour => GetObjectType(neighbour.Position) != ObjectType.Wall &&
+                                    !neighbour.IsOppositeDirection(current.Facing) &&
+                                    !_bestPaths.Any(path => path.Contains(neighbour)));
+
+        foreach (var neighbour in neighbours)
+        {
+            var possiblePath = new ReindeerPositioning[positionings.Length + 1];
+            Array.Copy(positionings, possiblePath, positionings.Length);
+            possiblePath[^1] = neighbour;
+            var pathScore = GetPathScore(possiblePath);
+
+            if (pathScore > _coordinateWeights[_endCoordinate])
+                continue;
+
+            if (neighbour.Position == _endCoordinate)
+                _bestPaths.Add(possiblePath);
+            else
+                GetAllPaths(possiblePath);
+        }
+    }
+
+    private static int GetPathScore(ReindeerPositioning[] path)
+    {
+        // Run over path from start to end and sum up the weights
+        var previousPositioning = path.First();
+        var totalWeight = 0;
+        foreach (var positioning in path.Skip(1))
+        {
+            totalWeight += positioning.Facing == previousPositioning.Facing ? StepWeight : StepWeight + RotateWeight;
+
+            previousPositioning = positioning;
+        }
+
+        return totalWeight;
     }
 }
