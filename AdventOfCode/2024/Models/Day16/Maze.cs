@@ -42,7 +42,7 @@ public class Maze
     private const int StepWeight = 1;
     private const int RotateWeight = 1000;
 
-    public void DoMovement(ReindeerPositioning current)
+    private void DoMovement(ReindeerPositioning current)
     {
         var neighbours = current.GetNeighbouringCoordinatesWithDirection()
             .Where(n => GetObjectType(n.Position) != ObjectType.Wall && !n.IsOppositeDirection(current.Facing));
@@ -54,11 +54,12 @@ public class Maze
             var possibleNewWeight = currentWeight + weightToAdd;
 
             var currentNeighbourWeight = _coordinateWeights.GetValueOrDefault(neighbour.Position, long.MaxValue);
+            var minimum = Math.Min(possibleNewWeight, currentNeighbourWeight);
 
-            if (Math.Min(possibleNewWeight, currentNeighbourWeight) == currentNeighbourWeight)
+            if (minimum == currentNeighbourWeight)
                 continue;
 
-            _coordinateWeights[neighbour.Position] = possibleNewWeight;
+            _coordinateWeights[neighbour.Position] = minimum;
 
             DoMovement(neighbour);
         }
@@ -102,7 +103,6 @@ public class Maze
     private readonly List<ReindeerPositioning[]> _bestPaths = new();
     private void FindAllBestPaths()
     {
-        // Start at the StartPoint
         var startingReindeerPositioning = new ReindeerPositioning(_startCoordinate, Direction.Right);
         GetAllPaths([startingReindeerPositioning]);
     }
@@ -115,16 +115,16 @@ public class Maze
                 .GetNeighbouringCoordinatesWithDirection()
                 .Where(neighbour => GetObjectType(neighbour.Position) != ObjectType.Wall &&
                                     !neighbour.IsOppositeDirection(current.Facing) &&
-                                    !_bestPaths.Any(path => path.Contains(neighbour)));
+                                    !_bestPaths.Any(path => path.Contains(neighbour)) &&
+                                    _coordinateWeights[neighbour.Position] <= _coordinateWeights[_endCoordinate]);
 
         foreach (var neighbour in neighbours)
         {
             var possiblePath = new ReindeerPositioning[positionings.Length + 1];
             Array.Copy(positionings, possiblePath, positionings.Length);
             possiblePath[^1] = neighbour;
-            var pathScore = GetPathScore(possiblePath);
 
-            if (pathScore > _coordinateWeights[_endCoordinate])
+            if (GetPathScore(possiblePath) > _coordinateWeights[_endCoordinate])
                 continue;
 
             if (neighbour.Position == _endCoordinate)
@@ -136,7 +136,6 @@ public class Maze
 
     private static int GetPathScore(ReindeerPositioning[] path)
     {
-        // Run over path from start to end and sum up the weights
         var previousPositioning = path.First();
         var totalWeight = 0;
         foreach (var positioning in path.Skip(1))
