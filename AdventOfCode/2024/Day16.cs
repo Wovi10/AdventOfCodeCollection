@@ -14,7 +14,9 @@ public class Day16(): DayBase("16", "Reindeer Maze")
 
     protected override Task<object> PartTwo()
     {
-        throw new NotImplementedException();
+        var result = GetBestPathsDistinctTilesCount();
+
+        return Task.FromResult<object>(result);
     }
 
     private long GetLowestResultForMaze()
@@ -22,4 +24,10 @@ public class Day16(): DayBase("16", "Reindeer Maze")
             .ToMaze()
             // .PrintMaze()
             .GetBestPathResult();
+
+    private int GetBestPathsDistinctTilesCount()
+        => GetInput()
+            .ToMaze()
+            // .PrintMaze()
+            .CountAllBestPathsDistinctCount();
 }

@@ -15,46 +15,14 @@ public class ReindeerPositioning
         Position = startingPosition;
     }
 
-
-    public Direction Facing { get; set; } = Direction.Right;
-    public Coordinate Position { get; set; }
-
-    public void Move(int distance = 1)
-        => Position = new Coordinate(Position.Move(Facing, distance));
-
-    public void TurnLeft()
-    {
-        Facing = Facing switch
-        {
-            Direction.Up => Direction.Left,
-            Direction.Left => Direction.Down,
-            Direction.Down => Direction.Right,
-            Direction.Right => Direction.Up,
-            _ => Facing
-        };
-    }
-
-    public void TurnRight()
-    {
-        Facing = Facing switch
-        {
-            Direction.Up => Direction.Right,
-            Direction.Right => Direction.Down,
-            Direction.Down => Direction.Left,
-            Direction.Left => Direction.Up,
-            _ => Facing
-        };
-    }
-
-    public Coordinate GetPositionInFront()
-        => new(Position.Move(Facing));
+    public Direction Facing { get; } = Direction.Right;
+    public Coordinate Position { get; }
 
     public ReindeerPositioning[] GetNeighbouringCoordinatesWithDirection()
         => Position.GetNeighbouringCoordinatesWithDirection();
 
-    public Direction OppositeDirection()
-    {
-        return Facing switch
+    private Direction OppositeDirection()
+        => Facing switch
         {
             Direction.Up => Direction.Down,
             Direction.Down => Direction.Up,
@@ -62,5 +30,7 @@ public class ReindeerPositioning
             Direction.Right => Direction.Left,
             _ => Facing
         };
-    }
+
+    public bool IsOppositeDirection(Direction reindeerPositioningFacing)
+        => reindeerPositioningFacing == OppositeDirection();
 }
