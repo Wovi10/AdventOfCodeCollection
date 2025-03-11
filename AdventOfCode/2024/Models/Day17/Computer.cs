@@ -1,4 +1,5 @@
 ﻿using AOC.Utils;
+using NUnit.Framework;
 using UtilsCSharp;
 using Constants = UtilsCSharp.Utils.Constants;
 
@@ -6,12 +7,12 @@ namespace _2024.Models.Day17;
 
 public class Computer(string[] input)
 {
-    public List<int> Program { get; set; } = input[4].Split(':').Last().Trim().Split(Constants.Comma).Select(int.Parse).ToList();
-    public int RegisterA { get; set; } = int.Parse(input[0].Split(':').Last().Trim());
-    public int RegisterB { get; set; } = int.Parse(input[1].Split(':').Last().Trim());
-    public int RegisterC { get; set; } = int.Parse(input[2].Split(':').Last().Trim());
-    public int InstructionPointer { get; set; }
-    public List<int> Output { get; set; } = new();
+    internal List<int> Program { get; } = input[4].Split(':').Last().Trim().Split(Constants.Comma).Select(int.Parse).ToList();
+    public long RegisterA { get; internal set; } = long.Parse(input[0].Split(':').Last().Trim());
+    private long RegisterB { get; set; } = long.Parse(input[1].Split(':').Last().Trim());
+    private long RegisterC { get; set; } = long.Parse(input[2].Split(':').Last().Trim());
+    private int InstructionPointer { get; set; }
+    internal List<int> Output { get; } = new();
 
     public string GetOutputAsString()
     {
@@ -19,7 +20,16 @@ public class Computer(string[] input)
         return string.Join(Constants.Comma, Output);
     }
 
-    private void Run()
+    public void ResetComputerPart2(int registerAValue)
+    {
+        RegisterA = registerAValue;
+        InstructionPointer = 0;
+        RegisterB = 0;
+        RegisterC = 0;
+        Output.Clear();
+    }
+
+    public void Run()
     {
         while (InstructionPointer < Program.Count - 1)
         {
@@ -28,6 +38,12 @@ public class Computer(string[] input)
             PerformOpcode(opCode, Program[InstructionPointer + 1]);
             if (opCode != 3 || RegisterA == 0)
                 InstructionPointer += 2;
+
+            if (Variables.RunningPartOne || opCode != 5)
+                continue;
+
+            if (Output.Last() != Program.Take(Output.Count).Last())
+                return;
         }
     }
 
@@ -85,7 +101,7 @@ public class Computer(string[] input)
         => RegisterB ^= RegisterC;
 
     private void Out(int operand)
-        => Output.Add(Combo(operand) % 8);
+        => Output.Add((int)(Combo(operand) % 8));
 
     private void Bdv(int operand)
         => RegisterB = (int)(RegisterA / Math.Pow(2, Combo(operand)));
@@ -93,7 +109,7 @@ public class Computer(string[] input)
     private void Cdv(int operand)
         => RegisterC = (int)(RegisterA / Math.Pow(2, Combo(operand)));
 
-    private int Combo(int operand)
+    private long Combo(int operand)
         => operand switch
         {
             0 or 1 or 2 or 3 => operand,
