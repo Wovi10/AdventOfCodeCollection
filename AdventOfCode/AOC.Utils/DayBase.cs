@@ -67,7 +67,7 @@ public abstract class DayBase(string day, string title)
 
         var result = await partToRun();
 
-#if !DEBUG
+#if DEBUG
         var expectedAnswer = Answers.GetExpectedAnswer(Day);
         if (expectedAnswer.ToString() != Answers.NotApplicable && expectedAnswer.ToString() != Answers.NotYetFound)
             Assert.That(result, Is.EqualTo(expectedAnswer));
