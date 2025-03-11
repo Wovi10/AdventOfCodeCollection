@@ -40,44 +40,6 @@ public class Maze
         // PrintWithWeights();
     }
 
-    private void PrintWithWeights()
-    {
-        var maxX = _maze.Keys.Max(c => c.X);
-        var maxY = _maze.Keys.Max(c => c.Y);
-        var evenEvenColor = ConsoleColor.Blue;
-        var oddEvenColor = ConsoleColor.Green;
-        var evenOddColor = ConsoleColor.Yellow;
-        var oddOddColor = ConsoleColor.Red;
-
-        for (var y = 0; y <= maxY; y++)
-        {
-            for (var x = 0; x <= maxX; x++)
-            {
-                var coordinate = new Coordinate(x, y);
-                Console.ForegroundColor =
-                    x%2 == 0 && y%2 == 0
-                        ? evenEvenColor
-                        : x%2 == 0 && y%2 != 0
-                            ? evenOddColor
-                            : x%2 != 0 && y%2 == 0
-                                ? oddEvenColor
-                                : oddOddColor;
-                if (_coordinateWeights.ContainsKey(coordinate))
-                {
-                    Console.Write(_coordinateWeights[coordinate]);
-                }
-                else
-                {
-                    var objectType = _maze.GetValueOrDefault(coordinate, ObjectType.Empty);
-                    Console.Write(objectType.ToChar());
-                }
-                Console.ResetColor();
-            }
-
-            Console.WriteLine();
-        }
-    }
-
     private const int StepWeight = 1;
     private const int RotateWeight = 1000;
 
@@ -195,5 +157,43 @@ public class Maze
         }
 
         return totalWeight;
+    }
+
+    private void PrintWithWeights()
+    {
+        var maxX = _maze.Keys.Max(c => c.X);
+        var maxY = _maze.Keys.Max(c => c.Y);
+        var evenEvenColor = ConsoleColor.Blue;
+        var oddEvenColor = ConsoleColor.Green;
+        var evenOddColor = ConsoleColor.Yellow;
+        var oddOddColor = ConsoleColor.Red;
+
+        for (var y = 0; y <= maxY; y++)
+        {
+            for (var x = 0; x <= maxX; x++)
+            {
+                var coordinate = new Coordinate(x, y);
+                Console.ForegroundColor =
+                    x%2 == 0 && y%2 == 0
+                        ? evenEvenColor
+                        : x%2 == 0 && y%2 != 0
+                            ? evenOddColor
+                            : x%2 != 0 && y%2 == 0
+                                ? oddEvenColor
+                                : oddOddColor;
+                if (_coordinateWeights.ContainsKey(coordinate))
+                {
+                    Console.Write(_coordinateWeights[coordinate]);
+                }
+                else
+                {
+                    var objectType = _maze.GetValueOrDefault(coordinate, ObjectType.Empty);
+                    Console.Write(objectType.ToChar());
+                }
+                Console.ResetColor();
+            }
+
+            Console.WriteLine();
+        }
     }
 }
