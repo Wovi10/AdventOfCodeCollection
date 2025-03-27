@@ -1,6 +1,4 @@
 ﻿using AOC.Utils;
-using NUnit.Framework;
-using UtilsCSharp;
 using Constants = UtilsCSharp.Utils.Constants;
 
 namespace _2024.Models.Day17;
@@ -20,7 +18,7 @@ public class Computer(string[] input)
         return string.Join(Constants.Comma, Output);
     }
 
-    public void ResetComputerPart2(int registerAValue)
+    public void ResetComputerPart2(long registerAValue)
     {
         RegisterA = registerAValue;
         InstructionPointer = 0;
@@ -34,51 +32,33 @@ public class Computer(string[] input)
         while (InstructionPointer < Program.Count - 1)
         {
             var opCode = Program[InstructionPointer];
+            var operand = Program[InstructionPointer + 1];
 
-            PerformOpcode(opCode, Program[InstructionPointer + 1]);
+            GetOperation(opCode).Invoke(operand);
             if (opCode != 3 || RegisterA == 0)
                 InstructionPointer += 2;
 
-            if (Variables.RunningPartOne || opCode != 5)
+            if (opCode != 5 || Variables.RunningPartOne)
                 continue;
 
-            if (Output.Last() != Program.Take(Output.Count).Last())
+            if (Output[^1] != Program[Output.Count-1])
                 return;
         }
     }
 
-    private void PerformOpcode(int opcode, int operand)
-    {
-        switch (opcode)
+    private Action<int> GetOperation(int opcode)
+        => opcode switch
         {
-            case 0:
-                Adv(operand);
-                return;
-            case 1:
-                Bxl(operand);
-                return;
-            case 2:
-                Bst(operand);
-                return;
-            case 3:
-                Jnz(operand);
-                return;
-            case 4:
-                Bxc(operand);
-                return;
-            case 5:
-                Out(operand);
-                return;
-            case 6:
-                Bdv(operand);
-                return;
-            case 7:
-                Cdv(operand);
-                return;
-            default:
-                throw new Exception("Unknown opcode");
-        }
-    }
+            0 => Adv,
+            1 => Bxl,
+            2 => Bst,
+            3 => Jnz,
+            4 => Bxc,
+            5 => Out,
+            6 => Bdv,
+            7 => Cdv,
+            _ => throw new Exception("Unknown opcode")
+        };
 
     private void Adv(int operand)
         => RegisterA = (int)(RegisterA / Math.Pow(2, Combo(operand)));

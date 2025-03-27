@@ -7,9 +7,13 @@ public static class Day17Extensions
 
     public static Computer TryDifferentValuesOfA(this Computer computer)
     {
-        var counter = 0;
+        var counter = 1299389035120L;
         do
         {
+            if (counter < 0L)
+            {
+                Console.WriteLine("What the actual fuck?");
+            }
             computer.ResetComputerPart2(counter);
             computer.Run();
 
