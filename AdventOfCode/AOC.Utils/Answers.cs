@@ -88,8 +88,8 @@ public static class Answers
         new(16, 2, Real, 433),
         new(17, 1, Mock, "4,6,3,5,6,3,5,2,1,0"),
         new(17, 1, Real, "5,0,3,5,7,6,1,5,4"),
-        new(17, 2, Mock, NotYetFound),
-        new(17, 2, Real, NotYetFound),
+        new(17, 2, Mock, 117440),
+        new(17, 2, Real, 164516454365621),
     };
 
     private static readonly List<Answer> AnswersList2023 = new()

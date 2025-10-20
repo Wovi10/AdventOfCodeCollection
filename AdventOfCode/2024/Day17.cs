@@ -14,9 +14,17 @@ public class Day17() :DayBase("17", "Chronospatial Computer")
 
     protected override Task<object> PartTwo()
     {
-        throw new NotImplementedException();
+        var result = GetCorrectedRegisterA();
+
+        return Task.FromResult<object>(result);
     }
 
     private string GetOutInstructionsAsString()
         => GetInput().InitializeComputer().GetOutputAsString();
+
+    private long GetCorrectedRegisterA()
+    {
+        // return GetInput().InitializeComputer().TryDifferentValuesOfA().RegisterA;
+        return GetInput().InitializeComputer().TryFindMathematics().RegisterA;
+    }
 }
