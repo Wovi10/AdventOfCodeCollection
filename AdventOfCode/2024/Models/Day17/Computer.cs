@@ -5,7 +5,7 @@ namespace _2024.Models.Day17;
 
 public class Computer(string[] input)
 {
-    internal List<int> Program { get; } = input[4].Split(':').Last().Trim().Split(Constants.Comma).Select(int.Parse).ToList();
+    internal int[] Program { get; } = input[4].Split(':').Last().Trim().Split(Constants.Comma).Select(int.Parse).ToArray();
     public long RegisterA { get; internal set; } = long.Parse(input[0].Split(':').Last().Trim());
     private long RegisterB { get; set; } = long.Parse(input[1].Split(':').Last().Trim());
     private long RegisterC { get; set; } = long.Parse(input[2].Split(':').Last().Trim());
@@ -29,7 +29,7 @@ public class Computer(string[] input)
 
     public void Run()
     {
-        while (InstructionPointer < Program.Count - 1)
+        while (InstructionPointer < Program.Length - 1)
         {
             var opCode = Program[InstructionPointer];
             var operand = Program[InstructionPointer + 1];
@@ -58,7 +58,7 @@ public class Computer(string[] input)
         };
 
     private void Adv(int operand)
-        => RegisterA = (int)(RegisterA / Math.Pow(2, Combo(operand)));
+        => RegisterA = RegisterA >> Combo(operand); // Use bit shift instead of division and casting
 
     private void Bxl(int operand)
         => RegisterB ^= operand;
@@ -81,18 +81,18 @@ public class Computer(string[] input)
         => Output.Add((int)(Combo(operand) % 8));
 
     private void Bdv(int operand)
-        => RegisterB = (int)(RegisterA / Math.Pow(2, Combo(operand)));
+        => RegisterB = RegisterA >> Combo(operand); // Use bit shift instead of division and casting
 
     private void Cdv(int operand)
-        => RegisterC = (int)(RegisterA / Math.Pow(2, Combo(operand)));
+        => RegisterC = RegisterA >> Combo(operand); // Use bit shift instead of division and casting
 
-    private long Combo(int operand)
+    private int Combo(int operand) // Change return type to int since operands are small
         => operand switch
         {
             0 or 1 or 2 or 3 => operand,
-            4 => RegisterA,
-            5 => RegisterB,
-            6 => RegisterC,
+            4 => (int)(RegisterA & 0x7FFFFFFF), // Safely cast to int, keeping only lower bits
+            5 => (int)(RegisterB & 0x7FFFFFFF), // Safely cast to int, keeping only lower bits
+            6 => (int)(RegisterC & 0x7FFFFFFF), // Safely cast to int, keeping only lower bits
             _ => throw new Exception($"Invalid input: {operand}")
         };
 }

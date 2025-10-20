@@ -23,5 +23,8 @@ public class Day17() :DayBase("17", "Chronospatial Computer")
         => GetInput().InitializeComputer().GetOutputAsString();
 
     private long GetCorrectedRegisterA()
-        => GetInput().InitializeComputer().TryDifferentValuesOfA().RegisterA;
+    {
+        // return GetInput().InitializeComputer().TryDifferentValuesOfA().RegisterA;
+        return GetInput().InitializeComputer().TryFindMathematics().RegisterA;
+    }
 }
