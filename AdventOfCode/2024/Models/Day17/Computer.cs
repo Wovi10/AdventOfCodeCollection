@@ -38,10 +38,7 @@ public class Computer(string[] input)
             if (opCode != 3 || RegisterA == 0)
                 InstructionPointer += 2;
 
-            if (opCode != 5 || Variables.RunningPartOne)
-                continue;
-
-            if (Output[^1] != Program[Output.Count-1])
+            if (!Variables.RunningPartOne && opCode == 5 && Output[^1] != Program[Output.Count-1])
                 return;
         }
     }
