@@ -90,6 +90,10 @@ public static class Answers
         new(17, 1, Real, "5,0,3,5,7,6,1,5,4"),
         new(17, 2, Mock, 117440),
         new(17, 2, Real, 164516454365621),
+        new(18, 1, Mock, 22),
+        new(18, 1, Real, NotYetFound),
+        new(18, 2, Mock, NotYetFound),
+        new(18, 2, Real, NotYetFound),
     };
 
     private static readonly List<Answer> AnswersList2023 = new()
