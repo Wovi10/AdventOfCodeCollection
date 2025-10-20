@@ -18,7 +18,8 @@ using AOC.Utils.Enums;
 // await new Day14().Run();
 // await new Day15().Run();
 // await new Day16().Run();
-await new Day17().Run(PartsToRun.Part2);
+// await new Day17().Run();
+await new Day18().Run();
 
 
 // AddNewDay(18);
@@ -35,4 +36,6 @@ void AddNewDay(int day)
 
     var mockDayFile = Path.Combine(dayFolder, $"MockDay{dayString}.in");
     File.WriteAllText(mockDayFile, "");
+
+    Console.WriteLine("Created files for Day " + dayString);
 }
