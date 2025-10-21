@@ -1,4 +1,6 @@
-﻿namespace AOC.Utils;
+﻿using System.Collections.Immutable;
+
+namespace AOC.Utils;
 
 public record Answer(int Day, int Part, bool IsReal, object Result);
 
@@ -11,7 +13,13 @@ public static class Answers
 
     public static object GetExpectedAnswer(string day)
     {
-        var listToUse = Constants.RunningYear == 2023 ? AnswersList2023 : AnswersList2024;
+        var answerLists = new Dictionary<int, List<Answer>>()
+        {
+            {2023, AnswersList2023},
+            {2024, AnswersList2024}
+        };
+
+        var listToUse = answerLists[Constants.RunningYear];
 
         var partInt = Variables.RunningPartOne ? 1 : 2;
         var answer = listToUse.FirstOrDefault(a =>
@@ -97,7 +105,11 @@ public static class Answers
         new(19, 1, Mock, 6),
         new(19, 1, Real, 313),
         new(19, 2, Mock, 16),
-        new(19, 2, Real, NotYetFound),
+        new(19, 2, Real, 666491493769758),
+        new(20, 1, Mock, NotApplicable),
+        new(20, 1, Real, NotYetFound),
+        new(20, 2, Mock, NotYetFound),
+        new(20, 2, Real, NotYetFound),
     };
 
     private static readonly List<Answer> AnswersList2023 = new()
