@@ -1,4 +1,5 @@
 ﻿using _2024.Models.Day16;
+using AOC.Utils;
 
 namespace _2024.Models.Day18;
 
@@ -55,5 +56,21 @@ public static class Day18Extensions
     public static long FindMinimumStepsToExit(this IDictionary<Tuple<int, int>, bool> coordinates)
     {
         return new Ram(coordinates).FindMinimumStepsToExit();
+    }
+
+    public static string GetFirstImpossibleMaze(
+        this string[] input, int maxDimensions, int initNumBytesFallen)
+    {
+        var counter = initNumBytesFallen;
+        while (true)
+        {
+            var maze = input.ToCoordinates(maxDimensions, counter);
+            var ram = new Ram(maze);
+
+            if (!ram.HasPath())
+                return input[counter-1];
+
+            counter++;
+        }
     }
 }
