@@ -14,7 +14,9 @@ public class Day19(): DayBase("19", "Linen Layout")
 
     protected override Task<object> PartTwo()
     {
-        throw new NotImplementedException();
+        var result = GetTotalNumberOfPossibleDesignOptions();
+
+        return Task.FromResult<object>(result);
     }
 
     private long GetNumberOfPossibleDesigns()
@@ -22,4 +24,10 @@ public class Day19(): DayBase("19", "Linen Layout")
             .ToArray()
             .ToTowelDesignIssue()
             .GetNumberOfPossibleDesigns();
+
+    private long GetTotalNumberOfPossibleDesignOptions()
+        => GetInput()
+            .ToArray()
+            .ToTowelDesignIssue()
+            .GetTotalNumberOfPossibleDesignOptions();
 }

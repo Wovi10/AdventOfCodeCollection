@@ -94,6 +94,10 @@ public static class Answers
         new(18, 1, Real, 314),
         new(18, 2, Mock, "6,1"),
         new(18, 2, Real, "15,20"),
+        new(19, 1, Mock, 6),
+        new(19, 1, Real, 313),
+        new(19, 2, Mock, 16),
+        new(19, 2, Real, NotYetFound),
     };
 
     private static readonly List<Answer> AnswersList2023 = new()
