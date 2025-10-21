@@ -52,4 +52,7 @@ public class Ram(IDictionary<Tuple<int, int>, bool> coordinates)
 
         return -1;
     }
+
+    public bool HasPath()
+        => FindMinimumStepsToExit() != -1;
 }

@@ -14,7 +14,9 @@ public class Day18():DayBase("18", "RAM Run")
 
     protected override Task<object> PartTwo()
     {
-        throw new NotImplementedException();
+        var result = GetFirstImpossibleMaze();
+
+        return Task.FromResult<object>(result);
     }
 
     private long GetMinimumStepsToExit()
@@ -22,4 +24,11 @@ public class Day18():DayBase("18", "RAM Run")
             GetInput()
                 .ToCoordinates(Constants.IsRealExercise ? 70 : 6, Constants.IsRealExercise ? 1024 : 12)
                 .FindMinimumStepsToExit();
+
+    private string GetFirstImpossibleMaze()
+    {
+        return GetInput()
+            .ToArray()
+            .GetFirstImpossibleMaze(Constants.IsRealExercise ? 70 : 6, Constants.IsRealExercise ? 1024 : 12);
+    }
 }
