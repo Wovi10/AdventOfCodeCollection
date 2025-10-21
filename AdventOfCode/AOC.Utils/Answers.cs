@@ -91,7 +91,7 @@ public static class Answers
         new(17, 2, Mock, 117440),
         new(17, 2, Real, 164516454365621),
         new(18, 1, Mock, 22),
-        new(18, 1, Real, NotYetFound),
+        new(18, 1, Real, 314),
         new(18, 2, Mock, NotYetFound),
         new(18, 2, Real, NotYetFound),
     };

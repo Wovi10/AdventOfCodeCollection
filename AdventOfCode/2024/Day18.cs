@@ -18,13 +18,8 @@ public class Day18():DayBase("18", "RAM Run")
     }
 
     private long GetMinimumStepsToExit()
-    {
-        var maxDimensions = Constants.IsRealExercise ? 70 : 6;
-        var numBytesFallen = Constants.IsRealExercise ? 1024 : 12;
-        var byteCoordinates = GetInput().ToCoordinates(maxDimensions, numBytesFallen);
-        byteCoordinates.PrintCoordinates();
-        var result = byteCoordinates.FindMinimumStepsToExit();
-
-        return 0;
-    }
+        =>
+            GetInput()
+                .ToCoordinates(Constants.IsRealExercise ? 70 : 6, Constants.IsRealExercise ? 1024 : 12)
+                .FindMinimumStepsToExit();
 }
