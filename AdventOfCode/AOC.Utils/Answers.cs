@@ -196,7 +196,7 @@ public static class Answers
         new(24, 2, Real, 741991571910536),
         new(25, 1, Mock, 54),
         new(25, 1, Real, 568214),
-        new(25, 2, Mock, NotApplicable),
+        new(25, 2, Mock, 6),
         new(25, 2, Real, NotApplicable),
     };
 }
