@@ -1,0 +1,61 @@
+@page "/"
+@using Microsoft.AspNetCore.Components
+
+<PageTitle>Advent of Code - Years</PageTitle>
+
+<h1>Advent of Code</h1>
+<p class="text-muted">Pick a year to see its challenges.</p>
+
+<div class="year-grid">
+    @foreach (var year in Years)
+    {
+        <a class="year-tile" href="@($"year/{year}")">@year</a>
+    }
+
+    @if (isAddingYear)
+    {
+        <div class="year-tile year-tile-add-form">
+            <input type="number" class="form-control form-control-sm" placeholder="2025"
+                   @bind="newYear"/>
+            <div class="year-tile-add-actions">
+                <button class="btn btn-sm btn-success" @onclick="ConfirmAddYear">Add</button>
+                <button class="btn btn-sm btn-secondary" @onclick="CancelAddYear">Cancel</button>
+            </div>
+        </div>
+    }
+    else
+    {
+        <button class="year-tile year-tile-add" @onclick="StartAddYear">+ New Year</button>
+    }
+</div>
+
+@code {
+    private List<int> Years { get; set; } = [2023, 2024, 2025];
+
+    private bool isAddingYear;
+    private int? newYear;
+
+    private void StartAddYear()
+    {
+        isAddingYear = true;
+        newYear = DateTime.Now.Year;
+    }
+
+    private void CancelAddYear()
+    {
+        isAddingYear = false;
+        newYear = null;
+    }
+
+    private void ConfirmAddYear()
+    {
+        // TODO: hand off to the logic project to scaffold the year project/folder.
+        if (newYear is not null && !Years.Contains(newYear.Value))
+        {
+            Years.Add(newYear.Value);
+            Years.Sort();
+        }
+
+        CancelAddYear();
+    }
+}

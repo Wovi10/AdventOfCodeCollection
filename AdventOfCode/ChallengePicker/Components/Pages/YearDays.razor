@@ -1,0 +1,74 @@
+@page "/year/{Year:int}"
+
+<PageTitle>Advent of Code @Year</PageTitle>
+
+<a href="/" class="back-link">&larr; Years</a>
+<h1>@Year</h1>
+<p class="text-muted">Pick a day, or add a new one.</p>
+
+<div class="day-grid">
+    @foreach (var day in AllDays)
+    {
+        var exists = ExistingDays.Contains(day);
+        var label = day.ToString().PadLeft(2, '0');
+        if (exists)
+        {
+            // TODO: navigate to a day-detail page once it exists.
+            <button type="button" class="day-tile day-tile-existing">Day @label</button>
+        }
+        else
+        {
+            <span class="day-tile day-tile-missing">Day @label</span>
+        }
+    }
+</div>
+
+@if (isAddingDay)
+{
+    <div class="add-day-form">
+        <input type="number" min="1" max="25" class="form-control form-control-sm" placeholder="Day number"
+               @bind="newDay"/>
+        <button class="btn btn-sm btn-success" @onclick="ConfirmAddDay">Add</button>
+        <button class="btn btn-sm btn-secondary" @onclick="CancelAddDay">Cancel</button>
+    </div>
+}
+else
+{
+    <button class="btn btn-primary" @onclick="StartAddDay">+ New Day</button>
+}
+
+@code {
+    [Parameter] public int Year { get; set; }
+
+    private static readonly List<int> AllDays = Enumerable.Range(1, 25).ToList();
+
+    // TODO: replace with the real set of scaffolded days for this year, from the logic project.
+    private List<int> ExistingDays { get; set; } = Enumerable.Range(1, 19).ToList();
+
+    private bool isAddingDay;
+    private int? newDay;
+
+    private void StartAddDay()
+    {
+        isAddingDay = true;
+        newDay = ExistingDays.Count > 0 ? ExistingDays.Max() + 1 : 1;
+    }
+
+    private void CancelAddDay()
+    {
+        isAddingDay = false;
+        newDay = null;
+    }
+
+    private void ConfirmAddDay()
+    {
+        // TODO: hand off to the logic project to scaffold the day's files.
+        if (newDay is >= 1 and <= 25 && !ExistingDays.Contains(newDay.Value))
+        {
+            ExistingDays.Add(newDay.Value);
+            ExistingDays.Sort();
+        }
+
+        CancelAddDay();
+    }
+}
