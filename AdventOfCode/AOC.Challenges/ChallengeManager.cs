@@ -1,5 +1,7 @@
 using System.Reflection;
 using System.Text.RegularExpressions;
+using AOC.Utils;
+using AOC.Utils.Enums;
 
 namespace AOC.Challenges;
 
@@ -38,6 +40,83 @@ public static class ChallengeManager
             2024 => GetExistingDaysFromAssembly(typeof(_2024.Day01).Assembly),
             _ => GetExistingDaysFromFolder(ChallengePaths.GetManagedYearFolder(year))
         };
+
+    // New years live in AOC.Challenges itself, so each gets its own namespace to keep
+    // e.g. 2025's Day01 and 2026's Day01 from colliding.
+    private static string GetManagedNamespace(int year) => $"AOC.Challenges.Years._{year}";
+
+    public static void CreateDay(int year, int day)
+    {
+        if (IsLegacyYear(year))
+            return;
+
+        var yearFolder = ChallengePaths.GetManagedYearFolder(year);
+        Directory.CreateDirectory(yearFolder);
+
+        var dayFile = Path.Combine(yearFolder, $"Day{day:D2}.cs");
+        if (File.Exists(dayFile))
+            return;
+
+        File.WriteAllText(dayFile, BuildDayStub(year, day));
+    }
+
+    private static string BuildDayStub(int year, int day)
+    {
+        var dayString = day.ToString("D2");
+        return $$"""
+            using AOC.Utils;
+
+            namespace {{GetManagedNamespace(year)}};
+
+            public class Day{{dayString}}() : DayBase("{{dayString}}", "TODO: Title")
+            {
+                protected override Task<object> PartOne()
+                {
+                    throw new NotImplementedException();
+                }
+
+                protected override Task<object> PartTwo()
+                {
+                    throw new NotImplementedException();
+                }
+            }
+
+            """;
+    }
+
+    public static async Task<ChallengeRunResult> RunPart(int year, int day, PartsToRun part)
+    {
+        var type = FindDayType(year, day);
+        if (type is null)
+            return ChallengeRunResult.Failure(
+                $"No compiled implementation found for Day{day:D2} ({year}). " +
+                "If you just created this day, rebuild and restart the app first.");
+
+        try
+        {
+            var instance = (DayBase)Activator.CreateInstance(type)!;
+            var result = await instance.RunPartForResult(part);
+            return ChallengeRunResult.Ok(result?.ToString() ?? string.Empty);
+        }
+        catch (Exception ex)
+        {
+            return ChallengeRunResult.Failure(ex.Message);
+        }
+    }
+
+    private static Type? FindDayType(int year, int day)
+    {
+        var dayName = $"Day{day:D2}";
+
+        var (assembly, expectedNamespace) = year switch
+        {
+            2023 => (typeof(_2023.Day01).Assembly, "_2023"),
+            2024 => (typeof(_2024.Day01).Assembly, "_2024"),
+            _ => (typeof(ChallengeManager).Assembly, GetManagedNamespace(year))
+        };
+
+        return assembly.GetTypes().FirstOrDefault(t => t.Name == dayName && t.Namespace == expectedNamespace);
+    }
 
     private static string GetYearRoot(int year)
         => IsLegacyYear(year) ? ChallengePaths.GetLegacyYearFolder(year) : ChallengePaths.GetManagedYearFolder(year);

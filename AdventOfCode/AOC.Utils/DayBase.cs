@@ -45,6 +45,19 @@ public abstract class DayBase(string day, string title, [CallerFilePath] string 
     protected IEnumerable<string> GetInput()
         => SharedMethods.GetInput(Day, ProjectRoot);
 
+    // Plain result retrieval for callers that just want the answer (e.g. a GUI "Run"
+    // button), without the console printing/DEBUG-assertion side effects of Run().
+    public async Task<object> RunPartForResult(PartsToRun part)
+    {
+        if (part == PartsToRun.Both)
+            throw new ArgumentOutOfRangeException(nameof(part), part, "Choose Part1 or Part2.");
+
+        Variables.RunningPartOne = part == PartsToRun.Part1;
+        Input = SharedMethods.GetInput(Day, ProjectRoot);
+
+        return part == PartsToRun.Part1 ? await PartOne() : await PartTwo();
+    }
+
     private static void WriteStopwatchStartText()
     {
 #if DEBUG

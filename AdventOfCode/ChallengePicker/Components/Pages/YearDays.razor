@@ -30,6 +30,11 @@ else
     <button class="btn btn-primary" @onclick="StartAddDay">+ New Day</button>
 }
 
+@if (errorMessage is not null)
+{
+    <p class="text-danger">@errorMessage</p>
+}
+
 @code {
     [Parameter] public int Year { get; set; }
 
@@ -39,6 +44,7 @@ else
 
     private bool isAddingDay;
     private int? newDay;
+    private string? errorMessage;
 
     protected override void OnParametersSet()
     {
@@ -49,6 +55,7 @@ else
     {
         isAddingDay = true;
         newDay = ExistingDays.Count > 0 ? ExistingDays.Max() + 1 : 1;
+        errorMessage = null;
     }
 
     private void CancelAddDay()
@@ -59,12 +66,26 @@ else
 
     private void ConfirmAddDay()
     {
-        // TODO: hand off to the logic project to scaffold the day's files.
-        if (newDay is >= 1 and <= 25 && !ExistingDays.Contains(newDay.Value))
+        if (newDay is not (>= 1 and <= 25))
         {
-            ExistingDays.Add(newDay.Value);
-            ExistingDays.Sort();
+            errorMessage = "Day must be between 1 and 25.";
+            return;
         }
+
+        if (ExistingDays.Contains(newDay.Value))
+        {
+            errorMessage = $"Day {newDay:D2} already exists.";
+            return;
+        }
+
+        if (ChallengeManager.IsLegacyYear(Year))
+        {
+            errorMessage = $"{Year} is a legacy project - add the day's .cs file there directly.";
+            return;
+        }
+
+        ChallengeManager.CreateDay(Year, newDay.Value);
+        ExistingDays = ChallengeManager.GetExistingDays(Year).ToList();
 
         CancelAddDay();
     }

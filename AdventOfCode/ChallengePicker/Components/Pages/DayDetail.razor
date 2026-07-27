@@ -1,9 +1,26 @@
 @page "/year/{Year:int}/day/{Day:int}"
+@using AOC.Utils.Enums
 
 <PageTitle>Advent of Code @Year - Day @FormattedDay</PageTitle>
 
 <a href="@($"/year/{Year}")" class="back-link">&larr; Day @FormattedDay list</a>
 <h1>@Year - Day @FormattedDay</h1>
+
+<div class="day-detail-section">
+    <h3>Run</h3>
+    <div class="run-buttons">
+        <button class="btn btn-outline-primary" disabled="@isRunning" @onclick="() => RunDayPart(PartsToRun.Part1)">Run Part 1</button>
+        <button class="btn btn-outline-primary" disabled="@isRunning" @onclick="() => RunDayPart(PartsToRun.Part2)">Run Part 2</button>
+    </div>
+    @if (isRunning)
+    {
+        <p class="text-muted mt-2">Running...</p>
+    }
+    else if (runResult is not null)
+    {
+        <p class="@(runResult.Success ? "text-success" : "text-danger") mt-2">@runResult.Message</p>
+    }
+</div>
 
 <div class="day-detail-section">
     <h3>Description</h3>
@@ -73,6 +90,9 @@
 
     private string? savedMessage;
 
+    private bool isRunning;
+    private ChallengeRunResult? runResult;
+
     protected override void OnParametersSet()
     {
         description = DescriptionStore.Get(Year, Day);
@@ -89,6 +109,17 @@
         editingMockInput = false;
 
         savedMessage = null;
+        runResult = null;
+    }
+
+    private async Task RunDayPart(PartsToRun part)
+    {
+        isRunning = true;
+        runResult = null;
+        StateHasChanged();
+
+        runResult = await ChallengeManager.RunPart(Year, Day, part);
+        isRunning = false;
     }
 
     private void SaveDescription()

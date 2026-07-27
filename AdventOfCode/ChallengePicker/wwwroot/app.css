@@ -177,3 +177,8 @@ h1:focus {
     padding: 0.1rem 0.3rem;
     border-radius: 0.25rem;
 }
+
+.run-buttons {
+    display: flex;
+    gap: 0.5rem;
+}

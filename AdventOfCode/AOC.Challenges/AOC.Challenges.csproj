@@ -3,6 +3,7 @@
   <ItemGroup>
     <ProjectReference Include="..\2023\2023.csproj" />
     <ProjectReference Include="..\2024\2024.csproj" />
+    <ProjectReference Include="..\AOC.Utils\AOC.Utils.csproj" />
   </ItemGroup>
 
   <PropertyGroup>
