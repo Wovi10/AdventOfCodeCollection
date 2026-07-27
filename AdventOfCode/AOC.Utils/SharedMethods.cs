@@ -1,4 +1,6 @@
-﻿namespace AOC.Utils;
+﻿using System.Runtime.CompilerServices;
+
+namespace AOC.Utils;
 
 public static class SharedMethods
 {
@@ -17,10 +19,15 @@ public static class SharedMethods
     private static string GetRunningPart()
         => Variables.RunningPartOne ? "1" : "2";
 
-    public static List<string> GetInput(string day)
+    // projectRoot lets a caller (DayBase) supply an already-resolved root explicitly.
+    // Everyone else (Day classes calling this directly) gets it for free via
+    // callerFilePath, which the compiler fills in with their own .cs file's path -
+    // this makes input resolution independent of the process's working directory.
+    public static List<string> GetInput(string day, string? projectRoot = null, [CallerFilePath] string callerFilePath = "")
     {
+        var root = projectRoot ?? Path.GetDirectoryName(callerFilePath)!;
         var filePath = GetFilePath(day);
-        var fullPath = Path.Combine(Directory.GetCurrentDirectory(), filePath);
+        var fullPath = Path.Combine(root, filePath);
         var inputFile = File.ReadAllText(fullPath);
         var splitInput = SplitInputFile(inputFile);
         return splitInput.Select(line => line.Trim()).ToList();
@@ -93,7 +100,7 @@ public static class SharedMethods
 
     private static string GetFilePath(string day)
     {
-        var basePath = $"{Constants.RootInputPath}/Day{day}/";
+        var basePath = $"{Constants.InputFolderName}/Day{day}/";
 
         if (!Constants.IsRealExercise)
             basePath += "Mock";

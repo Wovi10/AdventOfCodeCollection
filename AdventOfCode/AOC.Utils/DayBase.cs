@@ -1,13 +1,18 @@
 ﻿using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using AOC.Utils.Enums;
 using NUnit.Framework;
 
 namespace AOC.Utils;
 
-public abstract class DayBase(string day, string title)
+public abstract class DayBase(string day, string title, [CallerFilePath] string sourceFilePath = "")
 {
     protected static List<string> Input = new();
     protected string Day { get; } = day;
+
+    // Captured from the concrete DayXX class's own source file, so input files resolve
+    // correctly no matter what process/working directory ends up running the day.
+    private string ProjectRoot { get; } = Path.GetDirectoryName(sourceFilePath)!;
 
     public async Task Run(PartsToRun partToRun = PartsToRun.Both)
     {
@@ -38,7 +43,7 @@ public abstract class DayBase(string day, string title)
     }
 
     protected IEnumerable<string> GetInput()
-        => SharedMethods.GetInput(Day);
+        => SharedMethods.GetInput(Day, ProjectRoot);
 
     private static void WriteStopwatchStartText()
     {
@@ -63,7 +68,7 @@ public abstract class DayBase(string day, string title)
     private async Task RunPart(Func<Task<object>> partToRun, bool runningPartOne)
     {
         Variables.RunningPartOne = runningPartOne;
-        Input = SharedMethods.GetInput(Day);
+        Input = SharedMethods.GetInput(Day, ProjectRoot);
 
         var result = await partToRun();
 

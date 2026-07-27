@@ -29,16 +29,28 @@
     }
 </div>
 
+@if (errorMessage is not null)
+{
+    <p class="text-danger">@errorMessage</p>
+}
+
 @code {
-    private List<int> Years { get; set; } = [2023, 2024, 2025];
+    private List<int> Years { get; set; } = [];
 
     private bool isAddingYear;
     private int? newYear;
+    private string? errorMessage;
+
+    protected override void OnInitialized()
+    {
+        Years = ChallengeManager.GetAvailableYears().ToList();
+    }
 
     private void StartAddYear()
     {
         isAddingYear = true;
         newYear = DateTime.Now.Year;
+        errorMessage = null;
     }
 
     private void CancelAddYear()
@@ -49,12 +61,20 @@
 
     private void ConfirmAddYear()
     {
-        // TODO: hand off to the logic project to scaffold the year project/folder.
-        if (newYear is not null && !Years.Contains(newYear.Value))
+        if (newYear is null)
         {
-            Years.Add(newYear.Value);
-            Years.Sort();
+            CancelAddYear();
+            return;
         }
+
+        if (Years.Contains(newYear.Value))
+        {
+            errorMessage = $"Year {newYear} already exists.";
+            return;
+        }
+
+        ChallengeManager.CreateYear(newYear.Value);
+        Years = ChallengeManager.GetAvailableYears().ToList();
 
         CancelAddYear();
     }
