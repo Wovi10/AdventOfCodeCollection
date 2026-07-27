@@ -132,8 +132,12 @@ h1:focus {
 
 .day-tile-missing {
     background-color: #f1f1f1;
-    color: #adb5bd;
-    cursor: default;
+    color: #6c757d;
+}
+
+.day-tile-missing:hover {
+    background-color: #e2e2e2;
+    color: #495057;
 }
 
 .add-day-form {
@@ -142,4 +146,13 @@ h1:focus {
     gap: 0.5rem;
     max-width: 320px;
     margin-top: 1rem;
+}
+
+.day-detail-section {
+    max-width: 700px;
+    margin-bottom: 2rem;
+}
+
+.day-detail-section textarea {
+    font-family: 'Consolas', 'Courier New', monospace;
 }

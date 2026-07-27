@@ -28,7 +28,7 @@ public static class ChallengeManager
         if (IsLegacyYear(year))
             return;
 
-        Directory.CreateDirectory(ChallengePaths.GetYearFolder(year));
+        Directory.CreateDirectory(ChallengePaths.GetManagedYearFolder(year));
     }
 
     public static IReadOnlyList<int> GetExistingDays(int year)
@@ -36,8 +36,43 @@ public static class ChallengeManager
         {
             2023 => GetExistingDaysFromAssembly(typeof(_2023.Day01).Assembly),
             2024 => GetExistingDaysFromAssembly(typeof(_2024.Day01).Assembly),
-            _ => GetExistingDaysFromFolder(ChallengePaths.GetYearFolder(year))
+            _ => GetExistingDaysFromFolder(ChallengePaths.GetManagedYearFolder(year))
         };
+
+    private static string GetYearRoot(int year)
+        => IsLegacyYear(year) ? ChallengePaths.GetLegacyYearFolder(year) : ChallengePaths.GetManagedYearFolder(year);
+
+    private static string GetDayInputFolder(int year, int day)
+        => Path.Combine(GetYearRoot(year), "Input", $"Day{day:D2}");
+
+    private static string GetRealInputFile(int year, int day)
+        => Path.Combine(GetDayInputFolder(year, day), $"Day{day:D2}.in");
+
+    // Some legacy days use a differently-named mock file for part 1 (MockDayXXPart01.in);
+    // this manages the primary MockDayXX.in only.
+    private static string GetMockInputFile(int year, int day)
+        => Path.Combine(GetDayInputFolder(year, day), $"MockDay{day:D2}.in");
+
+    public static string GetRealInput(int year, int day)
+        => ReadIfExists(GetRealInputFile(year, day));
+
+    public static void SaveRealInput(int year, int day, string content)
+        => WriteInput(GetRealInputFile(year, day), content);
+
+    public static string GetMockInput(int year, int day)
+        => ReadIfExists(GetMockInputFile(year, day));
+
+    public static void SaveMockInput(int year, int day, string content)
+        => WriteInput(GetMockInputFile(year, day), content);
+
+    private static string ReadIfExists(string file)
+        => File.Exists(file) ? File.ReadAllText(file) : string.Empty;
+
+    private static void WriteInput(string file, string content)
+    {
+        Directory.CreateDirectory(Path.GetDirectoryName(file)!);
+        File.WriteAllText(file, content);
+    }
 
     private static readonly Regex DayClassName = new("^Day(?<day>\\d{2})$");
 

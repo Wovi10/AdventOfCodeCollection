@@ -1,0 +1,67 @@
+@page "/year/{Year:int}/day/{Day:int}"
+
+<PageTitle>Advent of Code @Year - Day @FormattedDay</PageTitle>
+
+<a href="@($"/year/{Year}")" class="back-link">&larr; Day @FormattedDay list</a>
+<h1>@Year - Day @FormattedDay</h1>
+
+<div class="day-detail-section">
+    <h3>Description</h3>
+    <textarea class="form-control" rows="8" @bind="description"></textarea>
+    <button class="btn btn-primary mt-2" @onclick="SaveDescription">Save Description</button>
+</div>
+
+<div class="day-detail-section">
+    <h3>Real Input</h3>
+    <textarea class="form-control" rows="10" @bind="realInput"></textarea>
+    <button class="btn btn-primary mt-2" @onclick="SaveRealInput">Save Real Input</button>
+</div>
+
+<div class="day-detail-section">
+    <h3>Mock Input</h3>
+    <textarea class="form-control" rows="10" @bind="mockInput"></textarea>
+    <button class="btn btn-primary mt-2" @onclick="SaveMockInput">Save Mock Input</button>
+</div>
+
+@if (savedMessage is not null)
+{
+    <p class="text-success">@savedMessage</p>
+}
+
+@code {
+    [Parameter] public int Year { get; set; }
+    [Parameter] public int Day { get; set; }
+
+    private string FormattedDay => Day.ToString().PadLeft(2, '0');
+
+    private string description = string.Empty;
+    private string realInput = string.Empty;
+    private string mockInput = string.Empty;
+    private string? savedMessage;
+
+    protected override void OnParametersSet()
+    {
+        description = DescriptionStore.Get(Year, Day);
+        realInput = ChallengeManager.GetRealInput(Year, Day);
+        mockInput = ChallengeManager.GetMockInput(Year, Day);
+        savedMessage = null;
+    }
+
+    private void SaveDescription()
+    {
+        DescriptionStore.Save(Year, Day, description);
+        savedMessage = "Description saved.";
+    }
+
+    private void SaveRealInput()
+    {
+        ChallengeManager.SaveRealInput(Year, Day, realInput);
+        savedMessage = "Real input saved.";
+    }
+
+    private void SaveMockInput()
+    {
+        ChallengeManager.SaveMockInput(Year, Day, mockInput);
+        savedMessage = "Mock input saved.";
+    }
+}

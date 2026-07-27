@@ -11,15 +11,8 @@
     {
         var exists = ExistingDays.Contains(day);
         var label = day.ToString().PadLeft(2, '0');
-        if (exists)
-        {
-            // TODO: navigate to a day-detail page once it exists.
-            <button type="button" class="day-tile day-tile-existing">Day @label</button>
-        }
-        else
-        {
-            <span class="day-tile day-tile-missing">Day @label</span>
-        }
+        var cssClass = exists ? "day-tile-existing" : "day-tile-missing";
+        <a class="day-tile @cssClass" href="@($"year/{Year}/day/{day}")">Day @label</a>
     }
 </div>
 
