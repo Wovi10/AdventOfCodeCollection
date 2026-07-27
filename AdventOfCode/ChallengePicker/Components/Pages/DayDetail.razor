@@ -8,6 +8,10 @@
 
 <div class="day-detail-section">
     <h3>Run</h3>
+    <div class="form-check form-switch mb-2">
+        <input class="form-check-input" type="checkbox" role="switch" id="useMockSwitch" @bind="useMockInput"/>
+        <label class="form-check-label" for="useMockSwitch">Use mock input</label>
+    </div>
     <div class="run-buttons">
         <button class="btn btn-outline-primary" disabled="@isRunning" @onclick="() => RunDayPart(PartsToRun.Part1)">Run Part 1</button>
         <button class="btn btn-outline-primary" disabled="@isRunning" @onclick="() => RunDayPart(PartsToRun.Part2)">Run Part 2</button>
@@ -91,6 +95,7 @@
     private string? savedMessage;
 
     private bool isRunning;
+    private bool useMockInput;
     private ChallengeRunResult? runResult;
 
     protected override void OnParametersSet()
@@ -110,6 +115,7 @@
 
         savedMessage = null;
         runResult = null;
+        useMockInput = false;
     }
 
     private async Task RunDayPart(PartsToRun part)
@@ -118,7 +124,7 @@
         runResult = null;
         StateHasChanged();
 
-        runResult = await ChallengeManager.RunPart(Year, Day, part);
+        runResult = await ChallengeManager.RunPart(Year, Day, part, useMockInput);
         isRunning = false;
     }
 

@@ -84,7 +84,7 @@ public static class ChallengeManager
             """;
     }
 
-    public static async Task<ChallengeRunResult> RunPart(int year, int day, PartsToRun part)
+    public static async Task<ChallengeRunResult> RunPart(int year, int day, PartsToRun part, bool useMock = false)
     {
         var type = FindDayType(year, day);
         if (type is null)
@@ -95,7 +95,7 @@ public static class ChallengeManager
         try
         {
             var instance = (DayBase)Activator.CreateInstance(type)!;
-            var result = await instance.RunPartForResult(part);
+            var result = await instance.RunPartForResult(part, useMock);
             return ChallengeRunResult.Ok(result?.ToString() ?? string.Empty);
         }
         catch (Exception ex)

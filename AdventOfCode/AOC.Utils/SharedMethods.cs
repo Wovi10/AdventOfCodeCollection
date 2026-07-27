@@ -23,10 +23,13 @@ public static class SharedMethods
     // Everyone else (Day classes calling this directly) gets it for free via
     // callerFilePath, which the compiler fills in with their own .cs file's path -
     // this makes input resolution independent of the process's working directory.
-    public static List<string> GetInput(string day, string? projectRoot = null, [CallerFilePath] string callerFilePath = "")
+    // useMock overrides Constants.IsRealExercise for callers that pick mock/real
+    // explicitly (e.g. a GUI toggle) instead of relying on that global switch.
+    public static List<string> GetInput(string day, string? projectRoot = null, bool? useMock = null, [CallerFilePath] string callerFilePath = "")
     {
         var root = projectRoot ?? Path.GetDirectoryName(callerFilePath)!;
-        var filePath = GetFilePath(day);
+        var resolvedUseMock = useMock ?? Variables.UseMockInput ?? !Constants.IsRealExercise;
+        var filePath = GetFilePath(day, resolvedUseMock);
         var fullPath = Path.Combine(root, filePath);
         var inputFile = File.ReadAllText(fullPath);
         var splitInput = SplitInputFile(inputFile);
@@ -98,13 +101,13 @@ public static class SharedMethods
         return inputFile.Split(UtilsCSharp.Utils.Constants.LineSeparator).ToList();
     }
 
-    private static string GetFilePath(string day)
+    private static string GetFilePath(string day, bool useMock)
     {
         var basePath = $"{Constants.InputFolderName}/Day{day}/";
 
-        if (!Constants.IsRealExercise)
+        if (useMock)
             basePath += "Mock";
-        
+
         basePath += $"Day{day}";
 
         var differentMockDays =
@@ -112,7 +115,7 @@ public static class SharedMethods
                 ? new List<string> {"01", "08", "10", "13", "20"}
                 : new List<string> {"03", "17"};
 
-        if (!Constants.IsRealExercise && Variables.RunningPartOne && differentMockDays.Contains(day))
+        if (useMock && Variables.RunningPartOne && differentMockDays.Contains(day))
             basePath += "Part01";
 
         return $"{basePath}.in";

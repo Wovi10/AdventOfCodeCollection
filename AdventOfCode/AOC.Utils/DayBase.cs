@@ -47,15 +47,26 @@ public abstract class DayBase(string day, string title, [CallerFilePath] string 
 
     // Plain result retrieval for callers that just want the answer (e.g. a GUI "Run"
     // button), without the console printing/DEBUG-assertion side effects of Run().
-    public async Task<object> RunPartForResult(PartsToRun part)
+    public async Task<object> RunPartForResult(PartsToRun part, bool useMock = false)
     {
         if (part == PartsToRun.Both)
             throw new ArgumentOutOfRangeException(nameof(part), part, "Choose Part1 or Part2.");
 
         Variables.RunningPartOne = part == PartsToRun.Part1;
-        Input = SharedMethods.GetInput(Day, ProjectRoot);
 
-        return part == PartsToRun.Part1 ? await PartOne() : await PartTwo();
+        // Some Day classes call SharedMethods.GetInput directly instead of going through
+        // DayBase - this override makes those calls respect useMock too, not just the
+        // Input field populated below.
+        Variables.UseMockInput = useMock;
+        try
+        {
+            Input = SharedMethods.GetInput(Day, ProjectRoot, useMock);
+            return part == PartsToRun.Part1 ? await PartOne() : await PartTwo();
+        }
+        finally
+        {
+            Variables.UseMockInput = null;
+        }
     }
 
     private static void WriteStopwatchStartText()
