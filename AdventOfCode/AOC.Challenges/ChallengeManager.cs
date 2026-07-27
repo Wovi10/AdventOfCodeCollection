@@ -59,11 +59,23 @@ public static class ChallengeManager
     public static void SaveRealInput(int year, int day, string content)
         => WriteInput(GetRealInputFile(year, day), content);
 
+    public static bool RealInputExists(int year, int day)
+        => File.Exists(GetRealInputFile(year, day));
+
+    public static string GetRealInputFileName(int year, int day)
+        => Path.GetFileName(GetRealInputFile(year, day));
+
     public static string GetMockInput(int year, int day)
         => ReadIfExists(GetMockInputFile(year, day));
 
     public static void SaveMockInput(int year, int day, string content)
         => WriteInput(GetMockInputFile(year, day), content);
+
+    public static bool MockInputExists(int year, int day)
+        => File.Exists(GetMockInputFile(year, day));
+
+    public static string GetMockInputFileName(int year, int day)
+        => Path.GetFileName(GetMockInputFile(year, day));
 
     private static string ReadIfExists(string file)
         => File.Exists(file) ? File.ReadAllText(file) : string.Empty;

@@ -156,3 +156,24 @@ h1:focus {
 .day-detail-section textarea {
     font-family: 'Consolas', 'Courier New', monospace;
 }
+
+.markdown-body {
+    line-height: 1.6;
+}
+
+.markdown-body :first-child {
+    margin-top: 0;
+}
+
+.markdown-body pre {
+    background-color: #f6f8fa;
+    padding: 0.75rem;
+    border-radius: 0.375rem;
+    overflow-x: auto;
+}
+
+.markdown-body code {
+    background-color: #f6f8fa;
+    padding: 0.1rem 0.3rem;
+    border-radius: 0.25rem;
+}

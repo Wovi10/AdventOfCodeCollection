@@ -7,20 +7,44 @@
 
 <div class="day-detail-section">
     <h3>Description</h3>
-    <textarea class="form-control" rows="8" @bind="description"></textarea>
-    <button class="btn btn-primary mt-2" @onclick="SaveDescription">Save Description</button>
+    @if (editingDescription || string.IsNullOrEmpty(description))
+    {
+        <textarea class="form-control" rows="8" @bind="description"></textarea>
+        <button class="btn btn-primary mt-2" @onclick="SaveDescription">Save Description</button>
+    }
+    else
+    {
+        <div class="markdown-body">@((MarkupString)Markdig.Markdown.ToHtml(description))</div>
+        <button class="btn btn-secondary btn-sm" @onclick="() => editingDescription = true">Edit</button>
+    }
 </div>
 
 <div class="day-detail-section">
     <h3>Real Input</h3>
-    <textarea class="form-control" rows="10" @bind="realInput"></textarea>
-    <button class="btn btn-primary mt-2" @onclick="SaveRealInput">Save Real Input</button>
+    @if (editingRealInput || !realInputExists)
+    {
+        <textarea class="form-control" rows="10" @bind="realInput"></textarea>
+        <button class="btn btn-primary mt-2" @onclick="SaveRealInput">Save Real Input</button>
+    }
+    else
+    {
+        <p>@realInputFileName</p>
+        <button class="btn btn-secondary btn-sm" @onclick="() => editingRealInput = true">Edit</button>
+    }
 </div>
 
 <div class="day-detail-section">
     <h3>Mock Input</h3>
-    <textarea class="form-control" rows="10" @bind="mockInput"></textarea>
-    <button class="btn btn-primary mt-2" @onclick="SaveMockInput">Save Mock Input</button>
+    @if (editingMockInput || !mockInputExists)
+    {
+        <textarea class="form-control" rows="10" @bind="mockInput"></textarea>
+        <button class="btn btn-primary mt-2" @onclick="SaveMockInput">Save Mock Input</button>
+    }
+    else
+    {
+        <p>@mockInputFileName</p>
+        <button class="btn btn-secondary btn-sm" @onclick="() => editingMockInput = true">Edit</button>
+    }
 </div>
 
 @if (savedMessage is not null)
@@ -35,33 +59,58 @@
     private string FormattedDay => Day.ToString().PadLeft(2, '0');
 
     private string description = string.Empty;
+    private bool editingDescription;
+
     private string realInput = string.Empty;
+    private bool editingRealInput;
+    private bool realInputExists;
+    private string realInputFileName = string.Empty;
+
     private string mockInput = string.Empty;
+    private bool editingMockInput;
+    private bool mockInputExists;
+    private string mockInputFileName = string.Empty;
+
     private string? savedMessage;
 
     protected override void OnParametersSet()
     {
         description = DescriptionStore.Get(Year, Day);
+        editingDescription = false;
+
         realInput = ChallengeManager.GetRealInput(Year, Day);
+        realInputExists = ChallengeManager.RealInputExists(Year, Day);
+        realInputFileName = ChallengeManager.GetRealInputFileName(Year, Day);
+        editingRealInput = false;
+
         mockInput = ChallengeManager.GetMockInput(Year, Day);
+        mockInputExists = ChallengeManager.MockInputExists(Year, Day);
+        mockInputFileName = ChallengeManager.GetMockInputFileName(Year, Day);
+        editingMockInput = false;
+
         savedMessage = null;
     }
 
     private void SaveDescription()
     {
         DescriptionStore.Save(Year, Day, description);
+        editingDescription = false;
         savedMessage = "Description saved.";
     }
 
     private void SaveRealInput()
     {
         ChallengeManager.SaveRealInput(Year, Day, realInput);
+        realInputExists = true;
+        editingRealInput = false;
         savedMessage = "Real input saved.";
     }
 
     private void SaveMockInput()
     {
         ChallengeManager.SaveMockInput(Year, Day, mockInput);
+        mockInputExists = true;
+        editingMockInput = false;
         savedMessage = "Mock input saved.";
     }
 }
