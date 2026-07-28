@@ -21,6 +21,8 @@
     <div class="add-day-form">
         <input type="number" min="1" max="25" class="form-control form-control-sm" placeholder="Day number"
                @bind="newDay"/>
+        <input type="text" class="form-control form-control-sm" placeholder="Title (optional)"
+               @bind="newDayTitle"/>
         <button class="btn btn-sm btn-success" @onclick="ConfirmAddDay">Add</button>
         <button class="btn btn-sm btn-secondary" @onclick="CancelAddDay">Cancel</button>
     </div>
@@ -44,6 +46,7 @@ else
 
     private bool isAddingDay;
     private int? newDay;
+    private string? newDayTitle;
     private string? errorMessage;
 
     protected override void OnParametersSet()
@@ -55,6 +58,7 @@ else
     {
         isAddingDay = true;
         newDay = ExistingDays.Count > 0 ? ExistingDays.Max() + 1 : 1;
+        newDayTitle = null;
         errorMessage = null;
     }
 
@@ -62,6 +66,7 @@ else
     {
         isAddingDay = false;
         newDay = null;
+        newDayTitle = null;
     }
 
     private void ConfirmAddDay()
@@ -84,7 +89,7 @@ else
             return;
         }
 
-        ChallengeManager.CreateDay(Year, newDay.Value);
+        ChallengeManager.CreateDay(Year, newDay.Value, newDayTitle);
         ExistingDays = ChallengeManager.GetExistingDays(Year).ToList();
 
         CancelAddDay();

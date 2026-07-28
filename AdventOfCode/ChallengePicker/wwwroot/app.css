@@ -144,8 +144,12 @@ h1:focus {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    max-width: 320px;
+    max-width: 520px;
     margin-top: 1rem;
+}
+
+.add-day-form input[type="number"] {
+    max-width: 110px;
 }
 
 .day-detail-section {

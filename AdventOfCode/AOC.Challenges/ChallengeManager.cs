@@ -45,7 +45,7 @@ public static class ChallengeManager
     // e.g. 2025's Day01 and 2026's Day01 from colliding.
     private static string GetManagedNamespace(int year) => $"AOC.Challenges.Years._{year}";
 
-    public static void CreateDay(int year, int day)
+    public static void CreateDay(int year, int day, string? title = null)
     {
         if (IsLegacyYear(year))
             return;
@@ -57,18 +57,23 @@ public static class ChallengeManager
         if (File.Exists(dayFile))
             return;
 
-        File.WriteAllText(dayFile, BuildDayStub(year, day));
+        File.WriteAllText(dayFile, BuildDayStub(year, day, title));
     }
 
-    private static string BuildDayStub(int year, int day)
+    private static string BuildDayStub(int year, int day, string? title)
     {
         var dayString = day.ToString("D2");
+        var hasTitle = !string.IsNullOrWhiteSpace(title);
+        var signature = hasTitle
+            ? $"""DayBase("{dayString}", "{title!.Trim().Replace("\"", "\\\"")}")"""
+            : $"""DayBase("{dayString}", "") // TODO Title""";
+
         return $$"""
             using AOC.Utils;
 
             namespace {{GetManagedNamespace(year)}};
 
-            public class Day{{dayString}}() : DayBase("{{dayString}}", "") // TODO Title
+            public class Day{{dayString}}() : {{signature}}
             {
                 protected override Task<object> PartOne()
                 {
