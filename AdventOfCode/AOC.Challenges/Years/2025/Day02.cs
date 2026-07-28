@@ -6,10 +6,16 @@ public class Day02() : DayBase("02", "") // TODO Title
 {
     protected override Task<object> PartOne()
     {
-        throw new NotImplementedException();
+        var result = SumInvalidIds();
+        return Task.FromResult<object>(result);
     }
 
     protected override Task<object> PartTwo()
+    {
+        throw new NotImplementedException();
+    }
+
+    private long SumInvalidIds()
     {
         throw new NotImplementedException();
     }
