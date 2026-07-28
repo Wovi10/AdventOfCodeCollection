@@ -12,7 +12,8 @@ public class Day02() : DayBase("02", "Gift Shop")
 
     protected override Task<object> PartTwo()
     {
-        throw new NotImplementedException();
+        var result = SumInvalidIds();
+        return Task.FromResult<object>(result);
     }
 
     private long SumInvalidIds()
@@ -36,10 +37,24 @@ public class Day02() : DayBase("02", "Gift Shop")
 
     private static bool IsInvalidId(string id)
     {
-        if (id.Length % 2 != 0)
-            return false;
+        if (Variables.RunningPartOne)
+        {
+            if (id.Length % 2 != 0)
+                return false;
 
-        var halfLength = id.Length / 2;
-        return id[..(halfLength)] == id[halfLength..];
+            var halfLength = id.Length / 2;
+            return id[..halfLength] == id[halfLength..];
+        }
+
+        var highestDivider = id.Length / 2;
+
+        for (var i = 1; i <= highestDivider; i++)
+        {
+            var firstPart = id[..i];
+            if (id.Replace(firstPart, string.Empty) == string.Empty)
+                return true;
+        }
+
+        return false;
     }
 }
