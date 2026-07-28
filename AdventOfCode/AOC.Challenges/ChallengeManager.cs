@@ -68,7 +68,7 @@ public static class ChallengeManager
 
             namespace {{GetManagedNamespace(year)}};
 
-            public class Day{{dayString}}() : DayBase("{{dayString}}", "TODO: Title")
+            public class Day{{dayString}}() : DayBase("{{dayString}}", "") // TODO Title
             {
                 protected override Task<object> PartOne()
                 {

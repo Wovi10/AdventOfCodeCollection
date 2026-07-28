@@ -20,6 +20,18 @@ public static class Answers
         return answer?.Result ?? NotYetFound;
     }
 
+    public static List<Answer> AnswersList2025 = new()
+    {
+        new (1, 1, Mock, 3),
+        new (1, 1, Real, 1011),
+        new (1, 2, Mock, 6),
+        new (1, 2, Real, 5937),
+        new (2, 1, Mock, NotYetFound),
+        new (2, 1, Real, NotYetFound),
+        new (2, 2, Mock, NotYetFound),
+        new (2, 2, Real, NotYetFound),
+    };
+
     private static readonly List<Answer> AnswersList2024 = new()
     {
         new(1, 1, Mock, 11),
