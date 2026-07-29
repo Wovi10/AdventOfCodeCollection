@@ -30,6 +30,10 @@ public static class Answers
         new (2, 1, Real, NotYetFound),
         new (2, 2, Mock, NotYetFound),
         new (2, 2, Real, NotYetFound),
+        new (3, 1, Mock, 357),
+        new (3, 1, Real, 17408),
+        new (3, 2, Mock, 3121910778619),
+        new (3, 2, Real, NotYetFound),
     };
 
     private static readonly List<Answer> AnswersList2024 = new()

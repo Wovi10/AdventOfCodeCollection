@@ -113,7 +113,9 @@ public static class SharedMethods
         var differentMockDays =
             Constants.RunningYear == 2023
                 ? new List<string> {"01", "08", "10", "13", "20"}
-                : new List<string> {"03", "17"};
+                : Constants.RunningYear == 2024
+                ? new List<string> {"03", "17"}
+                : [];
 
         if (useMock && Variables.RunningPartOne && differentMockDays.Contains(day))
             basePath += "Part01";
