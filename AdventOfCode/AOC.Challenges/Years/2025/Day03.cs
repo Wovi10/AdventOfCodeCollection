@@ -15,7 +15,9 @@ public class Day03() : DayBase("03", "Lobby")
     {
         var result = GetTotalJoltage();
 
-        return Task.FromResult<object>(result); // > 170775065764953
+        return Task.FromResult<object>(result);
+        // > 170880833511431
+        // > 169048146038925
     }
 
     private long GetTotalJoltage()
@@ -38,8 +40,7 @@ public class Day03() : DayBase("03", "Lobby")
             return long.Parse($"{highestNumber}{secondHighest}");
         }
 
-        var maxIndexNumber = line.Length - JoltageLength;
-        var highest = line[..maxIndexNumber].Max();
+        var highest = line[..^(JoltageLength-1)].Max();
         var indexHigh = line.IndexOf(highest);
         var leftOver = line[indexHigh..];
 
