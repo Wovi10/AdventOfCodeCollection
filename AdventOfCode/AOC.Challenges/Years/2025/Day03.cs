@@ -17,7 +17,6 @@ public class Day03() : DayBase("03", "Lobby")
 
         return Task.FromResult<object>(result);
         // > 170880833511431
-        // > 169048146038925
     }
 
     private long GetTotalJoltage()
@@ -39,6 +38,9 @@ public class Day03() : DayBase("03", "Lobby")
         var highest = line[..^(JoltageLength-1)].Max();
         var indexHigh = line.IndexOf(highest);
         var leftOver = line[indexHigh..];
+
+        // Up until here is good, try rolling window below
+        // from 288412 to 28842 is worse than from 288412 to 88412
 
         var length = leftOver.Length;
         while (length > JoltageLength)
