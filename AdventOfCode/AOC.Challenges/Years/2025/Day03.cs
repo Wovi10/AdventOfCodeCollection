@@ -21,14 +21,10 @@ public class Day03() : DayBase("03", "Lobby")
     }
 
     private long GetTotalJoltage()
-    {
-        var input = GetInput();
-
-        return input.Sum(GetJoltage);
-    }
+        => GetInput().Select(GetJoltage).ToArray().Sum();
 
     private const int JoltageLength = 12;
-    private long GetJoltage(string line)
+    private static long GetJoltage(string line)
     {
         if (Variables.RunningPartOne)
         {
