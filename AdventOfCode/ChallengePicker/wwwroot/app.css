@@ -186,3 +186,23 @@ h1:focus {
     display: flex;
     gap: 0.5rem;
 }
+
+.answer-field {
+    margin-bottom: 0.75rem;
+}
+
+.answer-field label {
+    display: block;
+    font-size: 0.85rem;
+    color: #6c757d;
+    margin-bottom: 0.2rem;
+}
+
+.answer-input-row {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.answer-input-row input {
+    max-width: 260px;
+}

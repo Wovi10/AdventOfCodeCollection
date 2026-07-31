@@ -22,8 +22,53 @@
     }
     else if (runResult is not null)
     {
-        <p class="@(runResult.Success ? "text-success" : "text-danger") mt-2">@runResult.Message</p>
+        @if (runResult.Success)
+        {
+            <p class="@savedAnswerCssClass mt-2 mb-1">Answer: @runResult.Message</p>
+            <p>Saved: @savedAnswerDisplay</p>
+        }
+        else
+        {
+            <p class="text-danger mt-2">@runResult.Message</p>
+        }
     }
+</div>
+
+<div class="day-detail-section">
+    <h3>Answers</h3>
+    <div class="answer-field">
+        <label>Part 1 - Mock</label>
+        <div class="answer-input-row">
+            <input class="form-control form-control-sm" @bind="answers.Part1Mock"/>
+            <button type="button" class="btn btn-outline-secondary btn-sm" @onclick="() => answers.Part1Mock = AnswerStore.NotYetFound">Not Yet Found</button>
+            <button type="button" class="btn btn-outline-secondary btn-sm" @onclick="() => answers.Part1Mock = AnswerStore.NotApplicable">N/A</button>
+        </div>
+    </div>
+    <div class="answer-field">
+        <label>Part 1 - Real</label>
+        <div class="answer-input-row">
+            <input class="form-control form-control-sm" @bind="answers.Part1Real"/>
+            <button type="button" class="btn btn-outline-secondary btn-sm" @onclick="() => answers.Part1Real = AnswerStore.NotYetFound">Not Yet Found</button>
+            <button type="button" class="btn btn-outline-secondary btn-sm" @onclick="() => answers.Part1Real = AnswerStore.NotApplicable">N/A</button>
+        </div>
+    </div>
+    <div class="answer-field">
+        <label>Part 2 - Mock</label>
+        <div class="answer-input-row">
+            <input class="form-control form-control-sm" @bind="answers.Part2Mock"/>
+            <button type="button" class="btn btn-outline-secondary btn-sm" @onclick="() => answers.Part2Mock = AnswerStore.NotYetFound">Not Yet Found</button>
+            <button type="button" class="btn btn-outline-secondary btn-sm" @onclick="() => answers.Part2Mock = AnswerStore.NotApplicable">N/A</button>
+        </div>
+    </div>
+    <div class="answer-field">
+        <label>Part 2 - Real</label>
+        <div class="answer-input-row">
+            <input class="form-control form-control-sm" @bind="answers.Part2Real"/>
+            <button type="button" class="btn btn-outline-secondary btn-sm" @onclick="() => answers.Part2Real = AnswerStore.NotYetFound">Not Yet Found</button>
+            <button type="button" class="btn btn-outline-secondary btn-sm" @onclick="() => answers.Part2Real = AnswerStore.NotApplicable">N/A</button>
+        </div>
+    </div>
+    <button class="btn btn-primary mt-2" @onclick="SaveAnswers">Save Answers</button>
 </div>
 
 <div class="day-detail-section">
@@ -92,11 +137,16 @@
     private bool mockInputExists;
     private string mockInputFileName = string.Empty;
 
+    private DayAnswers answers = new();
+
     private string? savedMessage;
 
     private bool isRunning;
     private bool useMockInput;
     private ChallengeRunResult? runResult;
+    private PartsToRun? lastRunPart;
+    private string savedAnswerDisplay = string.Empty;
+    private string savedAnswerCssClass = "text-body";
 
     protected override void OnParametersSet()
     {
@@ -113,8 +163,11 @@
         mockInputFileName = ChallengeManager.GetMockInputFileName(Year, Day);
         editingMockInput = false;
 
+        answers = AnswerStore.Get(Year, Day);
+
         savedMessage = null;
         runResult = null;
+        lastRunPart = null;
         useMockInput = false;
     }
 
@@ -125,8 +178,38 @@
         StateHasChanged();
 
         runResult = await ChallengeManager.RunPart(Year, Day, part, useMockInput);
+        lastRunPart = part;
         isRunning = false;
+
+        if (runResult.Success)
+            UpdateSavedAnswerDisplay();
     }
+
+    private void UpdateSavedAnswerDisplay()
+    {
+        if (lastRunPart is null || runResult is null)
+            return;
+
+        var saved = GetSavedAnswer(lastRunPart.Value);
+        savedAnswerDisplay = string.IsNullOrEmpty(saved) ? "(not set)" : saved;
+
+        savedAnswerCssClass = saved switch
+        {
+            "" => "text-body",
+            AnswerStore.NotYetFound => "text-body",
+            AnswerStore.NotApplicable => "text-danger",
+            _ => saved == runResult.Message ? "text-success" : "text-danger"
+        };
+    }
+
+    private string GetSavedAnswer(PartsToRun part) => (part, useMockInput) switch
+    {
+        (PartsToRun.Part1, true) => answers.Part1Mock,
+        (PartsToRun.Part1, false) => answers.Part1Real,
+        (PartsToRun.Part2, true) => answers.Part2Mock,
+        (PartsToRun.Part2, false) => answers.Part2Real,
+        _ => string.Empty
+    };
 
     private void SaveDescription()
     {
@@ -149,5 +232,14 @@
         mockInputExists = true;
         editingMockInput = false;
         savedMessage = "Mock input saved.";
+    }
+
+    private void SaveAnswers()
+    {
+        AnswerStore.Save(Year, Day, answers);
+        savedMessage = "Answers saved.";
+
+        if (runResult is { Success: true })
+            UpdateSavedAnswerDisplay();
     }
 }

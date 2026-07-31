@@ -1,7 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using AOC.Utils.Enums;
-using NUnit.Framework;
 
 namespace AOC.Utils;
 
@@ -95,12 +94,6 @@ public abstract class DayBase(string day, string title, [CallerFilePath] string 
         Input = SharedMethods.GetInput(Day, ProjectRoot);
 
         var result = await partToRun();
-
-#if DEBUG
-        var expectedAnswer = Answers.GetExpectedAnswer(Day);
-        if (expectedAnswer.ToString() != Answers.NotApplicable && expectedAnswer.ToString() != Answers.NotYetFound)
-            Assert.That(result, Is.EqualTo(expectedAnswer));
-#endif
 
         SharedMethods.PrintAnswer(result);
     }
