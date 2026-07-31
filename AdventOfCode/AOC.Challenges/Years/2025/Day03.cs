@@ -37,20 +37,26 @@ public class Day03() : DayBase("03", "Lobby")
 
         var highest = line[..^(JoltageLength-1)].Max();
         var indexHigh = line.IndexOf(highest);
-        var leftOver = line[indexHigh..];
 
-        // Up until here is good, try rolling window below
-        // from 288412 to 28842 is worse than from 288412 to 88412
+        var result = new char[JoltageLength];
+        result[0] = highest;
+        var windowStart = indexHigh + 1;
 
-        var length = leftOver.Length;
-        while (length > JoltageLength)
+        var indexInResult = 1;
+        for (var i = 1; i < JoltageLength; i++)
         {
-            var lowest = leftOver.Min();
-            leftOver = leftOver.Remove(leftOver.IndexOf(lowest), 1);
+            var remainingAfter = JoltageLength - i - 1;
+            var windowEnd = line.Length - remainingAfter;
 
-            length = leftOver.Length;
+            var bestIndex = windowStart;
+            for (var idx = windowStart + 1; idx < windowEnd; idx++)
+                if (line[idx] > line[bestIndex])
+                    bestIndex = idx;
+
+            result[indexInResult++] = line[bestIndex];
+            windowStart = bestIndex + 1;
         }
 
-        return long.Parse(leftOver);
+        return long.Parse(new string(result));
     }
 }
