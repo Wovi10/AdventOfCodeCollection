@@ -55,6 +55,7 @@ public class Day03() : DayBase("03", "Lobby")
 
             result[indexInResult++] = line[bestIndex];
             windowStart = bestIndex + 1;
+            //hye
         }
 
         return long.Parse(new string(result));
