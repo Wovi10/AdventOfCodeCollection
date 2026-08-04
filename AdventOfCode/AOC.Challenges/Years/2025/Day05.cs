@@ -65,20 +65,73 @@ public class Day05() : DayBase("05", "Cafeteria")
             var lowerBound = long.Parse(bounds[0]);
             var upperBound = long.Parse(bounds[1]);
 
-            if (allBounds.Any(b => b.low <= lowerBound && b.high >= upperBound))
-                continue;
-
-            allBounds = allBounds.Except(allBounds.Where(b => b.low > lowerBound && b.high < upperBound)).ToList();
             allBounds.Add((lowerBound, upperBound));
-
-            // Only leaves bounds that are totally separate or overlap on 1 side
         }
 
         return 0;
     }
 
-    private long CountTotal(List<(long low, long high)> bounds)
+    private static long CountTotal(List<(long low, long high)> bounds)
     {
-        throw new NotImplementedException();
+        var hasChanges = true;
+        while (hasChanges)
+            bounds = RewriteBounds(bounds, out hasChanges);
+
+        return bounds.Sum(b => b.high - b.low + 1);
+    }
+
+    private static List<(long low, long high)> RewriteBounds(List<(long low, long high)> bounds, out bool hasChanges)
+    {
+        var boundsWithIndex = bounds
+                .OrderBy(b => b.low)
+                .ThenBy(b => b.high)
+                .Distinct()
+                .Select((b, index) => (b.low, b.high, index))
+                .ToList();
+
+        var result  = new List<(long low, long high)>();
+        var toSkip = new HashSet<int>();
+        foreach (var (currentLow, currentHigh, index) in boundsWithIndex)
+        {
+            if (toSkip.Contains(index))
+                continue;
+
+            // currentLow is the lowest available (Maybe another is equal)
+            var compareWith = boundsWithIndex.Where(b => !toSkip.Contains(b.index)).ToArray();
+
+            if (compareWith.Any(b => b.index != index && b.low == currentLow))
+            {
+                // low is equal, high is different
+                var equalLowDifferentHigh = compareWith.Where(b => b.low == currentLow).ToArray();
+                result.Add((currentLow, equalLowDifferentHigh.MaxBy(b => b.high).high));
+                toSkip.UnionWith(equalLowDifferentHigh.Select(b => b.index));
+                continue;
+            }
+
+            // currentLow is lowest
+
+            if (compareWith
+                .Any(b =>
+                    b.index != index &&
+                    b.low <= currentHigh))
+            {
+                var lowSmallerThanHigh =
+                    compareWith
+                        .Where(b => b.low <= currentHigh)
+                        .ToArray();
+                result.Add((currentLow, lowSmallerThanHigh.MaxBy(b => b.high).high));
+                toSkip.UnionWith(lowSmallerThanHigh.Select(b => b.index));
+
+                continue;
+            }
+
+            // currentHigh is lowest
+
+            toSkip.Add(index);
+            result.Add((currentLow, currentHigh));
+        }
+
+        hasChanges = result.Count != bounds.Count;
+        return result;
     }
 }
