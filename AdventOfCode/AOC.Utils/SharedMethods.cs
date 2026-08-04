@@ -25,7 +25,7 @@ public static class SharedMethods
     // this makes input resolution independent of the process's working directory.
     // useMock overrides Constants.IsRealExercise for callers that pick mock/real
     // explicitly (e.g. a GUI toggle) instead of relying on that global switch.
-    public static List<string> GetInput(string day, string? projectRoot = null, bool? useMock = null, [CallerFilePath] string callerFilePath = "")
+    public static List<string> GetInput(string day, bool trimStart = true, string? projectRoot = null, bool? useMock = null, [CallerFilePath] string callerFilePath = "")
     {
         var root = projectRoot ?? Path.GetDirectoryName(callerFilePath)!;
         var resolvedUseMock = useMock ?? Variables.UseMockInput ?? !Constants.IsRealExercise;
@@ -33,7 +33,7 @@ public static class SharedMethods
         var fullPath = Path.Combine(root, filePath);
         var inputFile = File.ReadAllText(fullPath);
         var splitInput = SplitInputFile(inputFile);
-        return splitInput.Select(line => line.Trim()).ToList();
+        return splitInput.Select(line => trimStart ? line.Trim() : line.TrimEnd()).ToList();
     }
 
     public static int GetPercentage(long current, long max)

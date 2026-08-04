@@ -41,8 +41,8 @@ public abstract class DayBase(string day, string title, [CallerFilePath] string 
         Console.WriteLine();
     }
 
-    protected IEnumerable<string> GetInput()
-        => SharedMethods.GetInput(Day, ProjectRoot);
+    protected IEnumerable<string> GetInput(bool trimStart = true)
+        => SharedMethods.GetInput(Day, trimStart, ProjectRoot);
 
     // Plain result retrieval for callers that just want the answer (e.g. a GUI "Run"
     // button), without the console printing/DEBUG-assertion side effects of Run().
@@ -59,7 +59,7 @@ public abstract class DayBase(string day, string title, [CallerFilePath] string 
         Variables.UseMockInput = useMock;
         try
         {
-            Input = SharedMethods.GetInput(Day, ProjectRoot, useMock);
+            Input = SharedMethods.GetInput(Day, false, ProjectRoot, useMock);
             return part == PartsToRun.Part1 ? await PartOne() : await PartTwo();
         }
         finally
@@ -91,7 +91,7 @@ public abstract class DayBase(string day, string title, [CallerFilePath] string 
     private async Task RunPart(Func<Task<object>> partToRun, bool runningPartOne)
     {
         Variables.RunningPartOne = runningPartOne;
-        Input = SharedMethods.GetInput(Day, ProjectRoot);
+        Input = SharedMethods.GetInput(Day, false, ProjectRoot);
 
         var result = await partToRun();
 
