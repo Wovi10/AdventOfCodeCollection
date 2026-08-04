@@ -1,5 +1,6 @@
 using ChallengePicker.Components;
 using Microsoft.AspNetCore.SignalR;
+using NLog;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -34,5 +35,7 @@ app.UseAntiforgery();
 app.MapStaticAssets();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
+
+app.Lifetime.ApplicationStopped.Register(LogManager.Shutdown);
 
 app.Run();

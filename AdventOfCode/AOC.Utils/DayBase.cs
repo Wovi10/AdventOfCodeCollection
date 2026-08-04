@@ -1,11 +1,16 @@
 ﻿using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using AOC.Utils.Enums;
+using NLog;
 
 namespace AOC.Utils;
 
-public abstract class DayBase(string day, string title, [CallerFilePath] string sourceFilePath = "")
+public abstract class DayBase(string day, string title, Logger? logger = null, [CallerFilePath] string sourceFilePath = "")
 {
+    protected readonly Logger Log = logger ?? LogManager.GetLogger(sourceFilePath.Length > 0
+        ? Path.GetFileNameWithoutExtension(sourceFilePath)
+        : nameof(DayBase));
+
     protected static List<string> Input = new();
     protected string Day { get; } = day;
 

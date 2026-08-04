@@ -51,16 +51,16 @@ public class Day07() : DayBase("07", "Laboratories")
     private long CountTimeLines()
     {
         var input = GetInput().ToArray(); // 3094 too low
+        var countTimelines = 1L;
+        var laserIndeces = new List<int> { input.First().IndexOf('S') };
 
-        var laserIndeces = new HashSet<int> { input.First().IndexOf('S') };
-        var totalLaserIndeces = 0L;
         for (var i = 1; i < input.Length; i++)
         {
             var line = input[i];
             if (!line.Contains('^'))
                 continue;
 
-            var nextIndeces = new  HashSet<int>();
+            var nextIndeces = new  List<int>();
             foreach (var laserIndex in laserIndeces)
             {
                 if (line[laserIndex] != '^')
@@ -69,13 +69,15 @@ public class Day07() : DayBase("07", "Laboratories")
                     continue;
                 }
 
+                countTimelines++;
                 nextIndeces.Add(laserIndex - 1);
                 nextIndeces.Add(laserIndex + 1);
             }
-            totalLaserIndeces += nextIndeces.Count;
             laserIndeces = nextIndeces;
+            Log.Debug("Line {0}: {1} active timeline(s), running count {2}", i, laserIndeces.Count, countTimelines);
         }
 
-        return totalLaserIndeces;
+        Log.Info("CountTimeLines finished with {0} timelines", countTimelines);
+        return countTimelines;
     }
 }
