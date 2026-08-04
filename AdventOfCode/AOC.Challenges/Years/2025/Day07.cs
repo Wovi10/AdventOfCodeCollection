@@ -48,36 +48,41 @@ public class Day07() : DayBase("07", "Laboratories")
         return numberOfSplits;
     }
 
+    private const char Splitter = '^';
     private long CountTimeLines()
     {
-        var input = GetInput().ToArray(); // 3094 too low
+        var input = GetInput().Where(l => l.Any(c => c != Splitter)).ToArray(); // 3094 too low
         var countTimelines = 1L;
-        var laserIndeces = new List<int> { input.First().IndexOf('S') };
+        var laserIndeces = new Dictionary<int, long> {[input.First().IndexOf('S')] = 1L };
 
         for (var i = 1; i < input.Length; i++)
         {
             var line = input[i];
-            if (!line.Contains('^'))
+            if (!line.Contains(Splitter))
                 continue;
 
-            var nextIndeces = new  List<int>();
-            foreach (var laserIndex in laserIndeces)
+            var nextIndeces = new  Dictionary<int, long>();
+
+            foreach (var (laserIndex, count) in laserIndeces)
             {
-                if (line[laserIndex] != '^')
+                if (line[laserIndex] != Splitter)
                 {
-                    nextIndeces.Add(laserIndex);
+                    Add(nextIndeces, laserIndex, count);
                     continue;
                 }
 
                 countTimelines++;
-                nextIndeces.Add(laserIndex - 1);
-                nextIndeces.Add(laserIndex + 1);
+                Add(nextIndeces, laserIndex - 1, count);
+                Add(nextIndeces, laserIndex + 1, count);
             }
             laserIndeces = nextIndeces;
             Log.Debug("Line {0}: {1} active timeline(s), running count {2}", i, laserIndeces.Count, countTimelines);
         }
 
         Log.Info("CountTimeLines finished with {0} timelines", countTimelines);
-        return countTimelines;
+        return laserIndeces.Values.Sum();
     }
+
+    private static void Add(Dictionary<int, long> dict, int key, long value)
+        => dict[key] = dict.GetValueOrDefault(key) + value;
 }
