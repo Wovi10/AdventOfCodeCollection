@@ -1,8 +1,0 @@
-{
-  "permissions": {
-    "allow": [
-      "Bash(dotnet build *)",
-      "Bash(curl -s -D - -o /dev/null --compressed \"http://localhost:5051/app.3dm4sd2756.css\")"
-    ]
-  }
-}
