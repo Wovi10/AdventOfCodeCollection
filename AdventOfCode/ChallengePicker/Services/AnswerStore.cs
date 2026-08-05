@@ -9,6 +9,24 @@ public class DayAnswers
     public string Part1Real { get; set; } = string.Empty;
     public string Part2Mock { get; set; } = string.Empty;
     public string Part2Real { get; set; } = string.Empty;
+
+    public bool HasAnswers()
+    {
+        return
+            (!string.IsNullOrWhiteSpace(Part1Real)
+             && Part1Real != AnswerStore.NotYetFound)
+            || (!string.IsNullOrWhiteSpace(Part2Real)
+                && Part2Real != AnswerStore.NotYetFound);
+    }
+
+    public bool HasAllAnswers()
+    {
+        return
+            !string.IsNullOrWhiteSpace(Part1Real)
+            && Part1Real != AnswerStore.NotYetFound
+            && !string.IsNullOrWhiteSpace(Part2Real)
+            && Part2Real != AnswerStore.NotYetFound;
+    }
 }
 
 // Recorded answers live in ChallengePicker itself, next to descriptions - both are
@@ -38,6 +56,18 @@ public static class AnswerStore
             return new DayAnswers();
 
         return JsonSerializer.Deserialize<DayAnswers>(File.ReadAllText(file), JsonOptions) ?? new DayAnswers();
+    }
+
+    public static bool HasAnswers(int year, int day)
+    {
+        var answers = Get(year, day);
+        return answers.HasAnswers();
+    }
+
+    public static bool HasAllAnswers(int year, int day)
+    {
+        var answers = Get(year, day);
+        return answers.HasAllAnswers();
     }
 
     public static void Save(int year, int day, DayAnswers answers)

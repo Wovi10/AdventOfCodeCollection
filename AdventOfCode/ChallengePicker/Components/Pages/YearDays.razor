@@ -10,11 +10,16 @@
 </p>
 
 <div class="day-grid">
-    @foreach (var day in AllDays)
+    @foreach (var day in ExistingDays)
     {
-        var exists = ExistingDays.Contains(day);
+        var hasAnswers = HasAnswers(day);
+        var hasAllAnswers = hasAnswers && HasAllAnswers(day);
         var label = day.ToString().PadLeft(2, '0');
-        var cssClass = exists ? "day-tile-existing" : "day-tile-missing";
+        var cssClass = hasAnswers
+            ? hasAllAnswers
+                ? "day-tile-solved"
+                : "day-tile-partial"
+            : "day-tile-missing";
         <a class="day-tile @cssClass" href="@($"year/{Year}/day/{day}")">Day @label</a>
     }
 </div>
@@ -97,4 +102,15 @@ else
 
         CancelAddDay();
     }
+
+    private bool HasAnswers(int day)
+    {
+        return AnswerStore.HasAnswers(Year, day);
+    }
+
+    private bool HasAllAnswers(int day)
+    {
+        return AnswerStore.HasAllAnswers(Year, day);
+    }
+
 }
