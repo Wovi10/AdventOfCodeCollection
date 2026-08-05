@@ -4,7 +4,10 @@
 
 <a href="/" class="back-link">&larr; Years</a>
 <h1>@Year</h1>
-<p class="text-muted">Pick a day, or add a new one.</p>
+<p class="text-muted">
+    Pick a day, or add a new one.
+    <a href="@($"https://adventofcode.com/{Year}")" target="_blank" rel="noopener">adventofcode.com/@Year</a>
+</p>
 
 <div class="day-grid">
     @foreach (var day in AllDays)
