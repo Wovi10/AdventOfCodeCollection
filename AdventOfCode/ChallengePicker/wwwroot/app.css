@@ -119,15 +119,26 @@ h1:focus {
     font-size: 1rem;
 }
 
-.day-tile-existing {
+.day-tile-solved {
     background-color: #26b050;
     color: #fff;
     border: none;
 }
 
-.day-tile-existing:hover {
+.day-tile-solved:hover {
     background-color: #1e8f40;
     color: #fff;
+}
+
+.day-tile-partial{
+    background-color: #ffa500;
+    color: #2F4F4F;
+    border: none;
+}
+
+.day-tile-partial:hover {
+    background-color: #e59400;
+    color: #696969;
 }
 
 .day-tile-missing {
