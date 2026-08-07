@@ -1,3 +1,4 @@
+using System.Xml;
 using AOC.Utils;
 
 namespace AOC.Challenges.Years._2025;
@@ -50,6 +51,7 @@ public class Day09() : DayBase("09", "Movie Theater")
 
     private const char Red = '#';
     private const char Green = 'X';
+
     private long FindBiggestAreaRedAndGreenTiles()
     {
         HashSet<(long x, long y, char color)> used =
@@ -59,7 +61,9 @@ public class Day09() : DayBase("09", "Movie Theater")
                 .ToHashSet();
 
         used = AddGreenCoords(used);
-        used = FillAreaWithGreen(used);
+        PrintField(used);
+        used.UnionWith(FillAreaWithGreen(used).Select(c => (c.x, c.y, Green)));
+        used.UnionWith(used);
 
         PrintField(used);
 
@@ -77,15 +81,21 @@ public class Day09() : DayBase("09", "Movie Theater")
         Console.WriteLine();
         for (var y = 0; y <= maxY; y++)
         {
-            var line = string.Empty;
-            for (var x = 0; x <= maxX; x++)
-            {
-                var color = used.FirstOrDefault(c => c.x == x && c.y == y).color;
-                line += color != '\0' ? color : '.';
-            }
-
-            Console.WriteLine(line);
+            var curLine = used.Where(c => c.y == y).ToHashSet();
+            PrintLine(curLine, maxX);
         }
+    }
+
+    private static void PrintLine(HashSet<(long x, long y, char color)> used, long maxX)
+    {
+        var line = string.Empty;
+        for (var x = 0; x <= maxX; x++)
+        {
+            var color = used.FirstOrDefault(c => c.x == x).color;
+            line += color != '\0' ? color : '.';
+        }
+
+        Console.WriteLine(line);
     }
 
     private static HashSet<(long x, long y, char color)> AddGreenCoords(HashSet<(long x, long y, char color)> used)
@@ -110,41 +120,56 @@ public class Day09() : DayBase("09", "Movie Theater")
             }
         }
 
-        return used.Concat(result).ToHashSet();
+        used.UnionWith(result);
+
+        return used;
     }
 
-    private static HashSet<(long x, long y, char color)> FillAreaWithGreen(HashSet<(long x, long y, char color)> coordsUsed)
+    private static IEnumerable<(long x, long y)> FillAreaWithGreen(HashSet<(long x, long y, char color)> coordsUsed)
     {
         var highestRedY = coordsUsed.MaxBy(c => c.y).y;
         var lowestRedY = coordsUsed.MinBy(c => c.y).y;
         var totalChecks = highestRedY - lowestRedY;
         var currentChecks = 1L;
 
-        for (var yToCheck = lowestRedY + 1; yToCheck < highestRedY; yToCheck++)
+        for (var y = lowestRedY + 1; y < highestRedY; y++)
         {
-            var y = yToCheck;
-            var preLine = coordsUsed.Where(c => c.y == y - 1).Select(c => c.x).ToHashSet();
             var curLine = coordsUsed.Where(c => c.y == y).Select(c => c.x).ToHashSet();
-            var maxCurLine = curLine.Max();
+            var firstToCheck = curLine.Min();
+            var lastToCheck = curLine.Max();
 
-            for (var xToCheck = curLine.Min()-1; xToCheck < maxCurLine; xToCheck++)
+            var preLine = coordsUsed.Where(c => c.y == y - 1).Select(c => (c.x, c.color)).ToHashSet();
+            var prePreLine = coordsUsed.Where(c => c.y == y - 2).Select(c => c.x).ToHashSet();
+
+
+            for (var x = firstToCheck + 1; x < lastToCheck; x++)
             {
-                if (preLine.Contains(xToCheck-1) && preLine.Contains(xToCheck) && curLine.Contains(xToCheck-1))
-                    curLine.Add(xToCheck);
-            }
+                if (!ShouldBeFilled(x, curLine, preLine, prePreLine))
+                    continue;
 
-            coordsUsed.UnionWith(curLine.Select(x => (x, y, Green)));
+                var nextFilled = curLine.Where(c => c > x).Min();
+                while (x < nextFilled)
+                    yield return (x++, y);
+            }
 
             var percentageDone = (double)currentChecks / totalChecks * 100;
-            if (percentageDone % 5 == 0)
-            {
+            if ((percentageDone % 5 == 0))
                 Console.WriteLine("After {0} rows there are {1} coordsUsed \t\t {2}% done", currentChecks,
                     coordsUsed.Count, percentageDone);
-            }
+
             currentChecks++;
         }
+    }
 
-        return coordsUsed.OrderBy(c => c.x).ThenBy(c => c.y).ToHashSet();
+    private static bool ShouldBeFilled(long xToCheck, HashSet<long> curLine, HashSet<(long x, char color)> preLine, HashSet<long> prePreLine)
+    {
+        if (curLine.Contains(xToCheck) || !curLine.Contains(xToCheck - 1) || preLine.All(c => c.x != xToCheck))
+            return false;
+
+        if (!preLine.Any(c => c.x == xToCheck-1 && c.color == Red) || !curLine.Contains(xToCheck - 2) || prePreLine.All(c => c != xToCheck) || prePreLine.All(c => c != xToCheck - 2))
+            return true;
+
+        return false;
     }
 
     private static long GetMaxArea(HashSet<(long x, long y, char color)> used)
@@ -173,9 +198,9 @@ public class Day09() : DayBase("09", "Movie Theater")
         long smallestX, long biggestX, long smallestY, long biggestY, HashSet<(long x, long y, char color)> used)
     {
         for (var x = smallestX; x <= biggestX; x++)
-            for (var y = smallestY; y <= biggestY; y++)
-                if (!used.Contains((x, y, Red)) && !used.Contains((x,y,Green)))
-                    return false;
+        for (var y = smallestY; y <= biggestY; y++)
+            if (!used.Contains((x, y, Red)) && !used.Contains((x, y, Green)))
+                return false;
         return true;
     }
 }
