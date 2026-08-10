@@ -63,7 +63,8 @@ public class Day09() : DayBase("09", "Movie Theater")
         Log.Info("Compressed {0} vertices into a {1}x{2} grid", redTiles.Length, sizeX, sizeY);
 
         var isBoundary = FindEdges(sizeX, sizeY, redTiles, indexX, indexY);
-        var isOutside = MarkOutsideBreathFirst(isBoundary, sizeX, sizeY); // Less outside tiles than inside, so this is quicker
+        var isOutside =
+            MarkOutsideBreathFirst(isBoundary, sizeX, sizeY); // Less outside tiles than inside, so this is quicker
 
         var outsidePrefix = BuildPrefixSum(isOutside, sizeX, sizeY);
 
@@ -142,7 +143,7 @@ public class Day09() : DayBase("09", "Movie Theater")
         while (queue.Count > 0)
         {
             var (x, y) = queue.Dequeue();
-            foreach (var (nx, ny) in new[] { (x - 1, y), (x + 1, y), (x, y - 1), (x, y + 1) })
+            foreach (var (nx, ny) in new[] {(x - 1, y), (x + 1, y), (x, y - 1), (x, y + 1)})
             {
                 if (FellOffTheEdge(nx, ny) || VisitedOrWall(nx, ny))
                     continue;
@@ -163,8 +164,8 @@ public class Day09() : DayBase("09", "Movie Theater")
         var prefix = new int[sizeX + 1, sizeY + 1];
 
         for (var x = 0; x < sizeX; x++)
-            for (var y = 0; y < sizeY; y++)
-                prefix[x + 1, y + 1] = (isOutside[x, y] ? 1 : 0) + prefix[x, y + 1] + prefix[x + 1, y] - prefix[x, y];
+        for (var y = 0; y < sizeY; y++)
+            prefix[x + 1, y + 1] = (isOutside[x, y] ? 1 : 0) + prefix[x, y + 1] + prefix[x + 1, y] - prefix[x, y];
 
         return prefix;
     }
