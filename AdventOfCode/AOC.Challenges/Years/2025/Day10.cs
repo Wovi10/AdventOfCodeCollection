@@ -68,14 +68,16 @@ public class Day10() : DayBase("10", "Factory")
 
     private bool ContainsSolution(bool[] desired, IEnumerable<List<int>> combos, string[][] possibilities)
     {
-        var current = desired.Select(_ => false).ToArray();
-
+        var initial = desired.Select(_ => false).ToArray();
         foreach (var combo in combos)
         {
-            var toUse = possibilities.Where((_, i) => combo.Contains(i)).First().ToArray();
-            current = UseButtons(current, toUse);
+            var allToUse = possibilities.Where((_, i) => combo.Contains(i)).ToArray();
 
-            if (current == desired)
+            var current = initial;
+            foreach (var toUse in allToUse)
+                current = UseButtons(current, toUse);
+
+            if (current.SequenceEqual(desired))
                 return true;
         }
 
