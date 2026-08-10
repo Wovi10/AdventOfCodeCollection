@@ -14,7 +14,9 @@ public class Day10() : DayBase("10", "Factory")
 
     protected override Task<object> PartTwo()
     {
-        throw new NotImplementedException();
+        var result = FewestPressesForJoltage();
+
+        return Task.FromResult<object>(result);
     }
 
     private const char OutcomeStart = '[';
@@ -26,6 +28,7 @@ public class Day10() : DayBase("10", "Factory")
     private const char ButtonOn = '#';
     private const char Empty = '\0';
     private const char Comma = ',';
+
     private long FewestPressesToConfigure()
     {
         var input =
@@ -68,12 +71,11 @@ public class Day10() : DayBase("10", "Factory")
 
     private bool ContainsSolution(bool[] desired, IEnumerable<List<int>> combos, string[][] possibilities)
     {
-        var initial = desired.Select(_ => false).ToArray();
         foreach (var combo in combos)
         {
             var allToUse = possibilities.Where((_, i) => combo.Contains(i)).ToArray();
 
-            var current = initial;
+            var current = desired.Select(_ => false).ToArray();
             foreach (var toUse in allToUse)
                 current = UseButtons(current, toUse);
 
@@ -113,4 +115,92 @@ public class Day10() : DayBase("10", "Factory")
 
         return initial;
     }
+
+    private long FewestPressesForJoltage()
+    {
+        var input =
+            GetInput()
+                .Select(l =>
+                    (buttons: l.Split(OutcomeEnd).Last().Split(JoltageStart).First().Trim(),
+                        joltages:l.Split(OutcomeEnd).Last().Split(JoltageStart).Last().Trim())
+                );
+
+        var result = FewestPressesJoltage(input);
+
+        return result.Sum();
+    }
+
+    private IEnumerable<long> FewestPressesJoltage(IEnumerable<(string buttons, string joltages)> input)
+    {
+        foreach (var (buttons, joltages) in input)
+        {
+            var desired = joltages[..^1].Split(Comma).Select(long.Parse).ToArray();
+            var possibilities =
+                buttons.Split(Space).Select(o => o[1..^1].Split(Comma)).ToArray();
+
+            yield return IterateOverAllJoltages(desired, possibilities);
+        }
+    }
+
+    private long IterateOverAllJoltages(long[] desired, string[][] possibilities)
+    {
+        var comboLength = 1;
+        while (true)
+        {
+            var combos = FindCombinationsJoltages(possibilities.Length, comboLength);
+
+            if (ContainsSolutionJoltages(desired, combos, possibilities))
+                return comboLength;
+
+            comboLength++;
+        }
+    }
+
+    private bool ContainsSolutionJoltages(long[] desired, IEnumerable<List<int>> combos, string[][] possibilities)
+    {
+        foreach (var combo in combos)
+        {
+            var allToUse = possibilities.Where((_, i) => combo.Contains(i)).Select(p => p.Select(long.Parse).ToArray()).ToArray();
+
+            var current = desired.Select(_ => 0L).ToArray();
+            foreach (var toUse in allToUse)
+                current = UseButtonsJoltages(current, toUse);
+
+            if (current.SequenceEqual(desired))
+                return true;
+        }
+
+        return false;
+    }
+
+    private long[] UseButtonsJoltages(long[] current, long[] toUse)
+    {
+        foreach (var option in toUse)
+            current[option] += 1;
+
+        return current;
+    }
+
+    private static IEnumerable<List<int>> FindCombinationsJoltages(int posLength, int length)
+    {
+        return Combine(0, new List<int>());
+
+        IEnumerable<List<int>> Combine(int start, List<int> current)
+        {
+            if (current.Count == length)
+            {
+                yield return new List<int>(current);
+                yield break;
+            }
+
+            for (var i = start; i < posLength; i++)
+            {
+                current.Add(i);
+                foreach (var combo in Combine(i, current))
+                    yield return combo;
+                current.RemoveAt(current.Count-1);
+            }
+        }
+    }
+
 }
