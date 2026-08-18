@@ -121,75 +121,70 @@ public class Day10() : DayBase("10", "Factory")
         var input =
             GetInput()
                 .Select(l =>
-                    (buttons: l.Split(OutcomeEnd).Last().Split(JoltageStart).First().Trim(),
-                        joltages:l.Split(OutcomeEnd).Last().Split(JoltageStart).Last().Trim())
+                    {
+                        var useful = l.Split(OutcomeEnd).Last().Trim().Split(JoltageStart);
+                        return (
+                            buttons:
+                            useful.First().Trim()
+                                .Split(Space).Select(o => o[1..^1].Split(Comma).Select(int.Parse).ToArray()).ToArray(),
+                            joltages:
+                            useful.Last()[..^1]
+                                .Split(Comma).Select(int.Parse).ToArray()
+                        );
+                    }
                 );
 
-        var result = FewestPressesJoltage(input);
-
-        return result.Sum();
+        return FewestPressesJoltage(input).Sum();
     }
 
-    private IEnumerable<long> FewestPressesJoltage(IEnumerable<(string buttons, string joltages)> input)
+    private IEnumerable<long> FewestPressesJoltage(IEnumerable<(int[][] buttons, int[] joltages)> input)
     {
         foreach (var (buttons, joltages) in input)
-        {
-            var desired = joltages[..^1].Split(Comma).Select(long.Parse).ToArray();
-            var possibilities =
-                buttons.Split(Space).Select(o => o[1..^1].Split(Comma)).ToArray();
-
-            yield return IterateOverAllJoltages(desired, possibilities);
-        }
+            yield return IterateOverAllJoltages(joltages, buttons);
     }
 
-    private long IterateOverAllJoltages(long[] desired, string[][] possibilities)
+    private static long IterateOverAllJoltages(int[] desired, int[][] possibilities)
     {
-        var comboLength = 1;
+        var comboLength = desired.Sum() / possibilities.Max(p => p.Length);
         while (true)
         {
-            var combos = FindCombinationsJoltages(possibilities.Length, comboLength);
+            var dictVersion = new List<Dictionary<int, int>>();
+            foreach (var combo in FindCombinationsJoltages(possibilities.Length, comboLength).ToArray())
+            {
+                var dict = new Dictionary<int, int>();
+                var distinctIndexesCombo = combo.Distinct();
+                foreach (var i in distinctIndexesCombo)
+                {
+                    var numInCombo = combo.Count(c => c == i);
+                    foreach (var j in possibilities[i])
+                        if (!dict.TryAdd(j, numInCombo))
+                            dict[j] += numInCombo;
+                }
+                dictVersion.Add(dict);
+            }
 
-            if (ContainsSolutionJoltages(desired, combos, possibilities))
+            if (ContainsSolutionJoltages(desired, dictVersion))
                 return comboLength;
 
             comboLength++;
         }
     }
 
-    private bool ContainsSolutionJoltages(long[] desired, IEnumerable<List<int>> combos, string[][] possibilities)
+    private static bool ContainsSolutionJoltages(int[] desired, List<Dictionary<int, int>> combos)
+        => combos.Any(combo => ItWorks(combo, desired));
+
+    private static bool ItWorks(Dictionary<int, int> allToUse, int[] desired)
+        => allToUse.OrderBy(k => k.Key).Select(k => k.Value).ToArray().SequenceEqual(desired);
+
+    private static IEnumerable<List<long>> FindCombinationsJoltages(int posLength, int length)
     {
-        foreach (var combo in combos)
-        {
-            var allToUse = possibilities.Where((_, i) => combo.Contains(i)).Select(p => p.Select(long.Parse).ToArray()).ToArray();
+        return Combine(0, new List<long>());
 
-            var current = desired.Select(_ => 0L).ToArray();
-            foreach (var toUse in allToUse)
-                current = UseButtonsJoltages(current, toUse);
-
-            if (current.SequenceEqual(desired))
-                return true;
-        }
-
-        return false;
-    }
-
-    private long[] UseButtonsJoltages(long[] current, long[] toUse)
-    {
-        foreach (var option in toUse)
-            current[option] += 1;
-
-        return current;
-    }
-
-    private static IEnumerable<List<int>> FindCombinationsJoltages(int posLength, int length)
-    {
-        return Combine(0, new List<int>());
-
-        IEnumerable<List<int>> Combine(int start, List<int> current)
+        IEnumerable<List<long>> Combine(int start, List<long> current)
         {
             if (current.Count == length)
             {
-                yield return new List<int>(current);
+                yield return new List<long>(current);
                 yield break;
             }
 
