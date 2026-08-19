@@ -137,7 +137,7 @@ public class Day10() : DayBase("10", "Factory")
         return FewestPressesJoltage(input).Sum();
     }
 
-    private IEnumerable<long> FewestPressesJoltage(IEnumerable<(int[][] buttons, int[] joltages)> input)
+    private static IEnumerable<long> FewestPressesJoltage(IEnumerable<(int[][] buttons, int[] joltages)> input)
     {
         foreach (var (buttons, joltages) in input)
             yield return IterateOverAllJoltages(joltages, buttons);
@@ -145,14 +145,15 @@ public class Day10() : DayBase("10", "Factory")
 
     private static long IterateOverAllJoltages(int[] desired, int[][] possibilities)
     {
-        var comboLength = desired.Sum() / possibilities.Max(p => p.Length);
-        while (true)
+        var comboLength = desired.Max();
+        var maxComboLength = desired.Sum();
+        while (comboLength <= maxComboLength)
         {
-            var dictVersion = new List<Dictionary<int, int>>();
-            foreach (var combo in FindCombinationsJoltages(possibilities.Length, comboLength).ToArray())
+            foreach (var combo in FindCombinationsJoltages(possibilities.Length, comboLength))
             {
                 var dict = new Dictionary<int, int>();
-                var distinctIndexesCombo = combo.Distinct();
+                var distinctIndexesCombo = combo.Distinct().ToArray();
+
                 foreach (var i in distinctIndexesCombo)
                 {
                     var numInCombo = combo.Count(c => c == i);
@@ -160,18 +161,16 @@ public class Day10() : DayBase("10", "Factory")
                         if (!dict.TryAdd(j, numInCombo))
                             dict[j] += numInCombo;
                 }
-                dictVersion.Add(dict);
-            }
 
-            if (ContainsSolutionJoltages(desired, dictVersion))
-                return comboLength;
+                if (dict.Count == desired.Length && ItWorks(dict, desired))
+                    return comboLength;
+            }
 
             comboLength++;
         }
-    }
 
-    private static bool ContainsSolutionJoltages(int[] desired, List<Dictionary<int, int>> combos)
-        => combos.Any(combo => ItWorks(combo, desired));
+        return 0;
+    }
 
     private static bool ItWorks(Dictionary<int, int> allToUse, int[] desired)
         => allToUse.OrderBy(k => k.Key).Select(k => k.Value).ToArray().SequenceEqual(desired);
